@@ -111,7 +111,7 @@ alr\_Silt\_lab
 
     vario_alr_Silt_lab_a <- sample.variogram(data.spec[data.spec$layer == "A" & data.spec$set != "validation","alr_Silt_lab"], 
                                              locations = data.spec[data.spec$layer == "A" & data.spec$set != "validation", c("POINT_X", "POINT_Y")], 
-                                             lag.dist.def = seq(0, 2000, by = 100), estimator = "matheron")
+                                             lag.dist.def = seq(0, 1500, by = 100), estimator = "matheron")
     plot(vario_alr_Silt_lab_a[,c("lag.dist")], vario_alr_Silt_lab_a[,c("gamma")])
 
     alr_Silt_lab_a_psi2 <- georob(alr_Silt_lab ~ 1, data = data.spec[data.spec$layer == "A" & data.spec$set != "validation",], 
@@ -119,7 +119,7 @@ alr\_Silt\_lab
                                    variogram.model = "RMexp",
                                    param = c(variance = 0.1, nugget = 0.3, scale = 1500),
                                    fit.param = default.fit.param(scale = TRUE, alpha = TRUE),
-                                   tuning.psi = 2000)
+                                   tuning.psi = 2)
 
 
     summary(alr_Silt_lab_a_psi2)
@@ -128,7 +128,7 @@ alr\_Silt\_spec
 
     vario_alr_Silt_spec_a <- sample.variogram(data.spec[data.spec$layer == "A" & data.spec$set != "validation","alr_Silt_spec"], 
                                               locations = data.spec[data.spec$layer == "A"  & data.spec$set != "validation", c("POINT_X", "POINT_Y")], 
-                                              lag.dist.def = seq(0, 2000, by = 100), estimator = "matheron")
+                                              lag.dist.def = seq(0, 1500, by = 100), estimator = "matheron")
     plot(vario_alr_Silt_spec_a[,c("lag.dist")], vario_alr_Silt_spec_a[,c("gamma")])
 
     alr_Silt_spec_a_psi2 <- georob(alr_Silt_spec ~ 1, data = data.spec[data.spec$layer == "A" & data.spec$set != "validation",], 
@@ -136,7 +136,7 @@ alr\_Silt\_spec
                                     variogram.model = "RMexp",
                                     param = c(variance = 1, nugget = 0.1, scale = 1500),
                                     fit.param = default.fit.param(scale = TRUE, alpha = TRUE),
-                                    tuning.psi = 2000)
+                                    tuning.psi = 2)
 
 
     summary(alr_Silt_spec_a_psi2)
@@ -145,7 +145,7 @@ alr\_Clay\_lab
 
     vario_alr_Clay_lab_a <- sample.variogram(data.spec[data.spec$layer == "A" & data.spec$set != "validation","alr_Clay_lab"], 
                                              locations = data.spec[data.spec$layer == "A"  & data.spec$set != "validation", c("POINT_X", "POINT_Y")], 
-                                             lag.dist.def = seq(0, 2000, by = 100), estimator = "matheron")
+                                             lag.dist.def = seq(0, 1500, by = 100), estimator = "matheron")
     plot(vario_alr_Clay_lab_a[,c("lag.dist")], vario_alr_Clay_lab_a[,c("gamma")])
 
     alr_Clay_lab_a_psi2 <- georob(alr_Clay_lab ~ 1, data = data.spec[data.spec$layer == "A" & data.spec$set != "validation",], 
@@ -153,7 +153,7 @@ alr\_Clay\_lab
                                    variogram.model = "RMexp",
                                    param = c(variance = 1, nugget = 0.3, scale = 1500),
                                    fit.param = default.fit.param(scale = TRUE, alpha = TRUE),
-                                   tuning.psi = 2000)
+                                   tuning.psi = 2)
 
     summary(alr_Clay_lab_a_psi2)
 
@@ -161,7 +161,7 @@ alr\_Clay\_spec
 
     vario_alr_Clay_spec_a <- sample.variogram(data.spec[data.spec$layer == "A" & data.spec$set != "validation","alr_Clay_spec"], 
                                               locations = data.spec[data.spec$layer == "A" & data.spec$set != "validation", c("POINT_X", "POINT_Y")], 
-                                              lag.dist.def = seq(0, 2000, by = 100), estimator = "matheron")
+                                              lag.dist.def = seq(0, 1500, by = 100), estimator = "matheron")
     plot(vario_alr_Clay_spec_a[,c("lag.dist")], vario_alr_Clay_spec_a[,c("gamma")])
 
     alr_Clay_spec_a_psi2 <- georob(alr_Clay_spec ~ 1, data = data.spec[data.spec$layer == "A" & data.spec$set != "validation",], 
@@ -169,7 +169,7 @@ alr\_Clay\_spec
                                     variogram.model = "RMexp",
                                     param = c(variance = 1, nugget = 0.1, scale = 1500),
                                     fit.param = default.fit.param(scale = TRUE, alpha = TRUE),
-                                    tuning.psi = 2000)
+                                    tuning.psi = 2)
 
     summary(alr_Clay_spec_a_psi2)
 
@@ -177,7 +177,7 @@ Ca lab
 
     vario_Ca_lab_a <- sample.variogram(data.spec[data.spec$layer == "A" & data.spec$set != "validation","Ca"], 
                                        locations = data.spec[data.spec$layer == "A" & data.spec$set != "validation", c("POINT_X", "POINT_Y")], 
-                                       lag.dist.def = seq(0, 2000, by = 100), estimator = "matheron")
+                                       lag.dist.def = seq(0, 1500, by = 100), estimator = "matheron")
     plot(vario_Ca_lab_a[,c("lag.dist")], vario_Ca_lab_a[,c("gamma")])
 
     Ca_lab_a_psi2 <- georob(Ca ~ 1, data = data.spec[data.spec$layer == "A" & data.spec$set != "validation",], 
@@ -185,7 +185,7 @@ Ca lab
                              variogram.model = "RMexp",
                              param = c(variance = 200, nugget = 10, scale = 500),
                              fit.param = default.fit.param(scale = TRUE, alpha = TRUE),
-                             tuning.psi = 2000)
+                             tuning.psi = 2)
 
     summary(Ca_lab_a_psi2)
 
@@ -193,7 +193,7 @@ specCa
 
     vario_specCa_a <- sample.variogram(data.spec[data.spec$layer == "A" & data.spec$set != "validation","specCa"], 
                                        locations = data.spec[data.spec$layer == "A" & data.spec$set != "validation", c("POINT_X", "POINT_Y")], 
-                                       lag.dist.def = seq(0, 2000, by = 100), estimator = "matheron")
+                                       lag.dist.def = seq(0, 1500, by = 100), estimator = "matheron")
     plot(vario_specCa_a[,c("lag.dist")], vario_specCa_a[,c("gamma")])
 
     specCa_a_psi2 <- georob(specCa ~ 1, data = data.spec[data.spec$layer == "A" & data.spec$set != "validation",], 
@@ -201,7 +201,7 @@ specCa
                              variogram.model = "RMexp",
                              param = c(variance = 220, nugget = 1, scale = 1000),
                              fit.param = default.fit.param(scale = TRUE, alpha = TRUE),
-                             tuning.psi = 2000)
+                             tuning.psi = 2)
 
 
     summary(specCa_a_psi2)
@@ -213,7 +213,7 @@ alr\_Silt\_lab
 
     vario_alr_Silt_lab_b <- sample.variogram(data.spec[data.spec$layer == "B" & data.spec$set != "validation","alr_Silt_lab"], 
                                              locations = data.spec[data.spec$layer == "B" & data.spec$set != "validation", c("POINT_X", "POINT_Y")], 
-                                             lag.dist.def = seq(0, 2000, by = 100), estimator = "matheron")
+                                             lag.dist.def = seq(0, 1500, by = 100), estimator = "matheron")
     plot(vario_alr_Silt_lab_b[,c("lag.dist")], vario_alr_Silt_lab_b[,c("gamma")])
 
     alr_Silt_lab_b_psi2<- georob(alr_Silt_lab ~ 1, data = data.spec[data.spec$layer == "B" & data.spec$set != "validation",], 
@@ -221,7 +221,7 @@ alr\_Silt\_lab
                                    variogram.model = "RMexp",
                                    param = c(variance = 0.1, nugget = 0.3, scale = 1500),
                                    fit.param = default.fit.param(scale = TRUE, alpha = TRUE),
-                                   tuning.psi = 2000)
+                                   tuning.psi = 2)
 
     summary(alr_Silt_lab_b_psi2)
 
@@ -229,7 +229,7 @@ alr\_Silt\_spec
 
     vario_alr_Silt_spec_b <- sample.variogram(data.spec[data.spec$layer == "B" & data.spec$set != "validation","alr_Silt_spec"], 
                                               locations = data.spec[data.spec$layer == "B"  & data.spec$set != "validation", c("POINT_X", "POINT_Y")], 
-                                              lag.dist.def = seq(0, 2000, by = 100), estimator = "matheron")
+                                              lag.dist.def = seq(0, 1500, by = 100), estimator = "matheron")
     plot(vario_alr_Silt_spec_b[,c("lag.dist")], vario_alr_Silt_spec_b[,c("gamma")])
 
     alr_Silt_spec_b_psi2 <- georob(alr_Silt_spec ~ 1, data = data.spec[data.spec$layer == "B" & data.spec$set != "validation",], 
@@ -237,7 +237,7 @@ alr\_Silt\_spec
                                     variogram.model = "RMexp",
                                     param = c(variance = 1, nugget = 0.1, scale = 1500),
                                     fit.param = default.fit.param(scale = TRUE, alpha = TRUE),
-                                    tuning.psi = 2000)
+                                    tuning.psi = 2)
 
     summary(alr_Silt_spec_b_psi2)
 
@@ -245,7 +245,7 @@ alr\_Clay\_lab
 
     vario_alr_Clay_lab_b <- sample.variogram(data.spec[data.spec$layer == "B" & data.spec$set != "validation","alr_Clay_lab"], 
                                              locations = data.spec[data.spec$layer == "B"  & data.spec$set != "validation", c("POINT_X", "POINT_Y")], 
-                                             lag.dist.def = seq(0, 2000, by = 100), estimator = "matheron")
+                                             lag.dist.def = seq(0, 1500, by = 100), estimator = "matheron")
     plot(vario_alr_Clay_lab_b[,c("lag.dist")], vario_alr_Clay_lab_b[,c("gamma")])
 
     alr_Clay_lab_b_psi2 <- georob(alr_Clay_lab ~ 1, data = data.spec[data.spec$layer == "B" & data.spec$set != "validation",], 
@@ -253,7 +253,7 @@ alr\_Clay\_lab
                                    variogram.model = "RMexp",
                                    param = c(variance = 1, nugget = 0.3, scale = 1500),
                                    fit.param = default.fit.param(scale = TRUE, alpha = TRUE),
-                                   tuning.psi = 2000)
+                                   tuning.psi = 2)
 
     summary(alr_Clay_lab_b_psi2)
 
@@ -261,7 +261,7 @@ alr\_Clay\_spec
 
     vario_alr_Clay_spec_b <- sample.variogram(data.spec[data.spec$layer == "B" & data.spec$set != "validation","alr_Clay_spec"], 
                                               locations = data.spec[data.spec$layer == "B" & data.spec$set != "validation", c("POINT_X", "POINT_Y")], 
-                                              lag.dist.def = seq(0, 2000, by = 100), estimator = "matheron")
+                                              lag.dist.def = seq(0, 1500, by = 100), estimator = "matheron")
     plot(vario_alr_Clay_spec_b[,c("lag.dist")], vario_alr_Clay_spec_b[,c("gamma")])
 
     alr_Clay_spec_b_psi2 <- georob(alr_Clay_spec ~ 1, data = data.spec[data.spec$layer == "B" & data.spec$set != "validation",], 
@@ -269,7 +269,7 @@ alr\_Clay\_spec
                                     variogram.model = "RMexp",
                                     param = c(variance = 1, nugget = 0.1, scale = 1500),
                                     fit.param = default.fit.param(scale = TRUE, alpha = TRUE),
-                                    tuning.psi = 2000)
+                                    tuning.psi = 2)
 
     summary(alr_Clay_spec_b_psi2)
 
@@ -277,7 +277,7 @@ Ca lab
 
     vario_Ca_lab_b <- sample.variogram(data.spec[data.spec$layer == "B" & data.spec$set != "validation","Ca"], 
                                        locations = data.spec[data.spec$layer == "B" & data.spec$set != "validation", c("POINT_X", "POINT_Y")], 
-                                       lag.dist.def = seq(0, 2000, by = 100), estimator = "matheron")
+                                       lag.dist.def = seq(0, 1500, by = 100), estimator = "matheron")
     plot(vario_Ca_lab_b[,c("lag.dist")], vario_Ca_lab_b[,c("gamma")])
 
     Ca_lab_b_psi2 <- georob(Ca ~ 1, data = data.spec[data.spec$layer == "B" & data.spec$set != "validation",], 
@@ -285,7 +285,7 @@ Ca lab
                              variogram.model = "RMexp",
                              param = c(variance = 200, nugget = 0.1, scale = 2000),
                              fit.param = default.fit.param(scale = TRUE, alpha = TRUE),
-                             tuning.psi = 2000)
+                             tuning.psi = 2)
 
     summary(Ca_lab_b_psi2)
 
@@ -293,7 +293,7 @@ specCa
 
     vario_specCa_b <- sample.variogram(data.spec[data.spec$layer == "B" & data.spec$set != "validation","specCa"], 
                                        locations = data.spec[data.spec$layer == "B" & data.spec$set != "validation", c("POINT_X", "POINT_Y")], 
-                                       lag.dist.def = seq(0, 2000, by = 100), estimator = "matheron")
+                                       lag.dist.def = seq(0, 1500, by = 100), estimator = "matheron")
     plot(vario_specCa_b[,c("lag.dist")], vario_specCa_b[,c("gamma")])
 
     specCa_b_psi2 <- georob(specCa ~ 1, data = data.spec[data.spec$layer == "B" & data.spec$set != "validation",], 
@@ -301,7 +301,7 @@ specCa
                              variogram.model = "RMexp",
                              param = c(variance = 150, nugget = 0.1, scale = 2000),
                              fit.param = default.fit.param(scale = TRUE, alpha = TRUE),
-                             tuning.psi = 2000)
+                             tuning.psi = 2)
 
     summary(specCa_b_psi2)
 
