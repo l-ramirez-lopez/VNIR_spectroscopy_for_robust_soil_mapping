@@ -520,6 +520,7 @@ sum(sbl_ca$results[[idx.best.ca]]$k.org != nrow(train$spc))
 ```
 
 <p>Additive log-ratio transformation of silt:</p>
+
 ```r
 ## Run the MBL
 sbl_alrsilt <- mbl(Yr = log(train$Silt/train$Sand), 
