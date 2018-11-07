@@ -554,6 +554,7 @@ var.res.alrsilt <- var(valida$alr_silt - pred_val_alrsilt)
 sum(sbl_alrsilt$results[[idx.best.alrsilt ]]$k.org != nrow(train$spc))
 ```
 <p>Additive log-ratio transformation of clay:</p>
+
 ```r
 ## Run the MBL
 sbl_alrclay <- mbl(Yr = log(train$Clay/train$Sand), 
@@ -587,12 +588,15 @@ sum(sbl_alrclay$results[[idx.best.alrclay]]$k.org != nrow(train$spc))
 ```
 
 Back-transfrom to sand, silt and clay contents the predictions omade for the additive log-ratio transformations of the particle size. 
+
 ```r
 valSilt_alr <- 100 * exp(pred_val_alrsilt)/(1+exp(pred_val_alrclay)+exp(pred_val_alrsilt))
 valClay_alr <- 100 * exp(pred_val_alrclay)/(1+exp(pred_val_alrclay)+exp(pred_val_alrsilt))
 valSand_alr <- 100 * 1/(1+exp(pred_val_alrclay)+exp(pred_val_alrsilt))
 ```
+
 Compute the validation R^2^ and root mean squared error (RMSE) of the predicted sand, silt and clay contents
+
 ```r
 valR2Silt_alr <- (cor(valida$Silt, valSilt_alr))^2
 valR2Sand_alr <- (cor(valida$Sand, valSand_alr))^2
