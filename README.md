@@ -6,17 +6,17 @@ This repository is dedicated to our paper entitled ['Robust soil mapping at the 
 In the spirit of reproducible research, here you will find all the the data and computational code we used for conducting the research associated to this paper. If it catches your interest, you can go through the code presented here (mostly using copy and paste &#x263A;) and reproduce all the results reported in the paper. If you find that the data, parts of the code or some of the ideas here are useful for your own work, please cite any of these as follows:
 
 
-<ul><li style="color: #FFFFFF;">[Ramirez-Lopez, L., Wadoux, A.M.C., Franceschini, M. H. D., Terra, F.S., Marques, K.P.P., Sayão, V.M., Demattê, J.A.M. 2018.Robust soil mapping at the farm scale with vis-NIR spectroscopy. European Journal of Soil Science. doi: 10.1111/ejss.12752.](http://onlinelibrary.wiley.com/doi/abs/10.1111/ejss.12752)</li></ul>
+<ul><li style="color: #FFFFFF;">[Ramirez-Lopez, L., Wadoux, A.M.C., Franceschini, M. H. D., Terra, F.S., Marques, K.P.P., SayÃ£o, V.M., DemattÃª, J.A.M. 2018.Robust soil mapping at the farm scale with vis-NIR spectroscopy. European Journal of Soil Science. doi: 10.1111/ejss.12752.](http://onlinelibrary.wiley.com/doi/abs/10.1111/ejss.12752)</li></ul>
 
 
 If you want to check the code and try to reproduce what we present in the paper, we suggest to use [R >= 3.4.4](https://cran.r-project.org/) and also use [RStudio (>= 1.1.442)](https://www.rstudio.com/products/RStudio) which is a really good integrated development environment (IDE) for R. 
 
 # The Barra Bonita dataset
 <p>__License__: [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)</p>
-This is a soil dataset that comes from a soil survey conducted in a farm located in the municipality of [Barra Bonita](https://en.wikipedia.org/wiki/Barra_Bonita,_S%C3%A3o_Paulo) in the state of São Paulo (Brazil). This dataset comprises 910 soil samples collected at 458 locations (at two depths). The area covered by the survey is 473 ha.  
+This is a soil dataset that comes from a soil survey conducted in a farm located in the municipality of [Barra Bonita](https://en.wikipedia.org/wiki/Barra_Bonita,_S%C3%A3o_Paulo) in the state of SÃ£o Paulo (Brazil). This dataset comprises 910 soil samples collected at 458 locations (at two depths). The area covered by the survey is 473 ha.  
 The soil dataset used in the study is provided [here](https://github.com/l-ramirez-lopez/VNIR_spectroscopy_for_robust_soil_mapping/raw/master/BarraBonita.txt) in a table format which comprises the following headers (variable names):
 <ul>
-<li>__`Nr`__: An arbitrary number.</li>
+<li>__`r Nr`__: An arbitrary number.</li>
 <li>__`ID`__: The sample identifier which is given by a letter followed by a number. The letter designates the depth at which the soil the soil sample was collected. The letter A stands for the samples collected at a depth of 0-0 .2 m (458 samples) and letter B stands for samples collected at a depth of 0.8-1.0 m (452 samples). The number designates an arbitrary number assigned to the sampling location (same profile).</li>
 <li>__`POINT_X`__ and	__`POINT_Y`__: These two variables are the geographical coordiates of the samples.</li>
 <li>__`Sand`__, __`Silt`__ and __`Clay`__:	These variables are the sand, silt and sand contnets (soil particle-size fractions) of the samples (in percetnage).</li>
