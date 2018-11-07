@@ -38,7 +38,7 @@ Before you start, make sure you get all the necessary packages installed and dow
 
 Install the required packages
 
-``` r
+```r
 ## (optional) set the language to English
 Sys.setenv(language = "EN")
 
@@ -73,12 +73,12 @@ lapply(requiredp, require, character.only = TRUE)
 
 Define the working directory
 
-``` r
+```r
 workingd <- "C:/your/working/directory"
 setwd(workingd)
 ```
 Download the Barra Bonita dataset
-``` r
+```r
 ## File URL
 dataurl <- "https://github.com/l-ramirez-lopez/VNIR_spectroscopy_for_robust_soil_mapping/raw/master/BarraBonita.txt"
 
@@ -92,12 +92,12 @@ download.file(dataaurl, destfile = "BarraBonita.txt", method = "auto")
 
 Read the data
 
-``` r
+```r
 data <- read.table("BarraBonita.txt", header = TRUE, check.names = FALSE, sep = "\t")
 ```
 
 Organize the data
-``` r
+```r
 ## Minimum wavelength in the dataset
 mwav <- 502
 
@@ -117,14 +117,14 @@ rm(spc)
 
 Apply standard normal variate
 
-``` r
+```r
 data$spc_snv <- standardNormalVariate(data$spc)
 
 ```
 
 Remove the validation samples from the analysis
 
-``` r
+```r
 valida <- data[data$set == "validation",]
 data <- data[data$set == "cal_candidate",]
 ```
@@ -132,7 +132,7 @@ data <- data[data$set == "cal_candidate",]
 __1.1 Perform a principal component analysis__
 <p>Project the spectra onto the principal components (PCs) space.</p>
 
-``` r
+```r
 pcaall <- orthoProjection(Xr = data$spc_snv, X2 = NULL, 
                           Yr = NULL, 
                           method = "pca", pcSelection = list("var", 0.01), 
@@ -146,7 +146,7 @@ __1.2 Compute the probability density functions (pdfs) of each PC__
 <p>The probability density functions (pdfs) estimated here will be used as references to compare the pdfs computed with the different subsets of different sizes.</p>
 
 
-``` r
+```r
 ## First, compute the maximum and minimum of each score for the limits of the density estimations
 max.sc <- colMins(pcaall$scores.std)
 min.sc <- colMaxs(pcaall$scores.std)
@@ -180,7 +180,7 @@ for(i in 1:length(min.sc)){
 __1.3 Select subsets of different sizes and compare their pdfs against the reference pdfs__
 
 The following steps might take a while...
-``` r
+```r
 ## Create a vector containing the different sample sizes to test
 css <- seq(10, 400, by = 10)
 
@@ -310,14 +310,14 @@ final.clhs <- read.table("6pcs_final.clhs.txt", header = TRUE, check.names = FAL
 
 The plot that was generated above shows the mean squared Euclidean distance (msd) values corresponding to the comparisons between the estimates of probability density functions (pdfs) of the whole set and the pdfs of the samples in the different calibration sets. The msd values decreased as the sample set size increased. Despite this, the differences between the calibration sets in terms of their msd were marginal beyond 180 samples. Therefore, we used this number of samples as the optimal set size for the calibration of the vis-NIR models of the target soil properties. 
 
-``` r
+```r
 ## Optimal sample size for calibrating vis-NIR models
 ocss <- 180
 ```
 
 Now that we have the optimal set size, we select the very final calibration set using the conditioned Latin hypercube (cLH) algorithm. For this purpose, we sample 10 different sets with the inferred optimal size and selected the one with the minimum msd as the final calibration set.
 
-``` r
+```r
 ## Number of points in the density distribution
 nxdens <- 2000
 
@@ -378,7 +378,7 @@ Now we have three basic subsets:
 <li> `valida`: A validation subset of 227 samples (corresponding to 115 sampling locations). This subset will be used to validate/assess the predictive performance of both, the vis-NIR models and the spatial models of soil proerties.</li></li>
 </ul>
 
-``` r
+```r
 dim(train)
 dim(pred)
 dim(valida)
@@ -398,7 +398,7 @@ Here we will aos validate the predictive accuracy of the vis-NIR models using th
 <p>First, we will add a variable called layer that represents the depth at wich the sample was collected.</p>
 
 
-``` r
+```r
 train$layer <- as.factor(substr(train$ID, start = 1, stop = 1))
 pred$layer <- as.factor(substr(pred$ID, start = 1, stop = 1))
 valida$layer <- as.factor(substr(valida$ID, start = 1, stop = 1))
@@ -406,7 +406,7 @@ valida$layer <- as.factor(substr(valida$ID, start = 1, stop = 1))
 
 Sand, silt and clay contents are reported as proportions, which sum up to 100%. However, predictive models built for each of these fractions do not guarantee that their individual predictions will sum up to 100%. To avoid this compositional constraint, the particle size data (clay,silt and sand) of both layers will be transformed and modeled based on the additive log-ratio (alr) transformation. To ilustrate how this transofrmation is applied we provide the following code example:
 
-``` r
+```r
 ## In this case we use the sand content as denominator to transform 
 ## the silt and clay content values
 alr_clay <- log(train$Clay/train$Sand)
@@ -425,7 +425,7 @@ rm(list = c("alr_clay", "alr_silt", "clay", "silt", "sand"))
 Each vis-NIR model will be developed using a memory-based learning (MBL) algorithm. This is, for each new sample (requiring prediction of a given soil property), a local model is calibrated using only its most similar samples (nearest neighbours) found in the calibration set. The most similar samples were selected based on similarity/dissimilarity among the spectra. Although MBL is commonly used to model large and complex vis-NIR datasets, it can also be used for modelling small vis-NIR datasets. In this case, rather than overcoming the typical complexity of large vis-NIR, the MBL algorithm is used to optimize the prediction of each sample by removing calibration samples that lay far apart from the prediction sample in the vis-NIR space. These distant samples can be considered as outliers, which may harm the accuracy of the prediction. 
 <p> To build our MBL algorith we use the `resemble` package. First we define some basic apscts of our algorithm using the `mblControl` fucntion:
 
-``` r
+```r
 ## Ditance metric to select the neighbors or to remove local outliers:
 ## 'mahalanobis distance computed in the 'pls' factors (this is given by the sm argument)
 
@@ -446,13 +446,13 @@ ctrl <- mblControl(sm = "pls",
 
 Now we define a vector with the threshold distances to test. Note: the number of threshold
 distances tested here is large, it could be reduced
-``` r
+```r
 diss2test <- seq(0.3, 1.5, by = 0.05)
 ```
 
 Now we define the minimum (120) and maximum number of neighbors to be included in the
 model.
-``` r
+```r
 # Example: If with a given threshold distance only 70 neighbors are
 # selected, then the function will be fored to take the especified minimum
 # number of neighbors to be included in the model. In this case 120. In
@@ -520,7 +520,7 @@ sum(sbl_ca$results[[idx.best.ca]]$k.org != nrow(train$spc))
 ```
 
 <p>Additive log-ratio transformation of silt:</p>
-``` r
+```r
 ## Run the MBL
 sbl_alrsilt <- mbl(Yr = log(train$Silt/train$Sand), 
                    Xr = train$spc, 
@@ -553,7 +553,7 @@ var.res.alrsilt <- var(valida$alr_silt - pred_val_alrsilt)
 sum(sbl_alrsilt$results[[idx.best.alrsilt ]]$k.org != nrow(train$spc))
 ```
 <p>Additive log-ratio transformation of clay:</p>
-``` r
+```r
 ## Run the MBL
 sbl_alrclay <- mbl(Yr = log(train$Clay/train$Sand), 
                    Xr = train$spc, 
@@ -586,13 +586,13 @@ sum(sbl_alrclay$results[[idx.best.alrclay]]$k.org != nrow(train$spc))
 ```
 
 Back-transfrom to sand, silt and clay contents the predictions omade for the additive log-ratio transformations of the particle size. 
-``` r
+```r
 valSilt_alr <- 100 * exp(pred_val_alrsilt)/(1+exp(pred_val_alrclay)+exp(pred_val_alrsilt))
 valClay_alr <- 100 * exp(pred_val_alrclay)/(1+exp(pred_val_alrclay)+exp(pred_val_alrsilt))
 valSand_alr <- 100 * 1/(1+exp(pred_val_alrclay)+exp(pred_val_alrsilt))
 ```
 Compute the validation R^2^ and root mean squared error (RMSE) of the predicted sand, silt and clay contents
-``` r
+```r
 valR2Silt_alr <- (cor(valida$Silt, valSilt_alr))^2
 valR2Sand_alr <- (cor(valida$Sand, valSand_alr))^2
 valR2Clay_alr <- (cor(valida$Clay, valClay_alr))^2
@@ -607,7 +607,7 @@ valmeClay_alr <- mean(valida$Clay - valClay_alr)
 ``` 
 Now, we will use the optimal threshold distances to perform the MBL predictions of each soil property on the `pred` subset
 
-``` r
+```r
 ## Ca in the prediction subset
 sbl_ca_pred <- mbl(Yr = train$Ca, 
                    Xr = train$spc, 
@@ -677,7 +677,7 @@ predSand_alr <- 100 * 1/(1+exp(pred_pred_alrclay)+exp(pred_pred_alrsilt))
 Now let's store the results
 
 
-``` r
+```r
 results_spec_modeling <- data.frame(Property = c("Sand", "Silt", "Clay", "Ca"), 
                                     R2 = rep(NA, 4), 
                                     RMSE = rep(NA, 4),
