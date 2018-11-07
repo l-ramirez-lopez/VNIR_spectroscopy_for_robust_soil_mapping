@@ -1,5 +1,5 @@
 # Robust soil mapping at the farm scale with vis-NIR spectroscopy 
-_Leo Ramirez-Lopez & Alex wadoux_
+_Leo Ramirez-Lopez & Alex Wadoux_
 
 <hr>
 This repository is dedicated to our paper entitled ['Robust soil mapping at the farm scale with vis-NIR spectroscopy'](http://onlinelibrary.wiley.com/doi/abs/10.1111/ejss.12752) published in European Journal of Soil Science. 
@@ -16,7 +16,7 @@ If you want to check the code and try to reproduce what we present in the paper,
 This is a soil dataset that comes from a soil survey conducted in a farm located in the municipality of [Barra Bonita](https://en.wikipedia.org/wiki/Barra_Bonita,_S%C3%A3o_Paulo) in the state of São Paulo (Brazil). This dataset comprises 910 soil samples collected at 458 locations (at two depths). The area covered by the survey is 473 ha.  
 The soil dataset used in the study is provided [here](https://github.com/l-ramirez-lopez/VNIR_spectroscopy_for_robust_soil_mapping/raw/master/BarraBonita.txt) in a table format which comprises the following headers (variable names):
 <ul>
-<li>__`r Nr`__: An arbitrary number.</li>
+<li>__`Nr`__: An arbitrary number.</li>
 <li>__`ID`__: The sample identifier which is given by a letter followed by a number. The letter designates the depth at which the soil the soil sample was collected. The letter A stands for the samples collected at a depth of 0-0 .2 m (458 samples) and letter B stands for samples collected at a depth of 0.8-1.0 m (452 samples). The number designates an arbitrary number assigned to the sampling location (same profile).</li>
 <li>__`POINT_X`__ and	__`POINT_Y`__: These two variables are the geographical coordiates of the samples.</li>
 <li>__`Sand`__, __`Silt`__ and __`Clay`__:	These variables are the sand, silt and sand contnets (soil particle-size fractions) of the samples (in percetnage).</li>
@@ -164,7 +164,7 @@ sc.dens <- data.frame(seq(min.sc[ix], max.sc[ix], length = nxdens),
                       matrix(NA, nxdens, length(min.sc)))
 colnames(sc.dens) <- c("x", paste("densc", 1:length(min.sc), sep = ""))
 
-## Finally, Estimate the density fucntion of each component
+## Finally, Estimate the density function of each component
 d.bandwidths <- rep(NA, length(min.sc))
 names(d.bandwidths) <- colnames(pcaall$scores.std)
 for(i in 1:length(min.sc)){
@@ -253,7 +253,7 @@ for(k in 1:sreps){
 
 ## Read all the results from the iterations and compute the average 
 ## of the msds
-nmsrepsclhs <- paste("6pcs_resultsclhs_rep", 1:10, ".txt", sep = "")
+nmsrepsclhs <- paste("5pcs_resultsclhs_rep", 1:10, ".txt", sep = "")
 final.clhs <- 0
 for(i in nmsrepsclhs){
   iter <- which(i == nmsrepsclhs)
@@ -458,13 +458,13 @@ model.
 # number of neighbors to be included in the model. In this case 120. In
 # this case we also set that the maximum number of neighbors that can be
 # included can be all the samples in the calibration set.
-
 kminmax <- c(120, nrow(train$spc))
 ```
 
 Now we will optimize the threshold distance for neighbor selection in MBL modles for each soil property. We will also validate the MBL models. 
 <p>Exchangeable Ca:</p>
-``` r
+
+```r
 ## Here the calibration subset (i.e. train) is provided through the 
 ## arguments Xr (spectra) and Yr (reference value of the soil property) 
 ## while the spectral data of the subset for which the predictions of the 
@@ -489,7 +489,6 @@ sbl_ca <- mbl(Yr = train$Ca,
               k.range = kminmax,
               pls.c = c(5,20),
               method = "wapls1")
-              
               
 ## Get the optimal threshold distance for the Ca predictions
 idx.best.ca <- which.min(sbl_ca$nnValStats$st.rmse)
