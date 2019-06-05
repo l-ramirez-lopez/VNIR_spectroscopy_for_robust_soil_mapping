@@ -2,18 +2,18 @@
     "collab_server" : "",
     "contents" : "",
     "created" : 1559720771232.000,
-    "dirty" : true,
+    "dirty" : false,
     "encoding" : "UTF-8",
     "folds" : "",
     "hash" : "0",
     "id" : "892DD3D",
-    "lastKnownWriteTime" : 1559722015,
-    "last_content_update" : 1559722571072,
+    "lastKnownWriteTime" : 1559723177,
+    "last_content_update" : 1559723177056,
     "path" : "~/GitHub/VNIR_spectroscopy_for_robust_soil_mapping/1_sampling.md",
     "project_path" : "1_sampling.md",
     "properties" : {
         "cursorPosition" : "43,17",
-        "scrollLine" : "37"
+        "scrollLine" : "40"
     },
     "relative_order" : 2,
     "source_on_save" : false,

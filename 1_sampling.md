@@ -41,19 +41,10 @@ setwd(workingd)
 Organize the data
 =================
 
-Read the data
+Read the data set
 
 ``` r
-data <- read.table("SoilNIRSaoPaulo.txt", header = TRUE, check.names = FALSE, sep ="\t")
-```
-
-Minimum wavelength in the dataset
-
-``` r
-mwav <- 502
-spc <- log(1/data[,which(colnames(data) == mwav):ncol(data)])
-data <- data[,-c(which(colnames(data) == mwav):ncol(data))]
-data$spc <- spc
+data <- readRDS("SoilNIRSaoPaulo.rds")
 ```
 
 Apply standard normal variate
