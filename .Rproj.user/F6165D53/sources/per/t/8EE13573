@@ -1,0 +1,22 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1559722653878.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "1818091792",
+    "id" : "8EE13573",
+    "lastKnownWriteTime" : 1559723048,
+    "last_content_update" : 1559723048082,
+    "path" : "~/GitHub/VNIR_spectroscopy_for_robust_soil_mapping/.gitignore",
+    "project_path" : ".gitignore",
+    "properties" : {
+        "cursorPosition" : "39,0",
+        "scrollLine" : "0"
+    },
+    "relative_order" : 7,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "gitignore"
+}
