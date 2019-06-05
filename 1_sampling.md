@@ -1,37 +1,40 @@
 Annexe 1
 ================
 
-========================================================
+This first section of the code employed in our paper (["Robust soil mapping at the farm scale with vis–NIR spectroscopy"](https://onlinelibrary.wiley.com/doi/10.1111/ejss.12752)). 
+In the code below is used to select the calibration and validation sets
 
-Refers to section Selecting the calibration and validation sets
+For citation or details please refer to: Ramirez‐Lopez, L., Wadoux, A. C., Franceschini, M. H. D., Terra, F. S., Marques, K. P. P., Sayão, V. M., & Demattê, J. A. M. (2019). Robust soil mapping at the farm scale with vis–NIR spectroscopy. European Journal of Soil Science.
 
 ------------------------------------------------------------------------
 
 Install the required packages
 
 ``` r
-Sys.setenv(language = "EN")
+requiredpackages <- c("resemble",    # version 1.2.2
+                      "prospectr",   # version 0.1.3
+                      "clhs",        # version 0.5-6
+                      "matrixStats", # version 0.51.0
+                      "doParallel",  # version 1.0.10
+                      "ggplot2"      # version 2.2.1
+)
 
-options(warn=-1)
-if (!require(resemble))
-  install.packages("resemble") # version 1.2.2
-if (!require(prospectr))
-  install.packages("prospectr") # version 0.1.3
-if (!require(clhs))
-  install.packages("clhs") # version 0.5-6
-if (!require(matrixStats))
-  install.packages("matrixStats") # version 0.51.0
-if (!require(doParallel))
-  install.packages("doParallel") # version 1.0.10
-if (!require(ggplot2))
-  install.packages("ggplot2") # version 2.2.1
-options(warn=0)
+    
+toinstall <- requiredpackages[!requiredpackages %in% rownames(installed.packages())]
+
+if(length(toinstall) > 0){
+  install.packages(toinstall)
+}
+
+lapply(requiredpackages, 
+       FUN = library, 
+       character.only = TRUE)
 ```
 
 Define the working directory
 
 ``` r
-workingd <- "your/working/directory/"
+workingd <- "myworkingdirectory/"
 setwd(workingd)
 ```
 

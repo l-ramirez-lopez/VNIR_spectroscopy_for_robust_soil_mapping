@@ -1,0 +1,12 @@
+data <- read.table("C:/Users/NIR_Workstation/Documents/GitHub/papercodes/SoilNIRSaoPaulo.txt", header = TRUE, check.names = FALSE, sep ="\t")
+
+
+## minimum wavelength in the dataset
+mwav <- 502
+spc <- log(1/data[,which(colnames(data) == mwav):ncol(data)])
+data <- data[,-c(which(colnames(data) == mwav):ncol(data))]
+data$spc <- spc
+
+SoilNIRSaoPaulo <- data
+
+saveRDS(SoilNIRSaoPaulo, "SoilNIRSaoPaulo.rds")

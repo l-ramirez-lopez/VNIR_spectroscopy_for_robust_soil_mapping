@@ -1,0 +1,96 @@
+#
+# requiredpackages <- c("shinyalert",
+#                       "shinydashboard",
+#                       "shinycssloaders",
+#                       "shinyjs",
+#                       "foreach",
+#                       "prospectr",
+#                       # "future.apply",
+#                       "future",
+#                       "promises",
+#                       "resemble",
+#                       "matrixStats",
+#                       "DT",
+#                       # "caret",
+#                       "gridBase",
+#                       "shinyWidgets",
+#                       "gridBase",
+#                       "hexView",  ## for nircal.read functiopn
+#                       "wavelets", ## for transfer function
+#                       "parallel", ## for transfer function
+#                       # "Rcpp", ## for transfer function
+#                       "filesstrings")
+#
+#
+# fname <- "get a name pls"
+# toinstall <- requiredpackages[!requiredpackages %in% rownames(installed.packages())]
+#
+# if(length(toinstall) > 0){
+#   install.packages(toinstall)
+# }
+#
+# lapply(requiredpackages, FUN = library, character.only = TRUE)
+
+
+
+
+library(transpec)
+
+# forking on unix systems, mulitsession on win
+plan(multiprocess)
+
+
+# ans <- sapply(list.files("functions", pattern = "\\.[rR]", full.names = TRUE), source)
+
+
+# source("functions/read.nircal.R", local = TRUE)
+# source("functions/read.tsv.R", local = TRUE)
+# source("functions/pAggregate.R", local = TRUE)
+# source("functions/sTransfer.R")
+# source("functions/transfer.R", local = TRUE)
+# source("functions/write.tsv.R", local = TRUE)
+#sourceCpp("C:/raml/BUCHINIR_package/regalg.cpp")
+
+
+
+
+## create a log file and folder
+# logpath <- paste(getwd(), "/log", sep = "")
+# logfile <- paste(logpath, "/log.txt", sep = "")
+# dir.create(logpath, showWarnings = FALSE)
+
+# if(!file.exists(logfile)){
+#   log <- data.frame("Action", "Time", "Type","comment")
+#   write.table(log,
+#               file = logfile,
+#               col.names = FALSE,
+#               row.names = FALSE)
+# }
+
+
+#
+# ## load the necessary tables
+# files2read <- list.files(path = "transfermodels", full.names = TRUE)
+# idsmodels <- read.table(files2read[grep("idsmodels.txt", files2read)],
+#                         sep = "\t",
+#                         header = TRUE)
+#
+# summaraytablepaths <- read.table(files2read[grep("summaraytable.txt", files2read)],
+#                                  sep = "\t",
+#                                  header = TRUE)
+#
+#
+# models_rds <- list.files(path = "transfermodels/data/releasedtransfermodels",
+#                          full.names = TRUE)
+#
+# # lapply, nested df:
+# # summaraytablepaths$tmodles <- lapply(as.character(summaraytablepaths$rdspath), readRDS)
+#
+# tmodels <- NULL
+# for(i in 1:nrow(summaraytablepaths)){
+#   irds <- as.character(summaraytablepaths$rdspath[i])
+#   inm <- as.character(summaraytablepaths$Product.function[i])
+#   tmodels[[inm]] <- readRDS(irds)
+# }
+
+# summaraytable <- summaraytablepaths[,!colnames(summaraytablepaths) %in% "rdspath"]
