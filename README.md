@@ -5,7 +5,7 @@ _Leo Ramirez-Lopez and Alex Wadoux_
 _::::05.06.2019::::_
 
 
-```{r include = FALSE}
+```{r setup, include=FALSE}
 library(leaflet)
 library(dplyr)
 ```
@@ -19,6 +19,30 @@ leaflet() %>%
   addMarkers(lng=174.764, lat=-36.877, popup="Maunga Whau") 
 ```
 
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## GitHub Documents
+
+This is an R Markdown format used for publishing markdown documents to GitHub. When you click the **Knit** button all R code chunks are run and a markdown file (.md) suitable for publishing to GitHub is generated.
+
+## Including Code
+
+You can include R code in the document as follows:
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
 
 
 
