@@ -1,10 +1,3 @@
----
-title: "Test Document"
-output: 
-  html_document:
-    self_contained: no
----
-
 # R code for 'Robust soil mapping at the farm scale with vis-NIR spectroscopy'
 
 _Leo Ramirez-Lopez and Alex Wadoux_
