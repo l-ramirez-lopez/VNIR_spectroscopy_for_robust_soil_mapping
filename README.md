@@ -51,8 +51,9 @@ Ramirez-Lopez, L., Wadoux, A. C., Franceschini, M. H. D., Terra, F. S., Marques,
 
 
 
-1. Sampling
-================
+
+# 1. Sampling
+
 
 In the code below is used to select the calibration and validation sets
 
@@ -84,7 +85,7 @@ lapply(requiredpackages,
 Define the working directory
 
 ``` r
-workingd <- "myworkingdirectory/"
+workingd <- "/myworkingdirectory"
 setwd(workingd)
 ```
 
