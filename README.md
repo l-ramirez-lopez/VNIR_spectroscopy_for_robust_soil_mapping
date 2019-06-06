@@ -4,30 +4,7 @@ _Leo Ramirez-Lopez and Alex Wadoux_
 
 _::::05.06.2019::::_
 
-!![demographics map]('https://raw.githubusercontent.com/l-ramirez-lopez/VNIR_spectroscopy_for_robust_soil_mapping/gh-pages/maps/map.html')
-
-
-
-## GitHub Documents
-
-This is an R Markdown format used for publishing markdown documents to GitHub. When you click the **Knit** button all R code chunks are run and a markdown file (.md) suitable for publishing to GitHub is generated.
-
-## Including Code
-
-You can include R code in the document as follows:
-
-```{r cars}
-summary(cars)
-```
-
-## Including Plots
-
-You can also embed plots, for example:
-
-```{r pressure, echo=TRUE}
-plot(pressure)
-```
-
+!![barrabonita map]('https://raw.githubusercontent.com/l-ramirez-lopez/VNIR_spectroscopy_for_robust_soil_mapping/gh-pages/maps/map.html')
 
 
 In the spirit of reproducible research, here we share the data and the computational code
