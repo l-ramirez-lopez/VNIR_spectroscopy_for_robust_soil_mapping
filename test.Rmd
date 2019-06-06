@@ -1,0 +1,28 @@
+---
+title: 
+output: html_document
+---
+
+```{r include = FALSE}
+library(leaflet)
+library(dplyr)
+library(ggmap)
+```
+
+```{r echo = FALSE}
+leaflet() %>%
+  addProviderTiles('Esri.WorldImagery') %>%
+  setView(lat=-22.4097049, lng= -48.4977339, zoom = 11)  %>%
+  addMarkers(lat=-22.4097049, lng= -48.4977339, popup="Maunga Whau")
+
+# library(googleway)
+# 
+# apiKey <- 'your_api_key'
+# mapKey <- 'your_map_key'
+# 
+# newYork <- google_geocode(address = "New York", key = apiKey)
+# 
+# google_map(location = as.numeric(newYork$results$geometry$location), 
+#            key = mapKey)
+```
+
