@@ -1,10 +1,7 @@
-Annexe 1
+1. Sampling
 ================
 
-This first section of the code employed in our paper (["Robust soil mapping at the farm scale with vis–NIR spectroscopy"](https://onlinelibrary.wiley.com/doi/10.1111/ejss.12752)). 
 In the code below is used to select the calibration and validation sets
-
-For citation or details please refer to: Ramirez‐Lopez, L., Wadoux, A. C., Franceschini, M. H. D., Terra, F. S., Marques, K. P. P., Sayão, V. M., & Demattê, J. A. M. (2019). Robust soil mapping at the farm scale with vis–NIR spectroscopy. European Journal of Soil Science.
 
 ------------------------------------------------------------------------
 
@@ -44,14 +41,22 @@ Organize the data
 Read the data set
 
 ``` r
+# In case the data is already saved locally
 data <- readRDS("SoilNIRSaoPaulo.rds")
+```
+or
+
+``` r
+# In case you want to read the data directly from the repository
+nirfile <- file("https://github.com/l-ramirez-lopez/VNIR_spectroscopy_for_robust_soil_mapping/raw/master/SoilNIRSaoPaulo.rds")
+
+data <- readRDS(nirfile)
 ```
 
 Apply standard normal variate
 
 ``` r
 data$spc_snv <- standardNormalVariate(data$spc)
-rm(spc)
 ```
 
 Remove the validation samples from the analysis
@@ -66,10 +71,13 @@ Perform a principal component analysis
 Compress the data
 
 ``` r
-pcaall <- orthoProjection(Xr = data$spc_snv, X2 = NULL, 
+pcaall <- orthoProjection(Xr = data$spc_snv, 
+                          X2 = NULL, 
                           Yr = NULL, 
-                          method = "pca", pcSelection = list("cumvar", 0.99), 
-                          center = TRUE, scaled = FALSE, cores = 1)
+                          method = "pca", 
+                          pcSelection = list("cumvar", 0.99), 
+                          center = TRUE, 
+                          scaled = FALSE)
 ```
 
 Standardize the scores
@@ -131,12 +139,22 @@ css <- seq(10, 400, by = 10)
 Sample with conditioned latin hypercube sampling (clhs)
 
 ``` r
+# Sampling repetitions
+sreps <- 10
+
 results.clhs <-  data.frame(css = css, 
                             msd = rep(NA, length(css)),
                             mndiff = rep(NA, length(css)),
                             sddiff = rep(NA, length(css)))
 
-for(k in 1:10){
+# these two nested loops will take a while
+# in this case we have use loops because of 
+# code interpretability reasons
+# R tip:
+# this part of the code could be re-written to speed up computations
+# e.g. the operations here can be vectorized by using the family of
+# apply functions and also by using parallel computing
+for(k in 1:sreps){
   results.clhs[,-1] <- NA
   fn <- paste("6pcs_resultsclhs_rep", k,".txt", sep = "")
   
@@ -173,7 +191,7 @@ for(k in 1:10){
   }
 }
 
-nmsrepsclhs <- paste("6pcs_resultsclhs_rep", 1:10, ".txt", sep = "")
+nmsrepsclhs <- paste("6pcs_resultsclhs_rep", 1:sreps, ".txt", sep = "")
 final.clhs <- 0
 for(i in nmsrepsclhs){
   iter <- which(i == nmsrepsclhs)
