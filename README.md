@@ -5,6 +5,23 @@ _Leo Ramirez-Lopez and Alex Wadoux_
 _::::05.06.2019::::_
 
 
+```{r include = FALSE}
+library(leaflet)
+library(dplyr)
+```
+
+Use the leaflet map below to explore the actual Maunga Whau volcano in Auckland, NZ. 
+
+```{r}
+leaflet() %>%
+  setView(lng=174.764, lat=-36.877, zoom = 16) %>% 
+  addTiles() %>%
+  addMarkers(lng=174.764, lat=-36.877, popup="Maunga Whau") 
+```
+
+
+
+
 In the spirit of reproducible research, here we share the data and the computational code
 used for carrying out the analyses presented in our paper ["Robust soil mapping at the farm scale with vis-NIR spectroscopy"](https://onlinelibrary.wiley.com/doi/10.1111/ejss.12752) which is by the way open access. 
 
