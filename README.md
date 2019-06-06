@@ -4,7 +4,7 @@ _Leo Ramirez-Lopez and Alex Wadoux_
 
 _::::05.06.2019::::_
 
-![alt text](https://github.com/l-ramirez-lopez/VNIR_spectroscopy_for_robust_soil_mapping/blob/master/maps/map.html)
+![alt text](https://raw.githubusercontent.com/l-ramirez-lopez/VNIR_spectroscopy_for_robust_soil_mapping/master/maps/map.html)
 
 ## GitHub Documents
 
