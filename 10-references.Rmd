@@ -1,10 +1,5 @@
 `r if (knitr:::is_html_output()) '
 # References {-}
-
-
-(ramirez-lopez et al., 2019)
-(Odeh et al., 2003).
-Viscarra Rossel et al. (2016b)
 '`
 
 

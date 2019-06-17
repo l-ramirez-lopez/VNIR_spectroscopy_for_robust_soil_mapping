@@ -13,6 +13,8 @@ github-repo: l-ramirez-lopez/VNIR_spectroscopy_for_robust_soil_mapping
 description: "Here you will find all the code necessary to reproduce the methods we used in our paper 'Robust soil mapping at the farm scale with vis-NIR spectroscopy'"
 ---
 
+# Prerequisites
+
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
