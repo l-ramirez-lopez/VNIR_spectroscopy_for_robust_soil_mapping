@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta property="og:title" content="4.1 Optimal calibration set size identification | R_code_for_Robust_soil_mapping_at_the_farm_scale_with_vis_NIR_spectroscopy.utf8.md" />
+<meta property="og:type" content="book" />
+
+
+<meta property="og:description" content="Here you will find all the code necessary to reproduce the methods we used in our paper ‘Robust soil mapping at the farm scale with vis-NIR spectroscopy’" />
+<meta name="github-repo" content="l-ramirez-lopez/VNIR_spectroscopy_for_robust_soil_mapping" />
+
+<meta name="author" content="Leo Ramirez-Lopez and Alex Wadoux" />
+
+<meta name="date" content="2019-06-17" />
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  TeX: { equationNumbers: { autoNumber: "AMS" } }
+});
+</script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-AMS_CHTML-full" type="text/javascript"></script>
+
+<meta name="description" content="Here you will find all the code necessary to reproduce the methods we used in our paper ‘Robust soil mapping at the farm scale with vis-NIR spectroscopy’">
+
+<title>4.1 Optimal calibration set size identification | R_code_for_Robust_soil_mapping_at_the_farm_scale_with_vis_NIR_spectroscopy.utf8.md</title>
+
+<script src="libs/jquery-1.12.4/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="libs/navigation-1.1/tabsets.js"></script>
+<script src="libs/htmlwidgets-1.3/htmlwidgets.js"></script>
+<link href="libs/leaflet-1.3.1/leaflet.css" rel="stylesheet" />
+<script src="libs/leaflet-1.3.1/leaflet.js"></script>
+<link href="libs/leafletfix-1.0.0/leafletfix.css" rel="stylesheet" />
+<script src="libs/Proj4Leaflet-1.0.1/proj4-compressed.js"></script>
+<script src="libs/Proj4Leaflet-1.0.1/proj4leaflet.js"></script>
+<link href="libs/rstudio_leaflet-1.3.1/rstudio_leaflet.css" rel="stylesheet" />
+<script src="libs/leaflet-binding-2.0.2/leaflet.js"></script>
+<script src="libs/leaflet-providers-1.1.17/leaflet-providers.js"></script>
+<script src="libs/leaflet-providers-plugin-2.0.2/leaflet-providers-plugin.js"></script>
+
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+a.sourceLine { display: inline-block; line-height: 1.25; }
+a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
+a.sourceLine:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; position: relative; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+code.sourceCode { white-space: pre-wrap; }
+a.sourceLine { text-indent: -1em; padding-left: 1em; }
+}
+pre.numberSource a.sourceLine
+  { position: relative; left: -4em; }
+pre.numberSource a.sourceLine::before
+  { content: attr(title);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; pointer-events: all; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {  }
+@media screen {
+a.sourceLine::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container-fluid main-container">
+
+
+<div class="row">
+<div class="col-sm-12">
+<div id="TOC">
+<ul>
+<li class="has-sub"><a href="1-introduction.html#introduction"><span class="toc-section-number">1</span> Introduction</a><ul>
+<li><a href="1-1-paper-summary.html#paper-summary"><span class="toc-section-number">1.1</span> paper summary</a></li>
+<li><a href="1-2-study-area.html#study-area"><span class="toc-section-number">1.2</span> Study area</a></li>
+<li><a href="1-3-in-case-of-commentsquestionsissues.html#in-case-of-commentsquestionsissues"><span class="toc-section-number">1.3</span> In case of comments/questions/issues</a></li>
+<li><a href="1-4-for-citation-or-details-please-refer-to.html#for-citation-or-details-please-refer-to"><span class="toc-section-number">1.4</span> For citation or details please refer to:</a></li>
+<li><a href="1-5-notes.html#notes"><span class="toc-section-number">1.5</span> Notes</a></li>
+</ul></li>
+<li><a href="2-required-r-packages.html#required-r-packages"><span class="toc-section-number">2</span> Required <code>R</code> packages</a></li>
+<li><a href="3-required-data.html#required-data"><span class="toc-section-number">3</span> Required data</a></li>
+<li class="has-sub"><a href="4-sampling.html#sampling"><span class="toc-section-number">4</span> Sampling</a><ul>
+<li><a href="4-1-optimal-calibration-set-size-identification.html#optimal-calibration-set-size-identification"><span class="toc-section-number">4.1</span> Optimal calibration set size identification</a></li>
+<li><a href="4-2-plotting-the-results.html#plotting-the-results"><span class="toc-section-number">4.2</span> Plotting the results</a></li>
+<li><a href="4-3-final-selection-of-the-calibration-set.html#final-selection-of-the-calibration-set"><span class="toc-section-number">4.3</span> Final selection of the calibration set</a></li>
+</ul></li>
+<li><a href="5-splitting-the-data.html#splitting-the-data"><span class="toc-section-number">5</span> Splitting the data</a></li>
+<li><a href="6-transformation-of-the-particle-size-data.html#transformation-of-the-particle-size-data"><span class="toc-section-number">6</span> Transformation of the particle-size data</a></li>
+<li class="has-sub"><a href="7-visnir-modelling-and-predictions.html#visnir-modelling-and-predictions"><span class="toc-section-number">7</span> Vis–NIR modelling and predictions</a><ul>
+<li><a href="7-1-calibration-and-validation.html#calibration-and-validation"><span class="toc-section-number">7.1</span> Calibration and validation</a></li>
+<li><a href="7-2-property-predictions-in-the-prediction-set.html#property-predictions-in-the-prediction-set"><span class="toc-section-number">7.2</span> Property predictions in the prediction set</a></li>
+</ul></li>
+<li><a href="8-prepare-the-vis-nir-augmented-dataset.html#prepare-the-vis-nir-augmented-dataset"><span class="toc-section-number">8</span> Prepare the vis-NIR augmented dataset</a></li>
+<li class="has-sub"><a href="9-spatial-modeling.html#spatial-modeling"><span class="toc-section-number">9</span> Spatial modeling</a><ul>
+<li class="has-sub"><a href="9-1-robust-fitting-of-the-spatial-models.html#robust-fitting-of-the-spatial-models"><span class="toc-section-number">9.1</span> Robust fitting of the spatial models</a><ul>
+<li><a href="9-1-robust-fitting-of-the-spatial-models.html#laboratory-based-data"><span class="toc-section-number">9.1.1</span> Laboratory-based data</a></li>
+<li><a href="9-1-robust-fitting-of-the-spatial-models.html#augmented-vis-nir-data"><span class="toc-section-number">9.1.2</span> Augmented vis-NIR data</a></li>
+</ul></li>
+<li><a href="9-2-accounting-for-vis-nir-model-errors-in-the-spatial-models.html#accounting-for-vis-nir-model-errors-in-the-spatial-models"><span class="toc-section-number">9.2</span> Accounting for vis-NIR model errors in the spatial models</a></li>
+<li class="has-sub"><a href="9-3-validation-of-the-spatial-models.html#validation-of-the-spatial-models"><span class="toc-section-number">9.3</span> Validation of the spatial models</a><ul>
+<li><a href="9-3-validation-of-the-spatial-models.html#laboratory-based-data-1"><span class="toc-section-number">9.3.1</span> Laboratory-based data</a></li>
+<li><a href="9-3-validation-of-the-spatial-models.html#vis-nir-augmented-based-data"><span class="toc-section-number">9.3.2</span> Vis-NIR augmented-based data</a></li>
+</ul></li>
+<li class="has-sub"><a href="9-4-mapping.html#mapping"><span class="toc-section-number">9.4</span> Mapping</a><ul>
+<li><a href="9-4-mapping.html#laboratory-based-data-2"><span class="toc-section-number">9.4.1</span> Laboratory-based data</a></li>
+<li><a href="9-4-mapping.html#vis-nir-augmented-based-data-1"><span class="toc-section-number">9.4.2</span> Vis-NIR augmented-based data</a></li>
+<li><a href="9-4-mapping.html#plots"><span class="toc-section-number">9.4.3</span> Plots</a></li>
+</ul></li>
+</ul></li>
+<li><a href="references.html#references">References</a></li>
+</ul>
+</div>
+</div>
+</div>
+<div class="row">
+<div class="col-sm-12">
+<div id="optimal-calibration-set-size-identification" class="section level2">
+<h2><span class="header-section-number">4.1</span> Optimal calibration set size identification</h2>
+<p>In this section we show how the optimal size for a calibration set is identified using the mean squared
+Euclidean distance (<span class="math inline">\(msd\)</span>) between estimates of the probability density functions (<span class="math inline">\(pdfs\)</span>) of the whole set of samples and the pdfs of subsets with different sizes.<br />
+First we compute the principal components (PCs) of the NIR spectra of the whole set of calibration candidate samples. Then for each component we compute kernel density estimates (<span class="math inline">\(KDE\)</span>):</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co">## Apply standard normal variate </span>
+data<span class="op">$</span>spc_snv &lt;-<span class="st"> </span><span class="kw">standardNormalVariate</span>(data<span class="op">$</span>spc)
+
+<span class="co">## extract the validation samples into a new set/object</span>
+valida &lt;-<span class="st"> </span>data[data<span class="op">$</span>set <span class="op">==</span><span class="st"> &quot;validation&quot;</span>,]
+
+<span class="co">## remove the validation samples from data</span>
+data &lt;-<span class="st"> </span>data[data<span class="op">$</span>set <span class="op">==</span><span class="st"> &quot;cal_candidate&quot;</span>,]
+
+<span class="co">## --- 2. Perform a principal component analysis  ----</span>
+<span class="co">## Compress the data </span>
+pcaall &lt;-<span class="st"> </span><span class="kw">orthoProjection</span>(<span class="dt">Xr =</span> data<span class="op">$</span>spc_snv, 
+                          <span class="dt">X2 =</span> <span class="ot">NULL</span>, 
+                          <span class="dt">Yr =</span> <span class="ot">NULL</span>, 
+                          <span class="dt">method =</span> <span class="st">&quot;pca&quot;</span>, 
+                          <span class="dt">pcSelection =</span> <span class="kw">list</span>(<span class="st">&quot;cumvar&quot;</span>, <span class="fl">0.99</span>), 
+                          <span class="dt">center =</span> <span class="ot">TRUE</span>, 
+                          <span class="dt">scaled =</span> <span class="ot">FALSE</span>)
+                          
+<span class="co">## standardize the socres</span>
+pcaall<span class="op">$</span>scores.std &lt;-<span class="st"> </span><span class="kw">sweep</span>(pcaall<span class="op">$</span>scores, <span class="dt">MARGIN =</span> <span class="dv">2</span>, <span class="dt">STATS =</span> pcaall<span class="op">$</span>sc.sdv, <span class="dt">FUN =</span> <span class="st">&quot;/&quot;</span>)
+
+<span class="co">## compute the max and min of each score for the limits of the density estimations</span>
+max.sc &lt;-<span class="st"> </span><span class="kw">colMins</span>(pcaall<span class="op">$</span>scores.std)
+min.sc &lt;-<span class="st"> </span><span class="kw">colMaxs</span>(pcaall<span class="op">$</span>scores.std)
+
+<span class="co">## compute the mean and sd of each score for the comparisons with the samples</span>
+mean.sc &lt;-<span class="st"> </span><span class="kw">colMeans</span>(pcaall<span class="op">$</span>scores.std)
+sd.sc &lt;-<span class="st"> </span><span class="kw">colSds</span>(pcaall<span class="op">$</span>scores.std)
+
+<span class="co"># number of points in the density distribution</span>
+nxdens &lt;-<span class="st"> </span><span class="dv">500</span>
+
+<span class="co">## matrix where the density values will be stored</span>
+ix &lt;-<span class="st"> </span><span class="dv">1</span>
+sc.dens &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="kw">seq</span>(min.sc[ix], max.sc[ix], <span class="dt">length =</span> nxdens), 
+                      <span class="kw">matrix</span>(<span class="ot">NA</span>, nxdens, <span class="kw">length</span>(min.sc)))
+<span class="kw">colnames</span>(sc.dens) &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;x&quot;</span>, <span class="kw">paste</span>(<span class="st">&quot;densc&quot;</span>, <span class="dv">1</span><span class="op">:</span><span class="kw">length</span>(min.sc), <span class="dt">sep =</span> <span class="st">&quot;&quot;</span>))
+
+<span class="co">## Kernel density estimates (KDE) of each component </span>
+d.bandwidths &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="ot">NA</span>, <span class="kw">length</span>(min.sc))
+<span class="kw">names</span>(d.bandwidths) &lt;-<span class="st"> </span><span class="kw">colnames</span>(pcaall<span class="op">$</span>scores.std)
+<span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span><span class="kw">length</span>(min.sc)){
+  idsty &lt;-<span class="st"> </span><span class="kw">density</span>(pcaall<span class="op">$</span>scores.std[,i], 
+                   <span class="dt">bw =</span> <span class="st">&quot;nrd0&quot;</span>, 
+                   <span class="dt">n =</span> nxdens, <span class="dt">from =</span> min.sc[i], <span class="dt">to =</span> max.sc[i], 
+                   <span class="dt">kernel =</span> <span class="st">&quot;gaussian&quot;</span>)
+  sc.dens[,i<span class="op">+</span><span class="dv">1</span>] &lt;-<span class="st"> </span>idsty<span class="op">$</span>y
+  d.bandwidths[i] &lt;-<span class="st"> </span>idsty<span class="op">$</span>bw
+}
+
+<span class="co">## Create the vector of different sample set sizes to be tested</span>
+css &lt;-<span class="st"> </span><span class="kw">seq</span>(<span class="dv">10</span>, <span class="dv">400</span>, <span class="dt">by =</span> <span class="dv">10</span>)</code></pre>
+<p>Now we will iterate over the different calibration set sizes (<code>css</code>). We are going to use the LHS algorithm to select subsets from our set of candiate samples for calibartion. This is done using the (standardized) scores of the principal components (PCs) of the spectra (<code>pcaall$scores.std</code>). For each calibration subset we’ll compute the mean squared Euclidean distance (<span class="math inline">\(msd\)</span>) between estimates of the probability density functions (<span class="math inline">\(pdfs\)</span>) of the whole set of samples and the <span class="math inline">\(pdfs\)</span> of samples in the subset. The <span class="math inline">\(msd\)</span> is computed using kernel density estimates (<span class="math inline">\(KDE\)</span>) of the <span class="math inline">\(pdfs\)</span>. To obtain reliable estimates of <span class="math inline">\(msd\)</span> as a function of the sample set size, we will repeat 10 times (<code>repetitions</code>) the whole sampling procedure for each <code>css</code>, the final <span class="math inline">\(msd\)</span> will be the the average of the <span class="math inline">\(msd\)</span>s obtained at each iteration.
+The following pseudo-code summarizes the procedure to compute the <span class="math inline">\(msd\)</span> (see the ‘<em>Calibration samples</em>’ section in our paper for more details):</p>
+<pre class="text"><code>Input:  PCs of the whole set of candidate samples (p);
+        KDEs of the PCs of the whole set of candidate samples;
+Output: msd
+
+1 for each repetition do:
+2   for each proposed sampling size do:
+3     select from the PCs a subset (s);
+4     for each component in s and p:
+5       compute the msd between KDE(s,component) and KDE(p,component);
+6     end
+7   end
+8 end
+
+9 aggregate the results of the msds obatined for all 
+the repetition iterations for each sample set size</code></pre>
+<p>First we’ll compute the <span class="math inline">\(msd\)</span>s for ecah repetition and we will write each set of results into our working directory.</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co">## Sample with LHS (latin hypercube sampling)</span>
+
+<span class="co">## These three nested loops might take a while</span>
+<span class="co">## (aprox. 16 min per repetition, i.e. a bit more than a couple of hours </span>
+<span class="co">## for the whole thing)</span>
+<span class="co">## (for reducing the computation time the loops</span>
+<span class="co">## can be vectorized using the apply family of functions. </span>
+<span class="co">## Furtheromre parallelization of the loop for the repetitions</span>
+<span class="co">## can also be applied)</span>
+<span class="co">## We present the computations with nested loops for interpretability </span>
+<span class="co">## reasons</span>
+
+repetitions &lt;-<span class="st"> </span><span class="dv">10</span>
+
+<span class="co">## root name for the results of each iteration</span>
+filerootname &lt;-<span class="st"> &quot;6pcs_resultsclhs_rep&quot;</span>
+
+<span class="co">## Create the data.frame where the results will be stored </span>
+<span class="co">## at each iteration</span>
+results.clhs &lt;-<span class="st">  </span><span class="kw">data.frame</span>(<span class="dt">css =</span> css, 
+                            <span class="dt">msd =</span> <span class="kw">rep</span>(<span class="ot">NA</span>, <span class="kw">length</span>(css)),
+                            <span class="dt">mndiff =</span> <span class="kw">rep</span>(<span class="ot">NA</span>, <span class="kw">length</span>(css)),
+                            <span class="dt">sddiff =</span> <span class="kw">rep</span>(<span class="ot">NA</span>, <span class="kw">length</span>(css)))
+<span class="cf">for</span>(k <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span>repetitions){
+  results.clhs[,<span class="op">-</span><span class="dv">1</span>] &lt;-<span class="st"> </span><span class="ot">NA</span>
+  
+  <span class="co">## Define a file name</span>
+  fn &lt;-<span class="st"> </span><span class="kw">paste</span>(filerootname, k,<span class="st">&quot;.txt&quot;</span>, <span class="dt">sep =</span> <span class="st">&quot;&quot;</span>)
+  <span class="cf">if</span>(fn <span class="op">%in%</span><span class="st"> </span><span class="kw">list.files</span>()){
+    results.clhs &lt;-<span class="st"> </span><span class="kw">read.table</span>(fn, <span class="dt">header =</span> T, <span class="dt">sep =</span> <span class="st">&quot;</span><span class="ch">\t</span><span class="st">&quot;</span>)
+  }
+  
+  iter.p &lt;-<span class="st"> </span><span class="dv">1</span> <span class="op">+</span><span class="st"> </span><span class="kw">sum</span>(<span class="kw">rowSums</span>(<span class="op">!</span><span class="kw">is.na</span>(results.clhs)) <span class="op">==</span><span class="st"> </span><span class="kw">ncol</span>(results.clhs))
+  
+  <span class="cf">for</span>(i <span class="cf">in</span> iter.p<span class="op">:</span><span class="kw">length</span>(css)){
+    <span class="kw">set.seed</span>(k)
+    i.calidx &lt;-<span class="st"> </span><span class="kw">clhs</span>(<span class="dt">x =</span> <span class="kw">as.data.frame</span>(pcaall<span class="op">$</span>scores.std),
+                     <span class="dt">size =</span> css[i], 
+                     <span class="dt">iter =</span> <span class="dv">10000</span>)
+    
+    <span class="co">## Compute the KDEs of each PC</span>
+    j.sc.dens &lt;-<span class="st"> </span>msd.sc  &lt;-<span class="st"> </span>sc.dens 
+    <span class="cf">for</span>(j <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span><span class="kw">length</span>(min.sc)){
+      <span class="co">## use the same bandwidth (bw) as in the whole set of candidates</span>
+      j.sc.dens[,j <span class="op">+</span><span class="st"> </span><span class="dv">1</span>] &lt;-<span class="st"> </span><span class="kw">density</span>(<span class="dt">x =</span> pcaall<span class="op">$</span>scores.std[i.calidx,j], 
+                                   <span class="dt">bw =</span> d.bandwidths[j], 
+                                   <span class="dt">n =</span> nxdens, 
+                                   <span class="dt">from =</span> min.sc[j], 
+                                   <span class="dt">to =</span> max.sc[j], 
+                                   <span class="dt">kernel =</span> <span class="st">&quot;gaussian&quot;</span>)<span class="op">$</span>y
+    }
+    results.clhs<span class="op">$</span>msd[i] &lt;-<span class="st"> </span><span class="kw">mean</span>(<span class="kw">colMeans</span>((j.sc.dens[,<span class="op">-</span><span class="dv">1</span>] <span class="op">-</span><span class="st"> </span>sc.dens[,<span class="op">-</span><span class="dv">1</span>])<span class="op">^</span><span class="dv">2</span>, <span class="dt">na.rm =</span> T))
+    results.clhs<span class="op">$</span>mndiff[i] &lt;-<span class="st"> </span><span class="kw">mean</span>(<span class="kw">abs</span>(<span class="kw">colMeans</span>(pcaall<span class="op">$</span>scores.std[i.calidx,])))
+    results.clhs<span class="op">$</span>sddiff[i] &lt;-<span class="st"> </span><span class="kw">mean</span>(<span class="kw">abs</span>(<span class="kw">colSds</span>(pcaall<span class="op">$</span>scores.std[i.calidx,]) <span class="op">-</span><span class="st"> </span><span class="dv">1</span>))
+    
+    <span class="co">## write the results obtained so far...</span>
+    <span class="cf">if</span>(iter <span class="op">==</span><span class="st"> </span><span class="kw">length</span>(nmsrepsclhs)){
+      final.clhs &lt;-<span class="st"> </span>final.clhs<span class="op">/</span>iter
+      <span class="kw">write.table</span>(<span class="dt">x =</span> final.clhs, 
+                  <span class="dt">file =</span> <span class="st">&quot;6pcs_final.clhs.txt&quot;</span>, 
+                  <span class="dt">sep =</span> <span class="st">&quot;</span><span class="ch">\t</span><span class="st">&quot;</span>, 
+                  <span class="dt">row.names =</span> <span class="ot">FALSE</span>)
+    }
+    
+    <span class="kw">print</span>(results.clhs[<span class="dv">1</span><span class="op">:</span>i,])
+  }
+}</code></pre>
+<p>After executing the above nested loops, you should have obtained 10 different *.txt files in your working directorty (in this case the root name of the files is 6pcs_resultsclhs_rep[n].txt where [n] represents the repetition number). These files contain the <span class="math inline">\(msd\)</span> results obtained at each repetition iteration.
+Now we’ll calculate the final <span class="math inline">\(msd\)</span> as the average of the ones obtained at each repetition iteration.</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co">## Specify a file name for the file where the final results will be stored</span>
+finalresultsfile &lt;-<span class="st"> &quot;6pcs_final.clhs.txt&quot;</span>
+
+nmsrepsclhs &lt;-<span class="st"> </span><span class="kw">paste</span>(filerootname, <span class="dv">1</span><span class="op">:</span>repetitions, <span class="st">&quot;.txt&quot;</span>, <span class="dt">sep =</span> <span class="st">&quot;&quot;</span>)
+final.clhs &lt;-<span class="st"> </span><span class="dv">0</span>
+<span class="cf">for</span>(i <span class="cf">in</span> nmsrepsclhs){
+  iter &lt;-<span class="st"> </span><span class="kw">which</span>(i <span class="op">==</span><span class="st"> </span>nmsrepsclhs)
+  results.clhs &lt;-<span class="st"> </span><span class="kw">read.table</span>(i, <span class="dt">header =</span> T, <span class="dt">sep =</span> <span class="st">&quot;</span><span class="ch">\t</span><span class="st">&quot;</span>)
+  results.clhs<span class="op">$</span>mndiff &lt;-<span class="st"> </span><span class="kw">abs</span>(results.clhs<span class="op">$</span>mndiff)
+  final.clhs &lt;-<span class="st"> </span>final.clhs <span class="op">+</span><span class="st"> </span>results.clhs
+
+  <span class="co">## write a table with the final results </span>
+  <span class="cf">if</span>(iter <span class="op">==</span><span class="st"> </span><span class="kw">length</span>(nmsrepsclhs)){
+    final.clhs &lt;-<span class="st"> </span>final.clhs<span class="op">/</span>iter
+    <span class="kw">write.table</span>(<span class="dt">x =</span> final.clhs, 
+                <span class="dt">file =</span> finalresultsfile, 
+                <span class="dt">sep =</span> <span class="st">&quot;</span><span class="ch">\t</span><span class="st">&quot;</span>, 
+                <span class="dt">row.names =</span> <span class="ot">FALSE</span>)
+  }
+}
+
+<span class="co">## Compute the standard devitions of the msd results</span>
+final.clhs_sd &lt;-<span class="st"> </span><span class="dv">0</span>
+<span class="cf">for</span>(i <span class="cf">in</span> nmsrepsclhs){
+  iter &lt;-<span class="st"> </span><span class="kw">which</span>(i <span class="op">==</span><span class="st"> </span>nmsrepsclhs)
+  results.clhs &lt;-<span class="st"> </span><span class="kw">read.table</span>(i, <span class="dt">header =</span> T, <span class="dt">sep =</span> <span class="st">&quot;</span><span class="ch">\t</span><span class="st">&quot;</span>)
+  results.clhs<span class="op">$</span>mndiff &lt;-<span class="st"> </span><span class="kw">abs</span>(results.clhs<span class="op">$</span>mndiff)
+  final.clhs_sd &lt;-<span class="st"> </span>(results.clhs <span class="op">-</span><span class="st"> </span>final.clhs_sd)<span class="op">^</span><span class="dv">2</span>
+  <span class="cf">if</span>(iter <span class="op">==</span><span class="st"> </span><span class="kw">length</span>(nmsrepsclhs)){
+    final.clhs_sd &lt;-<span class="st"> </span>(final.clhs_sd<span class="op">/</span>iter)<span class="op">^</span><span class="fl">0.5</span>
+  }
+}</code></pre>
+<p>After executing the above code, a file with the final <span class="math inline">\(msd\)</span> estimations is writen in your working directory. In addition the standard deviations of the <span class="math inline">\(msd\)</span> for the different set sizes was also computed and stored in the object <code>final.clhs_sd</code>.</p>
+</div>
+<p style="text-align: center;">
+<a href="4-sampling.html"><button class="btn btn-default">Previous</button></a>
+<a href="4-2-plotting-the-results.html"><button class="btn btn-default">Next</button></a>
+</p>
+</div>
+</div>
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+$(document).ready(function () {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+});
+
+</script>
+
+</body>
+</html>

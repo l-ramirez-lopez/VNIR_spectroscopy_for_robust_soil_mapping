@@ -30,7 +30,7 @@ data <- readRDS("SoilNIRSaoPaulo.rds")
 
 Alternatively, you can also read the file directly from the [GitHub repository of the paper](https://github.com/l-ramirez-lopez/VNIR_spectroscopy_for_robust_soil_mapping):
 
-``` {r echo = TRUE}
+```{r, eval = FALSE}
 nirfile <- file("https://github.com/l-ramirez-lopez/VNIR_spectroscopy_for_robust_soil_mapping/raw/master/SoilNIRSaoPaulo.rds")
 data <- readRDS(nirfile)
 names(data)

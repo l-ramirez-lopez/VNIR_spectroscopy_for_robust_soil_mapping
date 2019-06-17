@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta property="og:title" content="9.4 Mapping | R_code_for_Robust_soil_mapping_at_the_farm_scale_with_vis_NIR_spectroscopy.utf8.md" />
+<meta property="og:type" content="book" />
+
+
+<meta property="og:description" content="Here you will find all the code necessary to reproduce the methods we used in our paper ‘Robust soil mapping at the farm scale with vis-NIR spectroscopy’" />
+<meta name="github-repo" content="l-ramirez-lopez/VNIR_spectroscopy_for_robust_soil_mapping" />
+
+<meta name="author" content="Leo Ramirez-Lopez and Alex Wadoux" />
+
+<meta name="date" content="2019-06-17" />
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  TeX: { equationNumbers: { autoNumber: "AMS" } }
+});
+</script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-AMS_CHTML-full" type="text/javascript"></script>
+
+<meta name="description" content="Here you will find all the code necessary to reproduce the methods we used in our paper ‘Robust soil mapping at the farm scale with vis-NIR spectroscopy’">
+
+<title>9.4 Mapping | R_code_for_Robust_soil_mapping_at_the_farm_scale_with_vis_NIR_spectroscopy.utf8.md</title>
+
+<script src="libs/jquery-1.12.4/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="libs/navigation-1.1/tabsets.js"></script>
+<script src="libs/htmlwidgets-1.3/htmlwidgets.js"></script>
+<link href="libs/leaflet-1.3.1/leaflet.css" rel="stylesheet" />
+<script src="libs/leaflet-1.3.1/leaflet.js"></script>
+<link href="libs/leafletfix-1.0.0/leafletfix.css" rel="stylesheet" />
+<script src="libs/Proj4Leaflet-1.0.1/proj4-compressed.js"></script>
+<script src="libs/Proj4Leaflet-1.0.1/proj4leaflet.js"></script>
+<link href="libs/rstudio_leaflet-1.3.1/rstudio_leaflet.css" rel="stylesheet" />
+<script src="libs/leaflet-binding-2.0.2/leaflet.js"></script>
+<script src="libs/leaflet-providers-1.1.17/leaflet-providers.js"></script>
+<script src="libs/leaflet-providers-plugin-2.0.2/leaflet-providers-plugin.js"></script>
+
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+a.sourceLine { display: inline-block; line-height: 1.25; }
+a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
+a.sourceLine:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; position: relative; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+code.sourceCode { white-space: pre-wrap; }
+a.sourceLine { text-indent: -1em; padding-left: 1em; }
+}
+pre.numberSource a.sourceLine
+  { position: relative; left: -4em; }
+pre.numberSource a.sourceLine::before
+  { content: attr(title);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; pointer-events: all; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {  }
+@media screen {
+a.sourceLine::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container-fluid main-container">
+
+
+<div class="row">
+<div class="col-sm-12">
+<div id="TOC">
+<ul>
+<li class="has-sub"><a href="1-introduction.html#introduction"><span class="toc-section-number">1</span> Introduction</a><ul>
+<li><a href="1-1-paper-summary.html#paper-summary"><span class="toc-section-number">1.1</span> paper summary</a></li>
+<li><a href="1-2-study-area.html#study-area"><span class="toc-section-number">1.2</span> Study area</a></li>
+<li><a href="1-3-in-case-of-commentsquestionsissues.html#in-case-of-commentsquestionsissues"><span class="toc-section-number">1.3</span> In case of comments/questions/issues</a></li>
+<li><a href="1-4-for-citation-or-details-please-refer-to.html#for-citation-or-details-please-refer-to"><span class="toc-section-number">1.4</span> For citation or details please refer to:</a></li>
+<li><a href="1-5-notes.html#notes"><span class="toc-section-number">1.5</span> Notes</a></li>
+</ul></li>
+<li><a href="2-required-r-packages.html#required-r-packages"><span class="toc-section-number">2</span> Required <code>R</code> packages</a></li>
+<li><a href="3-required-data.html#required-data"><span class="toc-section-number">3</span> Required data</a></li>
+<li class="has-sub"><a href="4-sampling.html#sampling"><span class="toc-section-number">4</span> Sampling</a><ul>
+<li><a href="4-1-optimal-calibration-set-size-identification.html#optimal-calibration-set-size-identification"><span class="toc-section-number">4.1</span> Optimal calibration set size identification</a></li>
+<li><a href="4-2-plotting-the-results.html#plotting-the-results"><span class="toc-section-number">4.2</span> Plotting the results</a></li>
+<li><a href="4-3-final-selection-of-the-calibration-set.html#final-selection-of-the-calibration-set"><span class="toc-section-number">4.3</span> Final selection of the calibration set</a></li>
+</ul></li>
+<li><a href="5-splitting-the-data.html#splitting-the-data"><span class="toc-section-number">5</span> Splitting the data</a></li>
+<li><a href="6-transformation-of-the-particle-size-data.html#transformation-of-the-particle-size-data"><span class="toc-section-number">6</span> Transformation of the particle-size data</a></li>
+<li class="has-sub"><a href="7-visnir-modelling-and-predictions.html#visnir-modelling-and-predictions"><span class="toc-section-number">7</span> Vis–NIR modelling and predictions</a><ul>
+<li><a href="7-1-calibration-and-validation.html#calibration-and-validation"><span class="toc-section-number">7.1</span> Calibration and validation</a></li>
+<li><a href="7-2-property-predictions-in-the-prediction-set.html#property-predictions-in-the-prediction-set"><span class="toc-section-number">7.2</span> Property predictions in the prediction set</a></li>
+</ul></li>
+<li><a href="8-prepare-the-vis-nir-augmented-dataset.html#prepare-the-vis-nir-augmented-dataset"><span class="toc-section-number">8</span> Prepare the vis-NIR augmented dataset</a></li>
+<li class="has-sub"><a href="9-spatial-modeling.html#spatial-modeling"><span class="toc-section-number">9</span> Spatial modeling</a><ul>
+<li class="has-sub"><a href="9-1-robust-fitting-of-the-spatial-models.html#robust-fitting-of-the-spatial-models"><span class="toc-section-number">9.1</span> Robust fitting of the spatial models</a><ul>
+<li><a href="9-1-robust-fitting-of-the-spatial-models.html#laboratory-based-data"><span class="toc-section-number">9.1.1</span> Laboratory-based data</a></li>
+<li><a href="9-1-robust-fitting-of-the-spatial-models.html#augmented-vis-nir-data"><span class="toc-section-number">9.1.2</span> Augmented vis-NIR data</a></li>
+</ul></li>
+<li><a href="9-2-accounting-for-vis-nir-model-errors-in-the-spatial-models.html#accounting-for-vis-nir-model-errors-in-the-spatial-models"><span class="toc-section-number">9.2</span> Accounting for vis-NIR model errors in the spatial models</a></li>
+<li class="has-sub"><a href="9-3-validation-of-the-spatial-models.html#validation-of-the-spatial-models"><span class="toc-section-number">9.3</span> Validation of the spatial models</a><ul>
+<li><a href="9-3-validation-of-the-spatial-models.html#laboratory-based-data-1"><span class="toc-section-number">9.3.1</span> Laboratory-based data</a></li>
+<li><a href="9-3-validation-of-the-spatial-models.html#vis-nir-augmented-based-data"><span class="toc-section-number">9.3.2</span> Vis-NIR augmented-based data</a></li>
+</ul></li>
+<li class="has-sub"><a href="9-4-mapping.html#mapping"><span class="toc-section-number">9.4</span> Mapping</a><ul>
+<li><a href="9-4-mapping.html#laboratory-based-data-2"><span class="toc-section-number">9.4.1</span> Laboratory-based data</a></li>
+<li><a href="9-4-mapping.html#vis-nir-augmented-based-data-1"><span class="toc-section-number">9.4.2</span> Vis-NIR augmented-based data</a></li>
+<li><a href="9-4-mapping.html#plots"><span class="toc-section-number">9.4.3</span> Plots</a></li>
+</ul></li>
+</ul></li>
+<li><a href="references.html#references">References</a></li>
+</ul>
+</div>
+</div>
+</div>
+<div class="row">
+<div class="col-sm-12">
+<div id="mapping" class="section level2">
+<h2><span class="header-section-number">9.4</span> Mapping</h2>
+<p>Now that we have validated the spatial models for both laboratory data and vis-NIR augmented data, we proceed to produce the maps of each property at each layer.
+First we have to read the polygon corresponding to the study area. Download the polygon to your working directory.
+This is a <code>R</code> object of class (<code>SpatialPolygonsDataFrame</code> of the package <code>sp</code>) which contains the polygon of the study area. Click <a href="https://github.com/l-ramirez-lopez/VNIR_spectroscopy_for_robust_soil_mapping/raw/master/polygon.rds">here</a> to download it. If you saved the file in your working directory you can:</p>
+<pre class="sourceCode r"><code class="sourceCode r">polyfile &lt;-<span class="st"> </span><span class="kw">file</span>(<span class="st">&quot;polygon.rds&quot;</span>)
+shape &lt;-<span class="st"> </span><span class="kw">readRDS</span>(polyfile)
+shape</code></pre>
+<p>or…</p>
+<pre class="sourceCode r"><code class="sourceCode r">polyfile &lt;-<span class="st"> </span><span class="kw">file</span>(<span class="st">&quot;https://github.com/l-ramirez-lopez/VNIR_spectroscopy_for_robust_soil_mapping/raw/master/polygon.rds&quot;</span>)
+shape &lt;-<span class="st"> </span><span class="kw">readRDS</span>(polyfile)
+shape</code></pre>
+<p>Now create a template for the spatial predictions</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co">## function to convert polygon to raster</span>
+pol2raster &lt;-<span class="cf">function</span>(r,  <span class="dt">nrows =</span> <span class="dv">10</span>, <span class="dt">ncols =</span> <span class="dv">10</span>){
+  ext&lt;-<span class="kw">raster</span>(<span class="kw">extent</span>(r), nrows, ncols)
+  <span class="kw">crs</span>(ext) &lt;-<span class="st"> </span><span class="kw">crs</span>(r)
+  fr &lt;-<span class="st"> </span><span class="kw">rasterize</span>(r, ext, <span class="dt">field =</span> <span class="dv">1</span>, <span class="dt">update =</span> <span class="ot">TRUE</span>)
+  <span class="kw">return</span>(fr)
+}
+
+rncol &lt;-<span class="st"> </span>(<span class="kw">extent</span>(shape)<span class="op">@</span>ymax <span class="op">-</span><span class="st"> </span><span class="kw">extent</span>(shape)<span class="op">@</span>ymin)<span class="op">/</span><span class="dv">10</span>
+rnrow &lt;-<span class="st"> </span>(<span class="kw">extent</span>(shape)<span class="op">@</span>xmax <span class="op">-</span><span class="st"> </span><span class="kw">extent</span>(shape)<span class="op">@</span>xmin)<span class="op">/</span><span class="dv">10</span>
+
+rasg &lt;-<span class="st"> </span><span class="kw">pol2raster</span>(shape, rncol, rnrow)
+
+<span class="co">## resolution</span>
+<span class="co">## here you can choose the resolution for the predicted maps</span>
+<span class="co">## for our paper we set this value to 10, however here we </span>
+<span class="co">## will set it to 50 for the sake of memory</span>
+<span class="co">## if you have a decent machine you can go finer</span>
+mresolution &lt;-<span class="st"> </span><span class="dv">50</span>
+
+rasg &lt;-<span class="st"> </span>raster<span class="op">::</span><span class="kw">resample</span>(rasg, 
+                         <span class="kw">raster</span>(<span class="dt">resolution =</span> mresolution, <span class="dt">ext =</span> <span class="kw">extent</span>(shape)), 
+                         <span class="dt">method=</span><span class="st">&quot;ngb&quot;</span>)
+rasg
+<span class="kw">plot</span>(rasg)
+
+<span class="co">## and here we have our template</span>
+sppx &lt;-<span class="st"> </span><span class="kw">as</span>(rasg, <span class="st">&quot;SpatialPixelsDataFrame&quot;</span>)
+<span class="kw">colnames</span>(sppx<span class="op">@</span>coords) &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;POINT_X&quot;</span>, <span class="st">&quot;POINT_Y&quot;</span>)</code></pre>
+<p>Create a <code>data.frame</code> for each layer to store the predicted values for the maps</p>
+<pre class="sourceCode r"><code class="sourceCode r">spatialpredsa &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="kw">matrix</span>(<span class="ot">NA</span>, <span class="kw">nrow</span>(sppx), <span class="kw">length</span>(bprops)))
+<span class="kw">colnames</span>(spatialpredsa) &lt;-<span class="st"> </span>bprops
+spatialpredsb &lt;-<span class="st"> </span>spatialpredsa</code></pre>
+<div id="laboratory-based-data-2" class="section level3">
+<h3><span class="header-section-number">9.4.1</span> Laboratory-based data</h3>
+<div id="layer-a-3" class="section level4">
+<h4><span class="header-section-number">9.4.1.1</span> Layer A</h4>
+<p>Exchangeable Ca<sup>2+</sup>…</p>
+<pre class="sourceCode r"><code class="sourceCode r">spatialpredsa<span class="op">$</span>Ca &lt;-<span class="st"> </span><span class="kw">predict</span>(Ca_lab_a, <span class="dt">newdata =</span> sppx)<span class="op">$</span>pred</code></pre>
+<p>Clay, sand and silt contents..</p>
+<pre class="sourceCode r"><code class="sourceCode r">alr_Clay_lab_a_map &lt;-<span class="st"> </span><span class="kw">predict</span>(alr_Clay_lab_a, <span class="dt">newdata =</span> sppx)
+alr_Silt_lab_a_map &lt;-<span class="st"> </span><span class="kw">predict</span>(alr_Silt_lab_a, <span class="dt">newdata =</span> sppx)
+
+spatialpredsa<span class="op">$</span>Clay &lt;-<span class="st"> </span><span class="dv">100</span> <span class="op">*</span><span class="st"> </span><span class="kw">exp</span>(alr_Clay_lab_a_map<span class="op">$</span>pred)<span class="op">/</span>(<span class="dv">1</span> <span class="op">+</span><span class="st"> </span><span class="kw">exp</span>(alr_Silt_lab_a_map<span class="op">$</span>pred) <span class="op">+</span><span class="st"> </span><span class="kw">exp</span>(alr_Clay_lab_a_map<span class="op">$</span>pred))
+spatialpredsa<span class="op">$</span>Silt &lt;-<span class="st"> </span><span class="dv">100</span> <span class="op">*</span><span class="st"> </span><span class="kw">exp</span>(alr_Silt_lab_a_map<span class="op">$</span>pred)<span class="op">/</span>(<span class="dv">1</span> <span class="op">+</span><span class="st"> </span><span class="kw">exp</span>(alr_Silt_lab_a_map<span class="op">$</span>pred) <span class="op">+</span><span class="st"> </span><span class="kw">exp</span>(alr_Clay_lab_a_map<span class="op">$</span>pred))
+spatialpredsa<span class="op">$</span>Sand &lt;-<span class="st"> </span><span class="dv">100</span><span class="op">/</span>(<span class="dv">1</span> <span class="op">+</span><span class="st"> </span><span class="kw">exp</span>(alr_Silt_lab_a_map<span class="op">$</span>pred) <span class="op">+</span><span class="st"> </span><span class="kw">exp</span>(alr_Clay_lab_a_map<span class="op">$</span>pred))</code></pre>
+</div>
+<div id="layer-b-4" class="section level4">
+<h4><span class="header-section-number">9.4.1.2</span> Layer B</h4>
+<p>Exchangeable Ca<sup>2+</sup>…</p>
+<pre class="sourceCode r"><code class="sourceCode r">spatialpredsb<span class="op">$</span>Ca &lt;-<span class="st"> </span><span class="kw">predict</span>(Ca_lab_b, <span class="dt">newdata =</span> sppx)<span class="op">$</span>pred</code></pre>
+<p>Clay, sand and silt contents..</p>
+<pre class="sourceCode r"><code class="sourceCode r">alr_Clay_lab_b_map &lt;-<span class="st"> </span><span class="kw">predict</span>(alr_Clay_lab_b, <span class="dt">newdata =</span> sppx)
+alr_Silt_lab_b_map &lt;-<span class="st"> </span><span class="kw">predict</span>(alr_Silt_lab_b, sppx)
+
+spatialpredsb<span class="op">$</span>Clay &lt;-<span class="st"> </span><span class="dv">100</span> <span class="op">*</span><span class="st"> </span><span class="kw">exp</span>(alr_Clay_lab_b_map<span class="op">$</span>pred)<span class="op">/</span>(<span class="dv">1</span> <span class="op">+</span><span class="st"> </span><span class="kw">exp</span>(alr_Silt_lab_b_map<span class="op">$</span>pred) <span class="op">+</span><span class="st"> </span><span class="kw">exp</span>(alr_Clay_lab_b_map<span class="op">$</span>pred))
+spatialpredsb<span class="op">$</span>Silt &lt;-<span class="st"> </span><span class="dv">100</span> <span class="op">*</span><span class="st"> </span><span class="kw">exp</span>(alr_Silt_lab_b_map<span class="op">$</span>pred)<span class="op">/</span>(<span class="dv">1</span> <span class="op">+</span><span class="st"> </span><span class="kw">exp</span>(alr_Silt_lab_b_map<span class="op">$</span>pred) <span class="op">+</span><span class="st"> </span><span class="kw">exp</span>(alr_Clay_lab_b_map<span class="op">$</span>pred))
+spatialpredsb<span class="op">$</span>Sand &lt;-<span class="st"> </span><span class="dv">100</span><span class="op">/</span>(<span class="dv">1</span> <span class="op">+</span><span class="st"> </span><span class="kw">exp</span>(alr_Silt_lab_b_map<span class="op">$</span>pred) <span class="op">+</span><span class="st"> </span><span class="kw">exp</span>(alr_Clay_lab_b_map<span class="op">$</span>pred))</code></pre>
+</div>
+</div>
+<div id="vis-nir-augmented-based-data-1" class="section level3">
+<h3><span class="header-section-number">9.4.2</span> Vis-NIR augmented-based data</h3>
+<div id="layer-a-4" class="section level4">
+<h4><span class="header-section-number">9.4.2.1</span> Layer A</h4>
+<p>Exchangeable Ca<sup>2+</sup>…</p>
+<pre class="sourceCode r"><code class="sourceCode r">spatialpredsa<span class="op">$</span>Ca_spec &lt;-<span class="st"> </span><span class="kw">predict</span>(Ca_spec_a, 
+                            <span class="dt">newdata =</span> sppx, 
+                            <span class="dt">param =</span> <span class="kw">unlist</span>(variogtablea[variogtablea<span class="op">$</span>properties <span class="op">==</span><span class="st"> &quot;Ca_spec&quot;</span>, varparamames]))<span class="op">$</span>pred</code></pre>
+<p>Clay, sand and silt contents..</p>
+<pre class="sourceCode r"><code class="sourceCode r">alr_Clay_spec_a_map &lt;-<span class="st"> </span><span class="kw">predict</span>(alr_Clay_spec_a, 
+                               <span class="dt">newdata =</span> sppx,
+                               <span class="dt">param =</span> <span class="kw">unlist</span>(variogtablea[variogtablea<span class="op">$</span>properties <span class="op">==</span><span class="st"> &quot;alr_Silt_spec&quot;</span>, varparamames]))
+alr_Silt_spec_a_map &lt;-<span class="st"> </span><span class="kw">predict</span>(alr_Silt_spec_a, 
+                               <span class="dt">newdata =</span> sppx, 
+                               <span class="dt">param =</span> <span class="kw">unlist</span>(variogtablea[variogtablea<span class="op">$</span>properties <span class="op">==</span><span class="st"> &quot;alr_Clay_spec&quot;</span>, varparamames]))
+
+spatialpredsa<span class="op">$</span>Clay_spec &lt;-<span class="st"> </span><span class="dv">100</span> <span class="op">*</span><span class="st"> </span><span class="kw">exp</span>(alr_Clay_spec_a_map<span class="op">$</span>pred)<span class="op">/</span>(<span class="dv">1</span> <span class="op">+</span><span class="st"> </span><span class="kw">exp</span>(alr_Silt_spec_a_map<span class="op">$</span>pred) <span class="op">+</span><span class="st"> </span><span class="kw">exp</span>(alr_Clay_spec_a_map<span class="op">$</span>pred))
+spatialpredsa<span class="op">$</span>Silt_spec &lt;-<span class="st"> </span><span class="dv">100</span> <span class="op">*</span><span class="st"> </span><span class="kw">exp</span>(alr_Silt_spec_a_map<span class="op">$</span>pred)<span class="op">/</span>(<span class="dv">1</span> <span class="op">+</span><span class="st"> </span><span class="kw">exp</span>(alr_Silt_spec_a_map<span class="op">$</span>pred) <span class="op">+</span><span class="st"> </span><span class="kw">exp</span>(alr_Clay_spec_a_map<span class="op">$</span>pred))
+spatialpredsa<span class="op">$</span>Sand_spec &lt;-<span class="st"> </span><span class="dv">100</span><span class="op">/</span>(<span class="dv">1</span> <span class="op">+</span><span class="st"> </span><span class="kw">exp</span>(alr_Silt_spec_a_map<span class="op">$</span>pred) <span class="op">+</span><span class="st"> </span><span class="kw">exp</span>(alr_Clay_spec_a_map<span class="op">$</span>pred))</code></pre>
+</div>
+<div id="layer-b-5" class="section level4">
+<h4><span class="header-section-number">9.4.2.2</span> Layer B</h4>
+<p>Exchangeable Ca<sup>2+</sup>…</p>
+<pre class="sourceCode r"><code class="sourceCode r">spatialpredsb<span class="op">$</span>Ca_spec &lt;-<span class="st"> </span><span class="kw">predict</span>(Ca_spec_b, 
+                                 <span class="dt">newdata =</span> sppx, 
+                                 <span class="dt">param =</span> <span class="kw">unlist</span>(variogtableb[variogtableb<span class="op">$</span>properties <span class="op">==</span><span class="st"> &quot;Ca_spec&quot;</span>, varparamames]))<span class="op">$</span>pred</code></pre>
+<p>Clay, sand and silt contents..</p>
+<pre class="sourceCode r"><code class="sourceCode r">alr_Clay_spec_b_map &lt;-<span class="st"> </span><span class="kw">predict</span>(alr_Clay_spec_b, 
+                               <span class="dt">newdata =</span> sppx,
+                               <span class="dt">param =</span> <span class="kw">unlist</span>(variogtableb[variogtableb<span class="op">$</span>properties <span class="op">==</span><span class="st"> &quot;alr_Silt_spec&quot;</span>, varparamames]))
+alr_Silt_spec_b_map &lt;-<span class="st"> </span><span class="kw">predict</span>(alr_Silt_spec_b, 
+                               <span class="dt">newdata =</span> sppx,
+                               <span class="dt">param =</span> <span class="kw">unlist</span>(variogtableb[variogtableb<span class="op">$</span>properties <span class="op">==</span><span class="st"> &quot;alr_Clay_spec&quot;</span>, varparamames]))
+
+spatialpredsb<span class="op">$</span>Clay_spec &lt;-<span class="st"> </span><span class="dv">100</span> <span class="op">*</span><span class="st"> </span><span class="kw">exp</span>(alr_Clay_spec_b_map<span class="op">$</span>pred)<span class="op">/</span>(<span class="dv">1</span> <span class="op">+</span><span class="st"> </span><span class="kw">exp</span>(alr_Silt_spec_b_map<span class="op">$</span>pred) <span class="op">+</span><span class="st"> </span><span class="kw">exp</span>(alr_Clay_spec_b_map<span class="op">$</span>pred))
+spatialpredsb<span class="op">$</span>Silt_spec &lt;-<span class="st"> </span><span class="dv">100</span> <span class="op">*</span><span class="st"> </span><span class="kw">exp</span>(alr_Silt_spec_b_map<span class="op">$</span>pred)<span class="op">/</span>(<span class="dv">1</span> <span class="op">+</span><span class="st"> </span><span class="kw">exp</span>(alr_Silt_spec_b_map<span class="op">$</span>pred) <span class="op">+</span><span class="st"> </span><span class="kw">exp</span>(alr_Clay_spec_b_map<span class="op">$</span>pred))
+spatialpredsb<span class="op">$</span>Sand_spec &lt;-<span class="st"> </span><span class="dv">100</span><span class="op">/</span>(<span class="dv">1</span> <span class="op">+</span><span class="st"> </span><span class="kw">exp</span>(alr_Silt_spec_b_map<span class="op">$</span>pred) <span class="op">+</span><span class="st"> </span><span class="kw">exp</span>(alr_Clay_spec_b_map<span class="op">$</span>pred))</code></pre>
+</div>
+</div>
+<div id="plots" class="section level3">
+<h3><span class="header-section-number">9.4.3</span> Plots</h3>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co">## compute the differences between maps (layer)</span>
+spatialpredsa<span class="op">$</span>Cadiff &lt;-<span class="st"> </span>spatialpredsa<span class="op">$</span>Ca <span class="op">-</span><span class="st"> </span>spatialpredsa<span class="op">$</span>Ca_spec 
+spatialpredsa<span class="op">$</span>Claydiff &lt;-<span class="st"> </span>spatialpredsa<span class="op">$</span>Clay <span class="op">-</span><span class="st"> </span>spatialpredsa<span class="op">$</span>Clay_spec 
+spatialpredsa<span class="op">$</span>Siltdiff &lt;-<span class="st"> </span>spatialpredsa<span class="op">$</span>Silt <span class="op">-</span><span class="st"> </span>spatialpredsa<span class="op">$</span>Silt_spec
+spatialpredsa<span class="op">$</span>Sanddiff &lt;-<span class="st"> </span>spatialpredsa<span class="op">$</span>Sand <span class="op">-</span><span class="st"> </span>spatialpredsa<span class="op">$</span>Sand_spec
+
+<span class="co">## compute the differences between maps (layer B)</span>
+spatialpredsb<span class="op">$</span>Cadiff &lt;-<span class="st"> </span>spatialpredsb<span class="op">$</span>Ca <span class="op">-</span><span class="st"> </span>spatialpredsb<span class="op">$</span>Ca_spec 
+spatialpredsb<span class="op">$</span>Claydiff &lt;-<span class="st"> </span>spatialpredsb<span class="op">$</span>Clay <span class="op">-</span><span class="st"> </span>spatialpredsb<span class="op">$</span>Clay_spec 
+spatialpredsb<span class="op">$</span>Siltdiff &lt;-<span class="st"> </span>spatialpredsb<span class="op">$</span>Silt <span class="op">-</span><span class="st"> </span>spatialpredsb<span class="op">$</span>Silt_spec
+spatialpredsb<span class="op">$</span>Sanddiff &lt;-<span class="st"> </span>spatialpredsb<span class="op">$</span>Sand <span class="op">-</span><span class="st"> </span>spatialpredsb<span class="op">$</span>Sand_spec</code></pre>
+<p>Create a new <code>data.frame</code> for plotting purposes</p>
+<pre class="sourceCode r"><code class="sourceCode r">pred_layer_a &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="kw">rbind</span>(sppx<span class="op">@</span>coords, 
+                                 sppx<span class="op">@</span>coords, 
+                                 sppx<span class="op">@</span>coords),
+                           <span class="dt">layer =</span> <span class="st">&quot;Depth A (0 - 0.2 m)&quot;</span>,
+                           <span class="dt">method =</span> <span class="kw">c</span>(<span class="kw">rep</span>(<span class="st">&quot;Laboratory-based&quot;</span>, <span class="kw">nrow</span>(spatialpredsa)), 
+                                      <span class="kw">rep</span>(<span class="st">&quot;vis-NIR augmented&quot;</span>,<span class="kw">nrow</span>(spatialpredsa)),
+                                      <span class="kw">rep</span>(<span class="st">&quot;Differences between maps&quot;</span>, <span class="kw">nrow</span>(spatialpredsa))), 
+                           <span class="dt">Ca =</span> <span class="kw">unlist</span>(spatialpredsa[,<span class="kw">c</span>(<span class="st">&quot;Ca&quot;</span>, <span class="st">&quot;Ca_spec&quot;</span>, <span class="st">&quot;Cadiff&quot;</span>)]),
+                           <span class="dt">Clay =</span> <span class="kw">unlist</span>(spatialpredsa[,<span class="kw">c</span>(<span class="st">&quot;Clay&quot;</span>, <span class="st">&quot;Clay_spec&quot;</span>, <span class="st">&quot;Claydiff&quot;</span>)]),
+                           <span class="dt">Silt =</span> <span class="kw">unlist</span>(spatialpredsa[,<span class="kw">c</span>(<span class="st">&quot;Silt&quot;</span>, <span class="st">&quot;Silt_spec&quot;</span>, <span class="st">&quot;Siltdiff&quot;</span>)]),
+                           <span class="dt">Sand =</span> <span class="kw">unlist</span>(spatialpredsa[,<span class="kw">c</span>(<span class="st">&quot;Sand&quot;</span>, <span class="st">&quot;Sand_spec&quot;</span>, <span class="st">&quot;Sanddiff&quot;</span>)]))
+
+pred_layer_b &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="kw">rbind</span>(sppx<span class="op">@</span>coords, 
+                                 sppx<span class="op">@</span>coords, 
+                                 sppx<span class="op">@</span>coords),
+                           <span class="dt">layer =</span> <span class="st">&quot;Depth B (0.8 - 1.0 m)&quot;</span>,
+                           <span class="dt">method =</span> <span class="kw">c</span>(<span class="kw">rep</span>(<span class="st">&quot;Laboratory-based&quot;</span>, <span class="kw">nrow</span>(spatialpredsb)), 
+                                      <span class="kw">rep</span>(<span class="st">&quot;vis-NIR augmented&quot;</span>,<span class="kw">nrow</span>(spatialpredsb)),
+                                      <span class="kw">rep</span>(<span class="st">&quot;Differences between maps&quot;</span>, <span class="kw">nrow</span>(spatialpredsb))), 
+                           <span class="dt">Ca =</span> <span class="kw">unlist</span>(spatialpredsb[,<span class="kw">c</span>(<span class="st">&quot;Ca&quot;</span>, <span class="st">&quot;Ca_spec&quot;</span>, <span class="st">&quot;Cadiff&quot;</span>)]),
+                           <span class="dt">Clay =</span> <span class="kw">unlist</span>(spatialpredsb[,<span class="kw">c</span>(<span class="st">&quot;Clay&quot;</span>, <span class="st">&quot;Clay_spec&quot;</span>, <span class="st">&quot;Claydiff&quot;</span>)]),
+                           <span class="dt">Silt =</span> <span class="kw">unlist</span>(spatialpredsb[,<span class="kw">c</span>(<span class="st">&quot;Silt&quot;</span>, <span class="st">&quot;Silt_spec&quot;</span>, <span class="st">&quot;Siltdiff&quot;</span>)]),
+                           <span class="dt">Sand =</span> <span class="kw">unlist</span>(spatialpredsb[,<span class="kw">c</span>(<span class="st">&quot;Sand&quot;</span>, <span class="st">&quot;Sand_spec&quot;</span>, <span class="st">&quot;Sanddiff&quot;</span>)]))
+
+finalmapping &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="kw">rbind</span>(pred_layer_a, pred_layer_b))</code></pre>
+<p>Define palette of color for the plot</p>
+<pre class="sourceCode r"><code class="sourceCode r">myPalette &lt;-<span class="st"> </span><span class="kw">colorRampPalette</span>(<span class="kw">rev</span>(<span class="kw">brewer.pal</span>(<span class="dv">11</span>, <span class="st">&quot;Spectral&quot;</span>)), <span class="dt">space =</span> <span class="st">&quot;Lab&quot;</span>)</code></pre>
+<p>Define some ggplot parameters common to all plots</p>
+<pre class="sourceCode r"><code class="sourceCode r">gfg &lt;-<span class="st"> </span><span class="kw">facet_grid</span>(layer <span class="op">~</span><span class="st"> </span>method)
+gscf &lt;-<span class="st"> </span><span class="kw">scale_fill_gradientn</span>(<span class="dt">colours =</span> <span class="kw">myPalette</span>(<span class="dv">30</span>))
+gcoord &lt;-<span class="st"> </span><span class="kw">coord_equal</span>() 
+gtheme &lt;-<span class="st"> </span><span class="kw">theme_bw</span>() <span class="op">+</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">theme</span>(<span class="dt">legend.position =</span> <span class="st">&quot;top&quot;</span>) <span class="op">+</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">theme</span>(<span class="dt">axis.title.y =</span> <span class="kw">element_text</span>( <span class="dt">colour =</span> <span class="kw">grey</span>(<span class="fl">0.2</span>), <span class="dt">size=</span><span class="dv">25</span>),
+        <span class="dt">axis.text.y  =</span> <span class="kw">element_text</span>(<span class="dt">angle=</span><span class="dv">0</span>, <span class="dt">vjust =</span><span class="fl">0.5</span>, <span class="dt">hjust =</span><span class="fl">0.5</span>, <span class="dt">size=</span><span class="dv">16</span>), 
+        <span class="dt">legend.title =</span> <span class="kw">element_text</span>( <span class="dt">colour =</span> <span class="st">&quot;black&quot;</span>, <span class="dt">size=</span><span class="dv">25</span>)) <span class="op">+</span>
+<span class="st">  </span><span class="kw">theme</span>(<span class="dt">axis.title.x =</span> <span class="kw">element_text</span>( <span class="dt">colour =</span> <span class="kw">grey</span>(<span class="fl">0.2</span>), <span class="dt">size=</span><span class="dv">25</span>),
+        <span class="dt">axis.text.x  =</span> <span class="kw">element_text</span>(<span class="dt">angle =</span> <span class="dv">0</span>, <span class="dt">vjust=</span><span class="dv">0</span>, <span class="dt">size=</span><span class="dv">16</span>)) <span class="op">+</span>
+<span class="st">  </span><span class="kw">theme</span>(<span class="dt">legend.text =</span> <span class="kw">element_text</span>( <span class="dt">colour =</span> <span class="kw">grey</span>(<span class="fl">0.2</span>), <span class="dt">size=</span><span class="dv">15</span>),
+        <span class="dt">legend.key.size =</span> <span class="kw">unit</span>(<span class="fl">0.95</span>, <span class="st">&quot;cm&quot;</span>)) <span class="op">+</span>
+<span class="st">  </span><span class="kw">theme</span>(<span class="dt">strip.background =</span> <span class="kw">element_rect</span>(<span class="dt">fill =</span> <span class="st">&quot;grey&quot;</span>), 
+        <span class="dt">strip.text.x =</span> <span class="kw">element_text</span>( <span class="dt">size =</span> <span class="dv">25</span>, <span class="dt">colour =</span> <span class="st">&quot;black&quot;</span>, <span class="dt">angle =</span> <span class="dv">0</span>),
+        <span class="dt">strip.text.y =</span> <span class="kw">element_text</span>( <span class="dt">size =</span> <span class="dv">25</span>, <span class="dt">colour =</span> <span class="st">&quot;black&quot;</span>, <span class="dt">angle =</span> <span class="dv">-90</span>)) 
+glabs &lt;-<span class="st"> </span><span class="kw">labs</span>(<span class="dt">y =</span> <span class="st">&quot;Northings /m&quot;</span>, <span class="dt">x =</span> <span class="st">&quot;Eastings /m&quot;</span>)
+Define palette of color <span class="cf">for</span> the plot</code></pre>
+<p>Create the maps for Ca<sup>2+</sup></p>
+<pre class="sourceCode r"><code class="sourceCode r">ca_map &lt;-<span class="st"> </span><span class="kw">ggplot</span>(finalmapping[finalmapping<span class="op">$</span>method <span class="op">!=</span><span class="st"> &quot;Differences between maps&quot;</span>,], 
+                 <span class="kw">aes</span>(POINT_X, POINT_Y)) <span class="op">+</span><span class="st"> </span><span class="kw">geom_tile</span>(<span class="kw">aes</span>(<span class="dt">fill =</span> Ca)) <span class="op">+</span><span class="st"> </span>
+<span class="st">  </span>gfg <span class="op">+</span><span class="st"> </span>gscf <span class="op">+</span><span class="st"> </span>gcoord <span class="op">+</span><span class="st"> </span>gtheme <span class="op">+</span><span class="st"> </span>glabs <span class="op">+</span>
+<span class="st">  </span><span class="kw">guides</span>(<span class="dt">fill =</span> <span class="kw">guide_colourbar</span>(<span class="dt">title =</span> <span class="kw">expression</span>(<span class="kw">paste</span>(<span class="st">&quot;&quot;</span>, Ca<span class="op">^</span><span class="st">&quot;++&quot;</span>, <span class="st">&quot; &quot;</span> <span class="op">/</span>mmol[c], kg<span class="op">^-</span><span class="dv">1</span>, <span class="st">&quot; &quot;</span>))))
+
+
+ca_map_diff &lt;-<span class="st"> </span><span class="kw">ggplot</span>(finalmapping[finalmapping<span class="op">$</span>method <span class="op">==</span><span class="st"> &quot;Differences between maps&quot;</span>,], 
+                      <span class="kw">aes</span>(POINT_X, POINT_Y)) <span class="op">+</span><span class="st"> </span><span class="kw">geom_tile</span>(<span class="kw">aes</span>(<span class="dt">fill =</span> Ca)) <span class="op">+</span><span class="st"> </span>
+<span class="st">  </span>gfg <span class="op">+</span><span class="st"> </span>gscf <span class="op">+</span><span class="st"> </span>gcoord <span class="op">+</span><span class="st"> </span>gtheme <span class="op">+</span><span class="st"> </span>glabs <span class="op">+</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">guides</span>(<span class="dt">fill =</span> <span class="kw">guide_colourbar</span>(<span class="dt">title =</span> <span class="kw">expression</span>(<span class="kw">paste</span>(<span class="st">&quot;Difference&quot;</span>, <span class="st">&quot; &quot;</span> <span class="op">/</span>mmol[c], kg<span class="op">^-</span><span class="dv">1</span>, <span class="st">&quot; &quot;</span>))))
+
+ca_map
+ca_map_diff</code></pre>
+<p>Create the maps for <span class="math inline">\(Clay\)</span></p>
+<pre class="sourceCode r"><code class="sourceCode r">Clay_map &lt;-<span class="st"> </span><span class="kw">ggplot</span>(finalmapping[finalmapping<span class="op">$</span>method <span class="op">!=</span><span class="st"> &quot;Differences between maps&quot;</span>,], 
+                 <span class="kw">aes</span>(POINT_X, POINT_Y)) <span class="op">+</span><span class="st"> </span><span class="kw">geom_tile</span>(<span class="kw">aes</span>(<span class="dt">fill =</span> Clay)) <span class="op">+</span><span class="st"> </span>
+gfg <span class="op">+</span><span class="st"> </span>gscf <span class="op">+</span><span class="st"> </span>gcoord <span class="op">+</span><span class="st"> </span>gtheme <span class="op">+</span><span class="st"> </span>glabs <span class="op">+</span>
+<span class="kw">guides</span>(<span class="dt">fill =</span> <span class="kw">guide_colourbar</span>(<span class="dt">title =</span> <span class="st">&quot;Clay content, % &quot;</span>)) 
+
+
+Clay_map_diff &lt;-<span class="st"> </span><span class="kw">ggplot</span>(finalmapping[finalmapping<span class="op">$</span>method <span class="op">==</span><span class="st"> &quot;Differences between maps&quot;</span>,], 
+                      <span class="kw">aes</span>(POINT_X, POINT_Y)) <span class="op">+</span><span class="st"> </span><span class="kw">geom_tile</span>(<span class="kw">aes</span>(<span class="dt">fill =</span> Clay)) <span class="op">+</span><span class="st"> </span>
+gfg <span class="op">+</span><span class="st"> </span>gscf <span class="op">+</span><span class="st"> </span>gcoord <span class="op">+</span><span class="st"> </span>gtheme <span class="op">+</span><span class="st"> </span>glabs <span class="op">+</span><span class="st"> </span>
+<span class="kw">guides</span>(<span class="dt">fill =</span> <span class="kw">guide_colourbar</span>(<span class="dt">title =</span> <span class="st">&quot;Difference, %&quot;</span>))
+
+Clay_map
+Clay_map_diff</code></pre>
+<p>Create the maps for <span class="math inline">\(Silt\)</span></p>
+<pre class="sourceCode r"><code class="sourceCode r">Silt_map &lt;-<span class="st"> </span><span class="kw">ggplot</span>(finalmapping[finalmapping<span class="op">$</span>method <span class="op">!=</span><span class="st"> &quot;Differences between maps&quot;</span>,], 
+                 <span class="kw">aes</span>(POINT_X, POINT_Y)) <span class="op">+</span><span class="st"> </span><span class="kw">geom_tile</span>(<span class="kw">aes</span>(<span class="dt">fill =</span> Silt)) <span class="op">+</span><span class="st"> </span>
+gfg <span class="op">+</span><span class="st"> </span>gscf <span class="op">+</span><span class="st"> </span>gcoord <span class="op">+</span><span class="st"> </span>gtheme <span class="op">+</span><span class="st"> </span>glabs <span class="op">+</span>
+<span class="kw">guides</span>(<span class="dt">fill =</span> <span class="kw">guide_colourbar</span>(<span class="dt">title =</span> <span class="st">&quot;Silt content, % &quot;</span>)) 
+
+
+Silt_map_diff &lt;-<span class="st"> </span><span class="kw">ggplot</span>(finalmapping[finalmapping<span class="op">$</span>method <span class="op">==</span><span class="st"> &quot;Differences between maps&quot;</span>,], 
+                      <span class="kw">aes</span>(POINT_X, POINT_Y)) <span class="op">+</span><span class="st"> </span><span class="kw">geom_tile</span>(<span class="kw">aes</span>(<span class="dt">fill =</span> Silt)) <span class="op">+</span><span class="st"> </span>
+gfg <span class="op">+</span><span class="st"> </span>gscf <span class="op">+</span><span class="st"> </span>gcoord <span class="op">+</span><span class="st"> </span>gtheme <span class="op">+</span><span class="st"> </span>glabs <span class="op">+</span><span class="st"> </span>
+<span class="kw">guides</span>(<span class="dt">fill =</span> <span class="kw">guide_colourbar</span>(<span class="dt">title =</span> <span class="st">&quot;Difference, %&quot;</span>))
+
+Silt_map
+Silt_map_diff</code></pre>
+<p>Create the maps for <span class="math inline">\(Sand\)</span></p>
+<pre class="sourceCode r"><code class="sourceCode r">Sand_map &lt;-<span class="st"> </span><span class="kw">ggplot</span>(finalmapping[finalmapping<span class="op">$</span>method <span class="op">!=</span><span class="st"> &quot;Differences between maps&quot;</span>,], 
+                 <span class="kw">aes</span>(POINT_X, POINT_Y)) <span class="op">+</span><span class="st"> </span><span class="kw">geom_tile</span>(<span class="kw">aes</span>(<span class="dt">fill =</span> Sand)) <span class="op">+</span><span class="st"> </span>
+gfg <span class="op">+</span><span class="st"> </span>gscf <span class="op">+</span><span class="st"> </span>gcoord <span class="op">+</span><span class="st"> </span>gtheme <span class="op">+</span><span class="st"> </span>glabs <span class="op">+</span>
+<span class="kw">guides</span>(<span class="dt">fill =</span> <span class="kw">guide_colourbar</span>(<span class="dt">title =</span> <span class="st">&quot;Sand content, % &quot;</span>)) 
+
+
+Sand_map_diff &lt;-<span class="st"> </span><span class="kw">ggplot</span>(finalmapping[finalmapping<span class="op">$</span>method <span class="op">==</span><span class="st"> &quot;Differences between maps&quot;</span>,], 
+                      <span class="kw">aes</span>(POINT_X, POINT_Y)) <span class="op">+</span><span class="st"> </span><span class="kw">geom_tile</span>(<span class="kw">aes</span>(<span class="dt">fill =</span> Sand)) <span class="op">+</span><span class="st"> </span>
+gfg <span class="op">+</span><span class="st"> </span>gscf <span class="op">+</span><span class="st"> </span>gcoord <span class="op">+</span><span class="st"> </span>gtheme <span class="op">+</span><span class="st"> </span>glabs <span class="op">+</span><span class="st"> </span>
+<span class="kw">guides</span>(<span class="dt">fill =</span> <span class="kw">guide_colourbar</span>(<span class="dt">title =</span> <span class="st">&quot;Difference, %&quot;</span>))
+
+Sand_map
+Sand_map_diff</code></pre>
+
+</div>
+</div>
+<!-- </div> -->
+<p style="text-align: center;">
+<a href="9-3-validation-of-the-spatial-models.html"><button class="btn btn-default">Previous</button></a>
+<a href="references.html"><button class="btn btn-default">Next</button></a>
+</p>
+</div>
+</div>
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+$(document).ready(function () {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+});
+
+</script>
+
+</body>
+</html>
