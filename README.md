@@ -6,4 +6,4 @@ You can access our code [here](https://l-ramirez-lopez.github.io/VNIR_spectrosco
 
 Thanks for visiting
 
-Leo and Alex
+_Leo and Alex_
