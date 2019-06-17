@@ -6,7 +6,6 @@ bookdown::gitbook:
         <li><a href="./">R_code_for_Robust_soil_mapping_at_the_farm_scale_with_vis_NIR_spectroscopy</a></li>
       after: |
         <li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
-    edit: https://github.com/rstudio/bookdown-demo/edit/master/%s
     download: ["pdf", "epub"]
 bookdown::html_book:
   latex_engine: xelatex

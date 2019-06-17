@@ -6,7 +6,6 @@ site: bookdown::bookdown_site
 output: bookdown::html_document2
 always_allow_html: yes
 documentclass: book
-bibliography: [book.bib, packages.bib]
 biblio-style: apalike
 link-citations: yes
 github-repo: l-ramirez-lopez/VNIR_spectroscopy_for_robust_soil_mapping
