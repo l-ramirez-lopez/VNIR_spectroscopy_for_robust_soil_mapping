@@ -6,7 +6,7 @@ In order to run all the code presented in the next sections you will need to hav
 
 You can install the required packages using the following code
 
-``` r
+``` {r, eval = FALSE}
 requiredpackages <- c("resemble",    
                       "prospectr",   
                       "clhs",        
