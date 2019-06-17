@@ -5,7 +5,7 @@ author:
    - Alex Wadoux (Wageningen University, Netherlands)
 date: "`r Sys.Date()`"
 site: bookdown::bookdown_site
-output: bookdown::html_document2
+output: bookdown::html_document1
 always_allow_html: yes
 documentclass: book
 biblio-style: apalike
@@ -23,3 +23,6 @@ used for carrying out the analyses presented in our paper ["Robust soil mapping 
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+```{r pressure, echo = FALSE, fig.cap = "", out.width = '100%'}
+knitr::include_graphics("./maps/paperimg.png")
+```

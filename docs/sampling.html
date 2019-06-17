@@ -63,7 +63,7 @@
 <style type="text/css">
 a.sourceLine { display: inline-block; line-height: 1.25; }
 a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
-a.sourceLine:empty { height: 1.2em; }
+a.sourceLine:empty { height: 1.2em; position: absolute; }
 .sourceCode { overflow: visible; }
 code.sourceCode { white-space: pre; position: relative; }
 div.sourceCode { margin: 1em 0; }
@@ -76,11 +76,13 @@ code.sourceCode { white-space: pre-wrap; }
 a.sourceLine { text-indent: -1em; padding-left: 1em; }
 }
 pre.numberSource a.sourceLine
-  { position: relative; left: -4em; }
+  { position: relative; }
+pre.numberSource a.sourceLine:empty
+  { position: absolute; }
 pre.numberSource a.sourceLine::before
-  { content: attr(title);
-    position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; pointer-events: all; display: inline-block;
+  { content: attr(data-line-number);
+    position: absolute; left: -5em; text-align: right; vertical-align: baseline;
+    border: none; pointer-events: all;
     -webkit-touch-callout: none; -webkit-user-select: none;
     -khtml-user-select: none; -moz-user-select: none;
     -ms-user-select: none; user-select: none;
@@ -207,17 +209,17 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>In this section we show how the optimal size for a calibration set is identified using the mean squared
 Euclidean distance (<span class="math inline">\(msd\)</span>) between estimates of the probability density functions (<span class="math inline">\(pdfs\)</span>) of the whole set of samples and the pdfs of subsets with different sizes.<br />
 First we compute the principal components (PCs) of the NIR spectra of the whole set of calibration candidate samples. Then for each component we compute kernel density estimates (<span class="math inline">\(KDE\)</span>):</p>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="co">## Apply standard normal variate </span>
+<pre class="sourceCode r"><code class="sourceCode r">## Apply standard normal variate 
 data<span class="op">$</span>spc_snv &lt;-<span class="st"> </span><span class="kw">standardNormalVariate</span>(data<span class="op">$</span>spc)
 
-<span class="co">## extract the validation samples into a new set/object</span>
+## extract the validation samples into a new set/object
 valida &lt;-<span class="st"> </span>data[data<span class="op">$</span>set <span class="op">==</span><span class="st"> &quot;validation&quot;</span>,]
 
-<span class="co">## remove the validation samples from data</span>
+## remove the validation samples from data
 data &lt;-<span class="st"> </span>data[data<span class="op">$</span>set <span class="op">==</span><span class="st"> &quot;cal_candidate&quot;</span>,]
 
-<span class="co">## --- 2. Perform a principal component analysis  ----</span>
-<span class="co">## Compress the data </span>
+## --- 2. Perform a principal component analysis  ----
+## Compress the data 
 pcaall &lt;-<span class="st"> </span><span class="kw">orthoProjection</span>(<span class="dt">Xr =</span> data<span class="op">$</span>spc_snv, 
                           <span class="dt">X2 =</span> <span class="ot">NULL</span>, 
                           <span class="dt">Yr =</span> <span class="ot">NULL</span>, 
@@ -226,27 +228,27 @@ pcaall &lt;-<span class="st"> </span><span class="kw">orthoProjection</span>(<sp
                           <span class="dt">center =</span> <span class="ot">TRUE</span>, 
                           <span class="dt">scaled =</span> <span class="ot">FALSE</span>)
                           
-<span class="co">## standardize the socres</span>
+## standardize the socres
 pcaall<span class="op">$</span>scores.std &lt;-<span class="st"> </span><span class="kw">sweep</span>(pcaall<span class="op">$</span>scores, <span class="dt">MARGIN =</span> <span class="dv">2</span>, <span class="dt">STATS =</span> pcaall<span class="op">$</span>sc.sdv, <span class="dt">FUN =</span> <span class="st">&quot;/&quot;</span>)
 
-<span class="co">## compute the max and min of each score for the limits of the density estimations</span>
+## compute the max and min of each score for the limits of the density estimations
 max.sc &lt;-<span class="st"> </span><span class="kw">colMins</span>(pcaall<span class="op">$</span>scores.std)
 min.sc &lt;-<span class="st"> </span><span class="kw">colMaxs</span>(pcaall<span class="op">$</span>scores.std)
 
-<span class="co">## compute the mean and sd of each score for the comparisons with the samples</span>
+## compute the mean and sd of each score for the comparisons with the samples
 mean.sc &lt;-<span class="st"> </span><span class="kw">colMeans</span>(pcaall<span class="op">$</span>scores.std)
 sd.sc &lt;-<span class="st"> </span><span class="kw">colSds</span>(pcaall<span class="op">$</span>scores.std)
 
 <span class="co"># number of points in the density distribution</span>
 nxdens &lt;-<span class="st"> </span><span class="dv">500</span>
 
-<span class="co">## matrix where the density values will be stored</span>
+## matrix where the density values will be stored
 ix &lt;-<span class="st"> </span><span class="dv">1</span>
 sc.dens &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="kw">seq</span>(min.sc[ix], max.sc[ix], <span class="dt">length =</span> nxdens), 
                       <span class="kw">matrix</span>(<span class="ot">NA</span>, nxdens, <span class="kw">length</span>(min.sc)))
 <span class="kw">colnames</span>(sc.dens) &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;x&quot;</span>, <span class="kw">paste</span>(<span class="st">&quot;densc&quot;</span>, <span class="dv">1</span><span class="op">:</span><span class="kw">length</span>(min.sc), <span class="dt">sep =</span> <span class="st">&quot;&quot;</span>))
 
-<span class="co">## Kernel density estimates (KDE) of each component </span>
+## Kernel density estimates (KDE) of each component 
 d.bandwidths &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="ot">NA</span>, <span class="kw">length</span>(min.sc))
 <span class="kw">names</span>(d.bandwidths) &lt;-<span class="st"> </span><span class="kw">colnames</span>(pcaall<span class="op">$</span>scores.std)
 <span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span><span class="kw">length</span>(min.sc)){
@@ -258,7 +260,7 @@ d.bandwidths &lt;-<span class="st"> </span><span class="kw">rep</span>(<span cla
   d.bandwidths[i] &lt;-<span class="st"> </span>idsty<span class="op">$</span>bw
 }
 
-<span class="co">## Create the vector of different sample set sizes to be tested</span>
+## Create the vector of different sample set sizes to be tested
 css &lt;-<span class="st"> </span><span class="kw">seq</span>(<span class="dv">10</span>, <span class="dv">400</span>, <span class="dt">by =</span> <span class="dv">10</span>)</code></pre>
 <p>Now we will iterate over the different calibration set sizes (<code>css</code>). We are going to use the LHS algorithm to select subsets from our set of candiate samples for calibartion. This is done using the (standardized) scores of the principal components (PCs) of the spectra (<code>pcaall$scores.std</code>). For each calibration subset we’ll compute the mean squared Euclidean distance (<span class="math inline">\(msd\)</span>) between estimates of the probability density functions (<span class="math inline">\(pdfs\)</span>) of the whole set of samples and the <span class="math inline">\(pdfs\)</span> of samples in the subset. The <span class="math inline">\(msd\)</span> is computed using kernel density estimates (<span class="math inline">\(KDE\)</span>) of the <span class="math inline">\(pdfs\)</span>. To obtain reliable estimates of <span class="math inline">\(msd\)</span> as a function of the sample set size, we will repeat 10 times (<code>repetitions</code>) the whole sampling procedure for each <code>css</code>, the final <span class="math inline">\(msd\)</span> will be the the average of the <span class="math inline">\(msd\)</span>s obtained at each iteration.
 The following pseudo-code summarizes the procedure to compute the <span class="math inline">\(msd\)</span> (see the ‘<em>Calibration samples</em>’ section in our paper for more details):</p>
@@ -278,25 +280,25 @@ Output: msd
 9 aggregate the results of the msds obatined for all 
 the repetition iterations for each sample set size</code></pre>
 <p>First we’ll compute the <span class="math inline">\(msd\)</span>s for ecah repetition and we will write each set of results into our working directory.</p>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="co">## Sample with LHS (latin hypercube sampling)</span>
+<pre class="sourceCode r"><code class="sourceCode r">## Sample with LHS (latin hypercube sampling)
 
-<span class="co">## These three nested loops might take a while</span>
-<span class="co">## (aprox. 16 min per repetition, i.e. a bit more than a couple of hours </span>
-<span class="co">## for the whole thing)</span>
-<span class="co">## (for reducing the computation time the loops</span>
-<span class="co">## can be vectorized using the apply family of functions. </span>
-<span class="co">## Furtheromre parallelization of the loop for the repetitions</span>
-<span class="co">## can also be applied)</span>
-<span class="co">## We present the computations with nested loops for interpretability </span>
-<span class="co">## reasons</span>
+## These three nested loops might take a while
+## (aprox. 16 min per repetition, i.e. a bit more than a couple of hours 
+## for the whole thing)
+## (for reducing the computation time the loops
+## can be vectorized using the apply family of functions. 
+## Furtheromre parallelization of the loop for the repetitions
+## can also be applied)
+## We present the computations with nested loops for interpretability 
+## reasons
 
 repetitions &lt;-<span class="st"> </span><span class="dv">10</span>
 
-<span class="co">## root name for the results of each iteration</span>
+## root name for the results of each iteration
 filerootname &lt;-<span class="st"> &quot;6pcs_resultsclhs_rep&quot;</span>
 
-<span class="co">## Create the data.frame where the results will be stored </span>
-<span class="co">## at each iteration</span>
+## Create the data.frame where the results will be stored 
+## at each iteration
 results.clhs &lt;-<span class="st">  </span><span class="kw">data.frame</span>(<span class="dt">css =</span> css, 
                             <span class="dt">msd =</span> <span class="kw">rep</span>(<span class="ot">NA</span>, <span class="kw">length</span>(css)),
                             <span class="dt">mndiff =</span> <span class="kw">rep</span>(<span class="ot">NA</span>, <span class="kw">length</span>(css)),
@@ -304,7 +306,7 @@ results.clhs &lt;-<span class="st">  </span><span class="kw">data.frame</span>(<
 <span class="cf">for</span>(k <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span>repetitions){
   results.clhs[,<span class="op">-</span><span class="dv">1</span>] &lt;-<span class="st"> </span><span class="ot">NA</span>
   
-  <span class="co">## Define a file name</span>
+  ## Define a file name
   fn &lt;-<span class="st"> </span><span class="kw">paste</span>(filerootname, k,<span class="st">&quot;.txt&quot;</span>, <span class="dt">sep =</span> <span class="st">&quot;&quot;</span>)
   <span class="cf">if</span>(fn <span class="op">%in%</span><span class="st"> </span><span class="kw">list.files</span>()){
     results.clhs &lt;-<span class="st"> </span><span class="kw">read.table</span>(fn, <span class="dt">header =</span> T, <span class="dt">sep =</span> <span class="st">&quot;</span><span class="ch">\t</span><span class="st">&quot;</span>)
@@ -318,10 +320,10 @@ results.clhs &lt;-<span class="st">  </span><span class="kw">data.frame</span>(<
                      <span class="dt">size =</span> css[i], 
                      <span class="dt">iter =</span> <span class="dv">10000</span>)
     
-    <span class="co">## Compute the KDEs of each PC</span>
+    ## Compute the KDEs of each PC
     j.sc.dens &lt;-<span class="st"> </span>msd.sc  &lt;-<span class="st"> </span>sc.dens 
     <span class="cf">for</span>(j <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span><span class="kw">length</span>(min.sc)){
-      <span class="co">## use the same bandwidth (bw) as in the whole set of candidates</span>
+      ## use the same bandwidth (bw) as in the whole set of candidates
       j.sc.dens[,j <span class="op">+</span><span class="st"> </span><span class="dv">1</span>] &lt;-<span class="st"> </span><span class="kw">density</span>(<span class="dt">x =</span> pcaall<span class="op">$</span>scores.std[i.calidx,j], 
                                    <span class="dt">bw =</span> d.bandwidths[j], 
                                    <span class="dt">n =</span> nxdens, 
@@ -333,7 +335,7 @@ results.clhs &lt;-<span class="st">  </span><span class="kw">data.frame</span>(<
     results.clhs<span class="op">$</span>mndiff[i] &lt;-<span class="st"> </span><span class="kw">mean</span>(<span class="kw">abs</span>(<span class="kw">colMeans</span>(pcaall<span class="op">$</span>scores.std[i.calidx,])))
     results.clhs<span class="op">$</span>sddiff[i] &lt;-<span class="st"> </span><span class="kw">mean</span>(<span class="kw">abs</span>(<span class="kw">colSds</span>(pcaall<span class="op">$</span>scores.std[i.calidx,]) <span class="op">-</span><span class="st"> </span><span class="dv">1</span>))
     
-    <span class="co">## write the results obtained so far...</span>
+    ## write the results obtained so far...
     <span class="cf">if</span>(iter <span class="op">==</span><span class="st"> </span><span class="kw">length</span>(nmsrepsclhs)){
       final.clhs &lt;-<span class="st"> </span>final.clhs<span class="op">/</span>iter
       <span class="kw">write.table</span>(<span class="dt">x =</span> final.clhs, 
@@ -347,7 +349,7 @@ results.clhs &lt;-<span class="st">  </span><span class="kw">data.frame</span>(<
 }</code></pre>
 <p>After executing the above nested loops, you should have obtained 10 different *.txt files in your working directorty (in this case the root name of the files is 6pcs_resultsclhs_rep[n].txt where [n] represents the repetition number). These files contain the <span class="math inline">\(msd\)</span> results obtained at each repetition iteration.
 Now we’ll calculate the final <span class="math inline">\(msd\)</span> as the average of the ones obtained at each repetition iteration.</p>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="co">## Specify a file name for the file where the final results will be stored</span>
+<pre class="sourceCode r"><code class="sourceCode r">## Specify a file name for the file where the final results will be stored
 finalresultsfile &lt;-<span class="st"> &quot;6pcs_final.clhs.txt&quot;</span>
 
 nmsrepsclhs &lt;-<span class="st"> </span><span class="kw">paste</span>(filerootname, <span class="dv">1</span><span class="op">:</span>repetitions, <span class="st">&quot;.txt&quot;</span>, <span class="dt">sep =</span> <span class="st">&quot;&quot;</span>)
@@ -358,7 +360,7 @@ final.clhs &lt;-<span class="st"> </span><span class="dv">0</span>
   results.clhs<span class="op">$</span>mndiff &lt;-<span class="st"> </span><span class="kw">abs</span>(results.clhs<span class="op">$</span>mndiff)
   final.clhs &lt;-<span class="st"> </span>final.clhs <span class="op">+</span><span class="st"> </span>results.clhs
 
-  <span class="co">## write a table with the final results </span>
+  ## write a table with the final results 
   <span class="cf">if</span>(iter <span class="op">==</span><span class="st"> </span><span class="kw">length</span>(nmsrepsclhs)){
     final.clhs &lt;-<span class="st"> </span>final.clhs<span class="op">/</span>iter
     <span class="kw">write.table</span>(<span class="dt">x =</span> final.clhs, 
@@ -368,7 +370,7 @@ final.clhs &lt;-<span class="st"> </span><span class="dv">0</span>
   }
 }
 
-<span class="co">## Compute the standard devitions of the msd results</span>
+## Compute the standard devitions of the msd results
 final.clhs_sd &lt;-<span class="st"> </span><span class="dv">0</span>
 <span class="cf">for</span>(i <span class="cf">in</span> nmsrepsclhs){
   iter &lt;-<span class="st"> </span><span class="kw">which</span>(i <span class="op">==</span><span class="st"> </span>nmsrepsclhs)
@@ -408,42 +410,42 @@ p.tmp <span class="op">+</span><span class="st"> </span>
 </div>
 <div id="final-selection-of-the-calibration-set" class="section level2">
 <h2><span class="header-section-number">4.3</span> Final selection of the calibration set</h2>
-<p>The previous analysis allows to infer an optimal calibration set size. This optimal size is indicated by the point at which no substantial reduction of the <span class="math inline">\(msd\)</span> is observed. In our case this assestment was intuetively done by looking at the <span class="math inline">\(msd\)</span> vs. <span class="math inline">\(css\)</span> plot. We set the optimal calibration set size (<code>ocss</code>) 180 samples:</p>
+<p>The previous analysis allows to infer an optimal calibration set size. This optimal size is indicated by the point at which no substantial reduction of the <span class="math inline">\(msd\)</span> is observed. In our case this assestment was intuetively done by looking at the <span class="math inline">\(msd\)</span> vs. <span class="math inline">\(css\)</span> plot. We set the optimal calibration set size (<code>ocss</code>) 180 samples:</p>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Optimal calibration sample set size</span>
 ocss &lt;-<span class="st"> </span><span class="dv">180</span></code></pre>
 <p>Once the optimal calibration set size is identified, we can propose/sample different calibration sets (solutions) containing 180 samples. In our paper we proposed 10 different solutions and we selected the one that returned the mimimum <span class="math inline">\(msd\)</span> (this subset will be then used as the final calibration set in later analyses):</p>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="co">## Compute the maximum and minimum of each score for the limits of the</span>
-<span class="co">## density estimations</span>
+<pre class="sourceCode r"><code class="sourceCode r">## Compute the maximum and minimum of each score for the limits of the
+## density estimations
 max.sc &lt;-<span class="st"> </span><span class="kw">colMins</span>(pcaall<span class="op">$</span>scores.std)
 min.sc &lt;-<span class="st"> </span><span class="kw">colMaxs</span>(pcaall<span class="op">$</span>scores.std)
 
-<span class="co">## Compute the mean and standard deviation of each score for the</span>
-<span class="co">## comparisons with the samples</span>
+## Compute the mean and standard deviation of each score for the
+## comparisons with the samples
 mean.sc &lt;-<span class="st"> </span><span class="kw">colMeans</span>(pcaall<span class="op">$</span>scores.std)
 sd.sc &lt;-<span class="st"> </span><span class="kw">colSds</span>(pcaall<span class="op">$</span>scores.std)
 
-<span class="co">## Set a number of solutions to test</span>
+## Set a number of solutions to test
 solutions &lt;-<span class="st"> </span><span class="dv">10</span>
 
-<span class="co">## object where the sample indices of the different solutions </span>
-<span class="co">## will be stored</span>
+## object where the sample indices of the different solutions 
+## will be stored
 calidx &lt;-<span class="st"> </span><span class="ot">NULL</span> 
 
-<span class="co">## object where the msds will be stored</span>
+## object where the msds will be stored
 results.clhs.ocss &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="ot">NA</span>, <span class="dt">length =</span> solutions)
 
 <span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span>solutions){
-  <span class="co">## set seed for the random number generation</span>
+  ## set seed for the random number generation
   <span class="kw">set.seed</span>(<span class="kw">round</span>(i <span class="op">*</span><span class="st"> </span><span class="kw">exp</span>(<span class="dv">4</span>)))
 
-  <span class="co">## sample the ith solution  </span>
+  ## sample the ith solution  
   i.calidx &lt;-<span class="st"> </span><span class="kw">clhs</span>(<span class="dt">x =</span> <span class="kw">as.data.frame</span>(pcaall<span class="op">$</span>scores.std),
                    <span class="dt">size =</span> ocss, <span class="dt">iter =</span> <span class="dv">10000</span>)
   
-  <span class="co">## store the indices of the selected samples </span>
+  ## store the indices of the selected samples 
   calidx[[i]] &lt;-<span class="st"> </span>i.calidx
   
-  <span class="co">## Compute the KDEs</span>
+  ## Compute the KDEs
   j.sc.dens &lt;-<span class="st"> </span>msd.sc  &lt;-<span class="st"> </span>sc.dens
   <span class="cf">for</span>(j <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span><span class="kw">length</span>(min.sc)){
     j.sc.dens[, j <span class="op">+</span><span class="st"> </span><span class="dv">1</span>] &lt;-<span class="st"> </span><span class="kw">density</span>(<span class="dt">x =</span> pcaall<span class="op">$</span>scores.std[i.calidx,j],
@@ -453,20 +455,20 @@ results.clhs.ocss &lt;-<span class="st"> </span><span class="kw">rep</span>(<spa
                                   <span class="dt">to =</span> max.sc[j],
                                   <span class="dt">kernel =</span> <span class="st">&quot;gaussian&quot;</span>)<span class="op">$</span>y
   }
-  <span class="co">## compute the msds</span>
+  ## compute the msds
   results.clhs.ocss[i] &lt;-<span class="st"> </span><span class="kw">mean</span>(<span class="kw">colMeans</span>((j.sc.dens[,<span class="op">-</span><span class="dv">1</span>] <span class="op">-</span><span class="st"> </span>sc.dens[,<span class="op">-</span><span class="dv">1</span>])<span class="op">^</span><span class="dv">2</span>, <span class="dt">na.rm =</span> T))
 }
 
-<span class="co">## Identify the index of the best group</span>
+## Identify the index of the best group
 <span class="kw">plot</span>(results.clhs.ocss)
 
-<span class="co">## best solution </span>
+## best solution 
 <span class="kw">which.min</span>(results.clhs.ocss)
 
-<span class="co">## get the indices of the samples in the final solution</span>
+## get the indices of the samples in the final solution
 calibration.idx &lt;-<span class="st"> </span>calidx[[<span class="kw">which.min</span>(results.clhs.ocss)]]
 
-<span class="co">## get the IDs of the samples in the final solution</span>
+## get the IDs of the samples in the final solution
 cal_smpls &lt;-<span class="st"> </span><span class="kw">as.character</span>(data<span class="op">$</span>ID[calibration.idx])</code></pre>
 <p>Save the IDs of the selected calibration samples into your working directory</p>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="kw">writeLines</span>(<span class="dt">text =</span> cal_smpls, <span class="dt">con =</span> <span class="st">&quot;calibration_samples_ids.txt&quot;</span>, <span class="dt">sep =</span> <span class="st">&quot;</span><span class="ch">\n</span><span class="st">&quot;</span>)</code></pre>

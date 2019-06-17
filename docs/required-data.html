@@ -63,7 +63,7 @@
 <style type="text/css">
 a.sourceLine { display: inline-block; line-height: 1.25; }
 a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
-a.sourceLine:empty { height: 1.2em; }
+a.sourceLine:empty { height: 1.2em; position: absolute; }
 .sourceCode { overflow: visible; }
 code.sourceCode { white-space: pre; position: relative; }
 div.sourceCode { margin: 1em 0; }
@@ -76,11 +76,13 @@ code.sourceCode { white-space: pre-wrap; }
 a.sourceLine { text-indent: -1em; padding-left: 1em; }
 }
 pre.numberSource a.sourceLine
-  { position: relative; left: -4em; }
+  { position: relative; }
+pre.numberSource a.sourceLine:empty
+  { position: absolute; }
 pre.numberSource a.sourceLine::before
-  { content: attr(title);
-    position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; pointer-events: all; display: inline-block;
+  { content: attr(data-line-number);
+    position: absolute; left: -5em; text-align: right; vertical-align: baseline;
+    border: none; pointer-events: all;
     -webkit-touch-callout: none; -webkit-user-select: none;
     -khtml-user-select: none; -moz-user-select: none;
     -ms-user-select: none; user-select: none;
@@ -219,7 +221,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li>spc: A set of 307 variables representing the wavelengths from 502 nm to 2338 nm in steps of 6 nm.</li>
 </ul>
 <p>Further information on this dataset can be found in <a href="https://onlinelibrary.wiley.com/doi/epdf/10.1111/ejss.12752">our paper</a></p>
-<p>We recommend to create a local folder (e.g. “./myworkingdirectory”). If you downloaded the file to this local folder then:</p>
+<p>We recommend to create a local folder (e.g. “./myworkingdirectory”). If you downloaded the file to this local folder then:</p>
 <pre class="sourceCode r"><code class="sourceCode r">workingd &lt;-<span class="st"> &quot;/myworkingdirectory&quot;</span>
 <span class="kw">setwd</span>(workingd)
 data &lt;-<span class="st"> </span><span class="kw">readRDS</span>(<span class="st">&quot;SoilNIRSaoPaulo.rds&quot;</span>)</code></pre>

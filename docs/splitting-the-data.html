@@ -63,7 +63,7 @@
 <style type="text/css">
 a.sourceLine { display: inline-block; line-height: 1.25; }
 a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
-a.sourceLine:empty { height: 1.2em; }
+a.sourceLine:empty { height: 1.2em; position: absolute; }
 .sourceCode { overflow: visible; }
 code.sourceCode { white-space: pre; position: relative; }
 div.sourceCode { margin: 1em 0; }
@@ -76,11 +76,13 @@ code.sourceCode { white-space: pre-wrap; }
 a.sourceLine { text-indent: -1em; padding-left: 1em; }
 }
 pre.numberSource a.sourceLine
-  { position: relative; left: -4em; }
+  { position: relative; }
+pre.numberSource a.sourceLine:empty
+  { position: absolute; }
 pre.numberSource a.sourceLine::before
-  { content: attr(title);
-    position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; pointer-events: all; display: inline-block;
+  { content: attr(data-line-number);
+    position: absolute; left: -5em; text-align: right; vertical-align: baseline;
+    border: none; pointer-events: all;
     -webkit-touch-callout: none; -webkit-user-select: none;
     -khtml-user-select: none; -moz-user-select: none;
     -ms-user-select: none; user-select: none;
@@ -220,30 +222,30 @@ train<span class="op">$</span>ID &lt;-<span class="st"> </span><span class="kw">
 valida<span class="op">$</span>ID &lt;-<span class="st"> </span><span class="kw">factor</span>(valida<span class="op">$</span>ID)
 pred<span class="op">$</span>ID &lt;-<span class="st"> </span><span class="kw">factor</span>(pred<span class="op">$</span>ID)</code></pre>
 <p>Optionally, we can get rid of all the unncessary data (<code>R</code> objects that will not be used from now on):</p>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="co">## necessary objects</span>
+<pre class="sourceCode r"><code class="sourceCode r">## necessary objects
 reqobjects &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;train&quot;</span>, <span class="st">&quot;pred&quot;</span>, <span class="st">&quot;valida&quot;</span>, <span class="st">&quot;cal_smpls&quot;</span>, <span class="st">&quot;o2rm&quot;</span>)
 
-<span class="co">## objects to be removed</span>
+## objects to be removed
 o2rm &lt;-<span class="st"> </span><span class="kw">ls</span>()[<span class="op">!</span><span class="kw">ls</span>() <span class="op">%in%</span><span class="st"> </span>reqobjects]
 
-<span class="co">## remove the objects</span>
+## remove the objects
 <span class="kw">rm</span>(<span class="dt">list =</span> o2rm)</code></pre>
 <p>Alternatively…</p>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="co">## If you have saved the IDs of the calibration samples </span>
-<span class="co">## into your working directory you can:</span>
+<pre class="sourceCode r"><code class="sourceCode r">## If you have saved the IDs of the calibration samples 
+## into your working directory you can:
 cal_smpls &lt;-<span class="st"> </span><span class="kw">readLines</span>(<span class="st">&quot;calibration_samples_ids.txt&quot;</span>)</code></pre>
 <p>and then…</p>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="co">## necessary objects</span>
+<pre class="sourceCode r"><code class="sourceCode r">## necessary objects
 reqobjects &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;cal_smpls&quot;</span>, <span class="st">&quot;o2rm&quot;</span>)
 
-<span class="co">## objects to be removed</span>
+## objects to be removed
 o2rm &lt;-<span class="st"> </span><span class="kw">ls</span>()[<span class="op">!</span><span class="kw">ls</span>() <span class="op">%in%</span><span class="st"> </span>reqobjects]
 
-<span class="co">## read again the data</span>
+## read again the data
 nirfile &lt;-<span class="st"> </span><span class="kw">file</span>(<span class="st">&quot;https://github.com/l-ramirez-lopez/VNIR_spectroscopy_for_robust_soil_mapping/raw/master/SoilNIRSaoPaulo.rds&quot;</span>)
 data &lt;-<span class="st"> </span><span class="kw">readRDS</span>(nirfile)
 
-<span class="co">## extract the validation samples into a new set/object</span>
+## extract the validation samples into a new set/object
 valida &lt;-<span class="st"> </span>data[data<span class="op">$</span>set <span class="op">==</span><span class="st"> &quot;validation&quot;</span>,]
 data &lt;-<span class="st"> </span>data[data<span class="op">$</span>set <span class="op">==</span><span class="st"> &quot;cal_candidate&quot;</span>,]
 
