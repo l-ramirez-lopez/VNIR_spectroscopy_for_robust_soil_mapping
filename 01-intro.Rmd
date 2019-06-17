@@ -24,41 +24,6 @@ Sustainable agriculture practices are often hampered by the prohibitive costs as
 ## Study area
 
 The study area is located in Brazil between the municipalities of Barra Bonita and Mineiros do Tiete (in the state of Sao Paulo).
-```{r include = FALSE}
-library(leaflet)
-library(dplyr)
-library(ggmap)
-require(rgdal)
-```
-
-```{r echo = FALSE}
-shape <- readOGR(dsn = "./maps/poly",
-                 layer = "lim_poly",
-                 verbose = FALSE)
-proj4string(shape) <- CRS("+proj=utm +zone=22 +datum=WGS84 +south")
-shape <- spTransform(shape, CRS("+proj=longlat +datum=WGS84"))
-adm <- leaflet(data = shape)
-popup <- paste0("<strong>Name: </strong>",
-                "adm")
-leaflet() %>%
-  addProviderTiles('Esri.WorldImagery') %>%
-  setView(lat=-22.4097049, lng= -48.4977339, zoom = 14)  %>%
-  addMarkers(lat=-22.4097049, lng= -48.4977339, popup="Maunga Whau") %>%
-  addPolygons(data = getMapData(adm),
-              weight = 8,
-              fill = FALSE,
-              color = "white")
-# library(googleway)
-# 
-# apiKey <- 'your_api_key'
-# mapKey <- 'your_map_key'
-# 
-# newYork <- google_geocode(address = "New York", key = apiKey)
-# 
-# google_map(location = as.numeric(newYork$results$geometry$location), 
-#            key = mapKey)
-```
-
 
 ## In case of comments/questions/issues 
 
