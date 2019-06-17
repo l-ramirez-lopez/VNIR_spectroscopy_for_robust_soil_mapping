@@ -1,0 +1,10 @@
+`r if (knitr:::is_html_output()) '
+# References {-}
+'`
+
+Odeh, I.O., Todd, A.J. & Triantafilis, J. 2003. Spatial prediction of soil particle-size fractions as compositional data. Soil Science, 168, 501–515.
+
+Ramirez-Lopez, L., Wadoux, A.C., Franceschini, M.H.D., Terra, F.S., Marques, K.P.P., Sayão, V.M. and Demattê, J.A.M., 2019. Robust soil mapping at the farm scale with vis–NIR spectroscopy. European Journal of Soil Science.
+
+Viscarra Rossel, R., Brus, D.J., Lobsey, C., Shi, Z. &McLachlan, G. 2016. Baseline estimates of soil organic carbon by proximal sensing: comparing design-based, model-assisted and model-based inference. Geoderma,265, 152–163.
+

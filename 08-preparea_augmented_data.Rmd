@@ -1,0 +1,135 @@
+# Prepare the vis-NIR augmented dataset
+
+------------------------------------------------------------------------
+
+Here we'll create the data that will be used for Spatial modelling. This dataset will contain 
+
+* Nr: The arbitrary sample number.
+* ID: The `factor` indicating the sample IDs.   
+* POINT_X: The X (geographical) coordinate. 
+* POINT_Y: The Y (geographical) coordinate.
+* layer: A `factor` indicating the depth layer at which the sample was collected (A: 0-20 cm and B: 80-100 cm).
+* set: A `factor` indicating whether the sample was used for vis-NIR calibrations (`train`), for vis-NIR predictions (`prediction`) or if it belongs to model's validation (`validation`). The samples labeled as validation are the same samples initially labeled as validation in the original dataset. 
+* Ca: The exchangeable Calcium content in the sample ($mmol_{c}$ $kg^{−1}$, measured by conventional laboratory methods) 
+* Clay: The percentage of clay contnet in the soil sample (measured by conventional laboratory methods). 
+* Silt: The percentage of silt contnet in the soil sample (measured by conventional laboratory methods). 
+* Sand: The percentage of sand contnet in the soil sample (measured by conventional laboratory methods). 
+* alr_Clay: The additive log-ratio transformed clay contnets (measured by conventional laboratory methods).
+* alr_Silt: The additive log-ratio transformed silt contnets (measured by conventional laboratory methods).
+* Ca_spec: This is the vis-NIR augmented exchangeable Ca^2+^ contents.
+* alr_Clay_spec: This is the vis-NIR augmented additive log-ratio transformed clay contnets.  
+* alr_Silt_spec: This is the vis-NIR augmented additive log-ratio transformed silt contnets.  
+
+For the vis-NIR augmented variables (alr_Clay_spc, alr_Silt_spc and Ca_spec) there are three classes of values:
+
+* The values of the samples that are labeled as `train` come from the conventional laboratory methods (e.g. for Ca_spec the values of these samples for this variable are identical to the corresponding values in the variable Ca).
+
+* The values of the samples that are labeled as `prediction` come from the predictions done with the respective vis-NIR model. 
+
+* The values of the samples that are labeled as `validation` are treated as missing (i.e. `NA`s).
+
+```{r, eval = FALSE}
+## samples for the set "prediction"
+vnirpredictions
+
+## samples for the set "train"
+vnirtrain <- train[ ,c("ID","POINT_X","POINT_Y","set", "Ca", "Clay", "Silt", "Sand", "alr_Clay","alr_Silt")]
+vnirtrain$set <- factor("train") 
+vnirtrain$Ca_spec <- vnirtrain$Ca
+vnirtrain$alr_Clay_spec <- vnirtrain$alr_Clay
+vnirtrain$alr_Silt_spec <- vnirtrain$alr_Silt
+
+## samples for the set "validation"
+vnirvalidation <- valida[ ,c("ID","POINT_X","POINT_Y","set", "Ca","Clay", "Silt", "Sand", "alr_Clay","alr_Silt")]
+vnirvalidation$set <- factor(vnirvalidation$set)
+vnirvalidation$Ca_spec <- NA
+vnirvalidation$alr_Clay_spec <- NA
+vnirvalidation$alr_Silt_spec <- NA
+```
+
+Now create a single `data.frame` containing the three data sets...
+```{r, eval = FALSE}
+vniraugmented <- rbind(vnirtrain, 
+                       vnirpredictions,
+                       vnirvalidation)
+
+vniraugmented$layer <- factor(substr(vniraugmented$ID, 1, 1))
+
+## Reorganize the variables
+vniraugmented <- vniraugmented[,c("ID", 
+                                  "POINT_X", 
+                                  "POINT_Y", 
+                                  "layer", 
+                                  "set", 
+                                  "Ca", 
+                                  "Clay", 
+                                  "Silt", 
+                                  "Sand",
+                                  "alr_Clay", 
+                                  "alr_Silt", 
+                                  "Ca_spec", 
+                                  "alr_Clay_spec", 
+                                  "alr_Silt_spec")]
+```
+
+Compute some statistics for the final data set...
+```{r, eval = FALSE}
+## Names of the properties
+props <- c("Ca",
+           "Clay",
+           "Silt",
+           "Sand",
+           "alr_Clay",
+           "alr_Silt",
+           "Ca_spec",
+           "alr_Clay_spec",
+           "alr_Silt_spec")
+
+## Compute the statistics: mean, standard deviation and 
+##  the quantiles ("0%", "25%", "50%", "75%" and"100%")
+statsprops <- aggregate(vniraugmented[, props],
+                        by = list(set = vniraugmented$set,
+                                  layer = vniraugmented$layer),
+                        FUN = function(x){
+                          c(mean = mean(as.matrix(x), na.rm = TRUE),
+                            sd = sd(as.matrix(x), na.rm = TRUE),
+                            quantile(x, na.rm = TRUE))
+                        })
+
+## Reorganize the object containing the results of the statistics
+statsprops <- lapply(props, 
+                     FUN = function(x, object, ids){
+                       object <- cbind(object[,keep], 
+                                       as.data.frame(statsquant[[x]]))
+                       
+                     }, 
+                     object = statsprops,
+                     ids = c("set", "layer"))
+names(statsprops) <- props
+
+statsprops <- do.call("rbind", statsprops)
+statsprops$property <- gsub(".[0-9]", "", rownames(statsprops))
+statsprops[is.na(statsprops)] <- NA
+
+## Reorganize the order of the variables
+statsprops <- statsprops[, c("set", 
+                             "layer",
+                             "property",
+                             "mean",
+                             "sd",
+                             "0%",
+                             "25%",
+                             "50%",
+                             "75%",
+                             "100%")]
+
+statsprops
+```
+
+Optionally, save this data in your working directory
+```{r, eval = FALSE}
+write.table(x = vniraugmented, 
+            file = "vniraugmented.txt", 
+            sep = "\t", 
+            row.names = FALSE)
+```

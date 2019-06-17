@@ -22,7 +22,7 @@ This `rds` file contains a `data.frame` with 910 rows (samples) and the followin
 Further information on this dataset can be found in [our paper](https://onlinelibrary.wiley.com/doi/epdf/10.1111/ejss.12752)
 
 We recommend to create a local folder (e.g. "./myworkingdirectory"). If you downloaded the file to this local folder then:
-```{r, eval = FALSE}
+``` r
 workingd <- "/myworkingdirectory"
 setwd(workingd)
 data <- readRDS("SoilNIRSaoPaulo.rds")

@@ -1,18 +1,23 @@
 ---
 title: "R code for Robust soil mapping at the farm scale with vis-NIR spectroscopy (Ramirez-Lopez _et al._, 2019)"
-author: "Leo Ramirez-Lopez and Alex Wadoux"
+author: 
+   - Leo Ramirez-Lopez (BUCHI Labortechnik AG, Switzerland)
+   - Alex Wadoux (Wageningen University, Netherlands)
 date: "`r Sys.Date()`"
 site: bookdown::bookdown_site
 output: bookdown::html_document2
 always_allow_html: yes
 documentclass: book
 biblio-style: apalike
-link-citations: yes
+link-citations: no
 github-repo: l-ramirez-lopez/VNIR_spectroscopy_for_robust_soil_mapping
 description: "Here you will find all the code necessary to reproduce the methods we used in our paper 'Robust soil mapping at the farm scale with vis-NIR spectroscopy'"
 ---
 
-# Prerequisites
+# Preface {-}
+
+In the spirit of reproducible research, here we share the data and the computational code
+used for carrying out the analyses presented in our paper ["Robust soil mapping at the farm scale with vis-NIR spectroscopy"](https://onlinelibrary.wiley.com/doi/10.1111/ejss.12752) which is by the way open access. Before you go thorugh this code we strongly recoment to read our paper.
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)

@@ -4,11 +4,11 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Section 3 Required data | R code for Robust soil mapping at the farm scale with vis-NIR spectroscopy (Ramirez-Lopez et al., 2019)</title>
+  <title>Section 8 Prepare the vis-NIR augmented dataset | R code for Robust soil mapping at the farm scale with vis-NIR spectroscopy (Ramirez-Lopez et al., 2019)</title>
   <meta name="description" content="Here you will find all the code necessary to reproduce the methods we used in our paper ‘Robust soil mapping at the farm scale with vis-NIR spectroscopy’" />
   <meta name="generator" content="bookdown 0.11 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="Section 3 Required data | R code for Robust soil mapping at the farm scale with vis-NIR spectroscopy (Ramirez-Lopez et al., 2019)" />
+  <meta property="og:title" content="Section 8 Prepare the vis-NIR augmented dataset | R code for Robust soil mapping at the farm scale with vis-NIR spectroscopy (Ramirez-Lopez et al., 2019)" />
   <meta property="og:type" content="book" />
   
   
@@ -16,7 +16,7 @@
   <meta name="github-repo" content="l-ramirez-lopez/VNIR_spectroscopy_for_robust_soil_mapping" />
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Section 3 Required data | R code for Robust soil mapping at the farm scale with vis-NIR spectroscopy (Ramirez-Lopez et al., 2019)" />
+  <meta name="twitter:title" content="Section 8 Prepare the vis-NIR augmented dataset | R code for Robust soil mapping at the farm scale with vis-NIR spectroscopy (Ramirez-Lopez et al., 2019)" />
   
   <meta name="twitter:description" content="Here you will find all the code necessary to reproduce the methods we used in our paper ‘Robust soil mapping at the farm scale with vis-NIR spectroscopy’" />
   
@@ -32,8 +32,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   
-<link rel="prev" href="required-r-packages.html">
-<link rel="next" href="sampling.html">
+<link rel="prev" href="visnir-modelling-and-predictions.html">
+<link rel="next" href="spatial-modeling.html">
 <script src="libs/jquery-2.2.3/jquery.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
 <link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
@@ -199,35 +199,129 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="required-data" class="section level1">
-<h1><span class="header-section-number">Section 3</span> Required data</h1>
-<p>In this section you will find the instructions on how to download and read the soil dataset used in our paper.</p>
+<div id="prepare-the-vis-nir-augmented-dataset" class="section level1">
+<h1><span class="header-section-number">Section 8</span> Prepare the vis-NIR augmented dataset</h1>
 <hr />
-<p>You can download the file <a href="https://github.com/l-ramirez-lopez/VNIR_spectroscopy_for_robust_soil_mapping/raw/master/SoilNIRSaoPaulo.rds">‘SoilNIRSaoPaulo.rds’</a>, alternatively you can visit to the <a href="https://github.com/l-ramirez-lopez/VNIR_spectroscopy_for_robust_soil_mapping">GitHub repository of the paper</a> where the file resides.</p>
-<p>This <code>rds</code> file contains a <code>data.frame</code> with 910 rows (samples) and the following variables:</p>
+<p>Here we’ll create the data that will be used for Spatial modelling. This dataset will contain</p>
 <ul>
-<li>Nr: An arbitrary sample number.</li>
-<li>ID: A <code>factor</code> indicating the sample IDs. The first character is a letter which indicates the depth layer at which the sample was collected (A: 0-20 cm and B: 80-100 cm).<br />
+<li>Nr: The arbitrary sample number.</li>
+<li>ID: The <code>factor</code> indicating the sample IDs.<br />
 </li>
 <li>POINT_X: The X (geographical) coordinate.</li>
 <li>POINT_Y: The Y (geographical) coordinate.</li>
-<li>Sand: The percentage of sand contnet in the soil sample.</li>
-<li>Silt: The percentage of silt contnet in the soil sample.</li>
-<li>Clay: The percentage of clay contnet in the soil sample.</li>
-<li>Ca: The exchangeable Calcium content in the sample (<span class="math inline">\(mmol_{c}\)</span> <span class="math inline">\(kg^{−1}\)</span>).</li>
-<li>set: A <code>factor</code> indicating whether the sample is used for model’s validation or if it can be used to calibrate models.</li>
-<li>spc: A set of 307 variables representing the wavelengths from 502 nm to 2338 nm in steps of 6 nm.</li>
+<li>layer: A <code>factor</code> indicating the depth layer at which the sample was collected (A: 0-20 cm and B: 80-100 cm).</li>
+<li>set: A <code>factor</code> indicating whether the sample was used for vis-NIR calibrations (<code>train</code>), for vis-NIR predictions (<code>prediction</code>) or if it belongs to model’s validation (<code>validation</code>). The samples labeled as validation are the same samples initially labeled as validation in the original dataset.</li>
+<li>Ca: The exchangeable Calcium content in the sample (<span class="math inline">\(mmol_{c}\)</span> <span class="math inline">\(kg^{−1}\)</span>, measured by conventional laboratory methods)</li>
+<li>Clay: The percentage of clay contnet in the soil sample (measured by conventional laboratory methods).</li>
+<li>Silt: The percentage of silt contnet in the soil sample (measured by conventional laboratory methods).</li>
+<li>Sand: The percentage of sand contnet in the soil sample (measured by conventional laboratory methods).</li>
+<li>alr_Clay: The additive log-ratio transformed clay contnets (measured by conventional laboratory methods).</li>
+<li>alr_Silt: The additive log-ratio transformed silt contnets (measured by conventional laboratory methods).</li>
+<li>Ca_spec: This is the vis-NIR augmented exchangeable Ca<sup>2+</sup> contents.</li>
+<li>alr_Clay_spec: This is the vis-NIR augmented additive log-ratio transformed clay contnets.<br />
+</li>
+<li>alr_Silt_spec: This is the vis-NIR augmented additive log-ratio transformed silt contnets.</li>
 </ul>
-<p>Further information on this dataset can be found in <a href="https://onlinelibrary.wiley.com/doi/epdf/10.1111/ejss.12752">our paper</a></p>
-<p>We recommend to create a local folder (e.g. “./myworkingdirectory”). If you downloaded the file to this local folder then:</p>
-<pre class="sourceCode r"><code class="sourceCode r">workingd &lt;-<span class="st"> &quot;/myworkingdirectory&quot;</span>
-<span class="kw">setwd</span>(workingd)
-data &lt;-<span class="st"> </span><span class="kw">readRDS</span>(<span class="st">&quot;SoilNIRSaoPaulo.rds&quot;</span>)</code></pre>
-<p>Alternatively, you can also read the file directly from the <a href="https://github.com/l-ramirez-lopez/VNIR_spectroscopy_for_robust_soil_mapping">GitHub repository of the paper</a>:</p>
-<pre class="sourceCode r"><code class="sourceCode r">nirfile &lt;-<span class="st"> </span><span class="kw">file</span>(<span class="st">&quot;https://github.com/l-ramirez-lopez/VNIR_spectroscopy_for_robust_soil_mapping/raw/master/SoilNIRSaoPaulo.rds&quot;</span>)
-data &lt;-<span class="st"> </span><span class="kw">readRDS</span>(nirfile)
-<span class="kw">names</span>(data)</code></pre>
-<p>In addition you also need a <code>R</code> object of class (<code>SpatialPolygonsDataFrame</code> of the package <code>sp</code>) which contains the polygon of the study area. You can also download the file (polygon.rds) containing this object by clicking <a href="https://github.com/l-ramirez-lopez/VNIR_spectroscopy_for_robust_soil_mapping/raw/master/polygon.rds">here</a>.</p>
+<p>For the vis-NIR augmented variables (alr_Clay_spc, alr_Silt_spc and Ca_spec) there are three classes of values:</p>
+<ul>
+<li><p>The values of the samples that are labeled as <code>train</code> come from the conventional laboratory methods (e.g. for Ca_spec the values of these samples for this variable are identical to the corresponding values in the variable Ca).</p></li>
+<li><p>The values of the samples that are labeled as <code>prediction</code> come from the predictions done with the respective vis-NIR model.</p></li>
+<li><p>The values of the samples that are labeled as <code>validation</code> are treated as missing (i.e. <code>NA</code>s).</p></li>
+</ul>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co">## samples for the set &quot;prediction&quot;</span>
+vnirpredictions
+
+<span class="co">## samples for the set &quot;train&quot;</span>
+vnirtrain &lt;-<span class="st"> </span>train[ ,<span class="kw">c</span>(<span class="st">&quot;ID&quot;</span>,<span class="st">&quot;POINT_X&quot;</span>,<span class="st">&quot;POINT_Y&quot;</span>,<span class="st">&quot;set&quot;</span>, <span class="st">&quot;Ca&quot;</span>, <span class="st">&quot;Clay&quot;</span>, <span class="st">&quot;Silt&quot;</span>, <span class="st">&quot;Sand&quot;</span>, <span class="st">&quot;alr_Clay&quot;</span>,<span class="st">&quot;alr_Silt&quot;</span>)]
+vnirtrain<span class="op">$</span>set &lt;-<span class="st"> </span><span class="kw">factor</span>(<span class="st">&quot;train&quot;</span>) 
+vnirtrain<span class="op">$</span>Ca_spec &lt;-<span class="st"> </span>vnirtrain<span class="op">$</span>Ca
+vnirtrain<span class="op">$</span>alr_Clay_spec &lt;-<span class="st"> </span>vnirtrain<span class="op">$</span>alr_Clay
+vnirtrain<span class="op">$</span>alr_Silt_spec &lt;-<span class="st"> </span>vnirtrain<span class="op">$</span>alr_Silt
+
+<span class="co">## samples for the set &quot;validation&quot;</span>
+vnirvalidation &lt;-<span class="st"> </span>valida[ ,<span class="kw">c</span>(<span class="st">&quot;ID&quot;</span>,<span class="st">&quot;POINT_X&quot;</span>,<span class="st">&quot;POINT_Y&quot;</span>,<span class="st">&quot;set&quot;</span>, <span class="st">&quot;Ca&quot;</span>,<span class="st">&quot;Clay&quot;</span>, <span class="st">&quot;Silt&quot;</span>, <span class="st">&quot;Sand&quot;</span>, <span class="st">&quot;alr_Clay&quot;</span>,<span class="st">&quot;alr_Silt&quot;</span>)]
+vnirvalidation<span class="op">$</span>set &lt;-<span class="st"> </span><span class="kw">factor</span>(vnirvalidation<span class="op">$</span>set)
+vnirvalidation<span class="op">$</span>Ca_spec &lt;-<span class="st"> </span><span class="ot">NA</span>
+vnirvalidation<span class="op">$</span>alr_Clay_spec &lt;-<span class="st"> </span><span class="ot">NA</span>
+vnirvalidation<span class="op">$</span>alr_Silt_spec &lt;-<span class="st"> </span><span class="ot">NA</span></code></pre>
+<p>Now create a single <code>data.frame</code> containing the three data sets…</p>
+<pre class="sourceCode r"><code class="sourceCode r">vniraugmented &lt;-<span class="st"> </span><span class="kw">rbind</span>(vnirtrain, 
+                       vnirpredictions,
+                       vnirvalidation)
+
+vniraugmented<span class="op">$</span>layer &lt;-<span class="st"> </span><span class="kw">factor</span>(<span class="kw">substr</span>(vniraugmented<span class="op">$</span>ID, <span class="dv">1</span>, <span class="dv">1</span>))
+
+<span class="co">## Reorganize the variables</span>
+vniraugmented &lt;-<span class="st"> </span>vniraugmented[,<span class="kw">c</span>(<span class="st">&quot;ID&quot;</span>, 
+                                  <span class="st">&quot;POINT_X&quot;</span>, 
+                                  <span class="st">&quot;POINT_Y&quot;</span>, 
+                                  <span class="st">&quot;layer&quot;</span>, 
+                                  <span class="st">&quot;set&quot;</span>, 
+                                  <span class="st">&quot;Ca&quot;</span>, 
+                                  <span class="st">&quot;Clay&quot;</span>, 
+                                  <span class="st">&quot;Silt&quot;</span>, 
+                                  <span class="st">&quot;Sand&quot;</span>,
+                                  <span class="st">&quot;alr_Clay&quot;</span>, 
+                                  <span class="st">&quot;alr_Silt&quot;</span>, 
+                                  <span class="st">&quot;Ca_spec&quot;</span>, 
+                                  <span class="st">&quot;alr_Clay_spec&quot;</span>, 
+                                  <span class="st">&quot;alr_Silt_spec&quot;</span>)]</code></pre>
+<p>Compute some statistics for the final data set…</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co">## Names of the properties</span>
+props &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;Ca&quot;</span>,
+           <span class="st">&quot;Clay&quot;</span>,
+           <span class="st">&quot;Silt&quot;</span>,
+           <span class="st">&quot;Sand&quot;</span>,
+           <span class="st">&quot;alr_Clay&quot;</span>,
+           <span class="st">&quot;alr_Silt&quot;</span>,
+           <span class="st">&quot;Ca_spec&quot;</span>,
+           <span class="st">&quot;alr_Clay_spec&quot;</span>,
+           <span class="st">&quot;alr_Silt_spec&quot;</span>)
+
+<span class="co">## Compute the statistics: mean, standard deviation and </span>
+<span class="co">##  the quantiles (&quot;0%&quot;, &quot;25%&quot;, &quot;50%&quot;, &quot;75%&quot; and&quot;100%&quot;)</span>
+statsprops &lt;-<span class="st"> </span><span class="kw">aggregate</span>(vniraugmented[, props],
+                        <span class="dt">by =</span> <span class="kw">list</span>(<span class="dt">set =</span> vniraugmented<span class="op">$</span>set,
+                                  <span class="dt">layer =</span> vniraugmented<span class="op">$</span>layer),
+                        <span class="dt">FUN =</span> <span class="cf">function</span>(x){
+                          <span class="kw">c</span>(<span class="dt">mean =</span> <span class="kw">mean</span>(<span class="kw">as.matrix</span>(x), <span class="dt">na.rm =</span> <span class="ot">TRUE</span>),
+                            <span class="dt">sd =</span> <span class="kw">sd</span>(<span class="kw">as.matrix</span>(x), <span class="dt">na.rm =</span> <span class="ot">TRUE</span>),
+                            <span class="kw">quantile</span>(x, <span class="dt">na.rm =</span> <span class="ot">TRUE</span>))
+                        })
+
+<span class="co">## Reorganize the object containing the results of the statistics</span>
+statsprops &lt;-<span class="st"> </span><span class="kw">lapply</span>(props, 
+                     <span class="dt">FUN =</span> <span class="cf">function</span>(x, object, ids){
+                       object &lt;-<span class="st"> </span><span class="kw">cbind</span>(object[,keep], 
+                                       <span class="kw">as.data.frame</span>(statsquant[[x]]))
+                       
+                     }, 
+                     <span class="dt">object =</span> statsprops,
+                     <span class="dt">ids =</span> <span class="kw">c</span>(<span class="st">&quot;set&quot;</span>, <span class="st">&quot;layer&quot;</span>))
+<span class="kw">names</span>(statsprops) &lt;-<span class="st"> </span>props
+
+statsprops &lt;-<span class="st"> </span><span class="kw">do.call</span>(<span class="st">&quot;rbind&quot;</span>, statsprops)
+statsprops<span class="op">$</span>property &lt;-<span class="st"> </span><span class="kw">gsub</span>(<span class="st">&quot;.[0-9]&quot;</span>, <span class="st">&quot;&quot;</span>, <span class="kw">rownames</span>(statsprops))
+statsprops[<span class="kw">is.na</span>(statsprops)] &lt;-<span class="st"> </span><span class="ot">NA</span>
+
+<span class="co">## Reorganize the order of the variables</span>
+statsprops &lt;-<span class="st"> </span>statsprops[, <span class="kw">c</span>(<span class="st">&quot;set&quot;</span>, 
+                             <span class="st">&quot;layer&quot;</span>,
+                             <span class="st">&quot;property&quot;</span>,
+                             <span class="st">&quot;mean&quot;</span>,
+                             <span class="st">&quot;sd&quot;</span>,
+                             <span class="st">&quot;0%&quot;</span>,
+                             <span class="st">&quot;25%&quot;</span>,
+                             <span class="st">&quot;50%&quot;</span>,
+                             <span class="st">&quot;75%&quot;</span>,
+                             <span class="st">&quot;100%&quot;</span>)]
+
+statsprops</code></pre>
+<p>Optionally, save this data in your working directory</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">write.table</span>(<span class="dt">x =</span> vniraugmented, 
+            <span class="dt">file =</span> <span class="st">&quot;vniraugmented.txt&quot;</span>, 
+            <span class="dt">sep =</span> <span class="st">&quot;</span><span class="ch">\t</span><span class="st">&quot;</span>, 
+            <span class="dt">row.names =</span> <span class="ot">FALSE</span>)</code></pre>
 
 </div>
             </section>
@@ -235,8 +329,8 @@ data &lt;-<span class="st"> </span><span class="kw">readRDS</span>(nirfile)
           </div>
         </div>
       </div>
-<a href="required-r-packages.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
-<a href="sampling.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+<a href="visnir-modelling-and-predictions.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="spatial-modeling.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>
@@ -266,7 +360,7 @@ gitbook.start({
 "size": 2
 },
 "edit": {
-"link": "https://github.com/rstudio/bookdown-demo/edit/master/03-requireddata.Rmd",
+"link": "https://github.com/rstudio/bookdown-demo/edit/master/08-preparea_augmented_data.Rmd",
 "text": "Edit"
 },
 "history": {

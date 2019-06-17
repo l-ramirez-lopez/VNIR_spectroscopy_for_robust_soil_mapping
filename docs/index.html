@@ -4,11 +4,11 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Section 3 Required data | R code for Robust soil mapping at the farm scale with vis-NIR spectroscopy (Ramirez-Lopez et al., 2019)</title>
+  <title>R code for Robust soil mapping at the farm scale with vis-NIR spectroscopy (Ramirez-Lopez et al., 2019)</title>
   <meta name="description" content="Here you will find all the code necessary to reproduce the methods we used in our paper ‘Robust soil mapping at the farm scale with vis-NIR spectroscopy’" />
   <meta name="generator" content="bookdown 0.11 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="Section 3 Required data | R code for Robust soil mapping at the farm scale with vis-NIR spectroscopy (Ramirez-Lopez et al., 2019)" />
+  <meta property="og:title" content="R code for Robust soil mapping at the farm scale with vis-NIR spectroscopy (Ramirez-Lopez et al., 2019)" />
   <meta property="og:type" content="book" />
   
   
@@ -16,7 +16,7 @@
   <meta name="github-repo" content="l-ramirez-lopez/VNIR_spectroscopy_for_robust_soil_mapping" />
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Section 3 Required data | R code for Robust soil mapping at the farm scale with vis-NIR spectroscopy (Ramirez-Lopez et al., 2019)" />
+  <meta name="twitter:title" content="R code for Robust soil mapping at the farm scale with vis-NIR spectroscopy (Ramirez-Lopez et al., 2019)" />
   
   <meta name="twitter:description" content="Here you will find all the code necessary to reproduce the methods we used in our paper ‘Robust soil mapping at the farm scale with vis-NIR spectroscopy’" />
   
@@ -32,8 +32,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   
-<link rel="prev" href="required-r-packages.html">
-<link rel="next" href="sampling.html">
+
+<link rel="next" href="intro.html">
 <script src="libs/jquery-2.2.3/jquery.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
 <link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
@@ -199,35 +199,16 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="required-data" class="section level1">
-<h1><span class="header-section-number">Section 3</span> Required data</h1>
-<p>In this section you will find the instructions on how to download and read the soil dataset used in our paper.</p>
-<hr />
-<p>You can download the file <a href="https://github.com/l-ramirez-lopez/VNIR_spectroscopy_for_robust_soil_mapping/raw/master/SoilNIRSaoPaulo.rds">‘SoilNIRSaoPaulo.rds’</a>, alternatively you can visit to the <a href="https://github.com/l-ramirez-lopez/VNIR_spectroscopy_for_robust_soil_mapping">GitHub repository of the paper</a> where the file resides.</p>
-<p>This <code>rds</code> file contains a <code>data.frame</code> with 910 rows (samples) and the following variables:</p>
-<ul>
-<li>Nr: An arbitrary sample number.</li>
-<li>ID: A <code>factor</code> indicating the sample IDs. The first character is a letter which indicates the depth layer at which the sample was collected (A: 0-20 cm and B: 80-100 cm).<br />
-</li>
-<li>POINT_X: The X (geographical) coordinate.</li>
-<li>POINT_Y: The Y (geographical) coordinate.</li>
-<li>Sand: The percentage of sand contnet in the soil sample.</li>
-<li>Silt: The percentage of silt contnet in the soil sample.</li>
-<li>Clay: The percentage of clay contnet in the soil sample.</li>
-<li>Ca: The exchangeable Calcium content in the sample (<span class="math inline">\(mmol_{c}\)</span> <span class="math inline">\(kg^{−1}\)</span>).</li>
-<li>set: A <code>factor</code> indicating whether the sample is used for model’s validation or if it can be used to calibrate models.</li>
-<li>spc: A set of 307 variables representing the wavelengths from 502 nm to 2338 nm in steps of 6 nm.</li>
-</ul>
-<p>Further information on this dataset can be found in <a href="https://onlinelibrary.wiley.com/doi/epdf/10.1111/ejss.12752">our paper</a></p>
-<p>We recommend to create a local folder (e.g. “./myworkingdirectory”). If you downloaded the file to this local folder then:</p>
-<pre class="sourceCode r"><code class="sourceCode r">workingd &lt;-<span class="st"> &quot;/myworkingdirectory&quot;</span>
-<span class="kw">setwd</span>(workingd)
-data &lt;-<span class="st"> </span><span class="kw">readRDS</span>(<span class="st">&quot;SoilNIRSaoPaulo.rds&quot;</span>)</code></pre>
-<p>Alternatively, you can also read the file directly from the <a href="https://github.com/l-ramirez-lopez/VNIR_spectroscopy_for_robust_soil_mapping">GitHub repository of the paper</a>:</p>
-<pre class="sourceCode r"><code class="sourceCode r">nirfile &lt;-<span class="st"> </span><span class="kw">file</span>(<span class="st">&quot;https://github.com/l-ramirez-lopez/VNIR_spectroscopy_for_robust_soil_mapping/raw/master/SoilNIRSaoPaulo.rds&quot;</span>)
-data &lt;-<span class="st"> </span><span class="kw">readRDS</span>(nirfile)
-<span class="kw">names</span>(data)</code></pre>
-<p>In addition you also need a <code>R</code> object of class (<code>SpatialPolygonsDataFrame</code> of the package <code>sp</code>) which contains the polygon of the study area. You can also download the file (polygon.rds) containing this object by clicking <a href="https://github.com/l-ramirez-lopez/VNIR_spectroscopy_for_robust_soil_mapping/raw/master/polygon.rds">here</a>.</p>
+<div id="header">
+<h1 class="title">R code for Robust soil mapping at the farm scale with vis-NIR spectroscopy (Ramirez-Lopez <em>et al.</em>, 2019)</h1>
+<p class="author"><em>Leo Ramirez-Lopez (BUCHI Labortechnik AG, Switzerland)</em></p>
+<p class="author"><em>Alex Wadoux (Wageningen University, Netherlands)</em></p>
+<p class="date"><em>2019-06-17</em></p>
+</div>
+<div id="preface" class="section level1 unnumbered">
+<h1>Preface</h1>
+<p>In the spirit of reproducible research, here we share the data and the computational code
+used for carrying out the analyses presented in our paper <a href="https://onlinelibrary.wiley.com/doi/10.1111/ejss.12752">“Robust soil mapping at the farm scale with vis-NIR spectroscopy”</a> which is by the way open access. Before you go thorugh this code we strongly recoment to read our paper.</p>
 
 </div>
             </section>
@@ -235,8 +216,8 @@ data &lt;-<span class="st"> </span><span class="kw">readRDS</span>(nirfile)
           </div>
         </div>
       </div>
-<a href="required-r-packages.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
-<a href="sampling.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+
+<a href="intro.html" class="navigation navigation-next navigation-unique" aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>
@@ -266,7 +247,7 @@ gitbook.start({
 "size": 2
 },
 "edit": {
-"link": "https://github.com/rstudio/bookdown-demo/edit/master/03-requireddata.Rmd",
+"link": "https://github.com/rstudio/bookdown-demo/edit/master/index.Rmd",
 "text": "Edit"
 },
 "history": {

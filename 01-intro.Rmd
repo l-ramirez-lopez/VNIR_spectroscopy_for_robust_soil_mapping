@@ -1,15 +1,49 @@
 # Introduction {#intro}
 
-In the spirit of reproducible research, here we share the data and the computational code
-used for carrying out the analyses presented in our paper ["Robust soil mapping at the farm scale with vis-NIR spectroscopy"](https://onlinelibrary.wiley.com/doi/10.1111/ejss.12752) which is by the way open access. 
+Here you will find some basic informatzion about the paper and the `R` code opresented here.
 
-## paper summary
+## Paper summary
 
 Sustainable agriculture practices are often hampered by the prohibitive costs associated with the generation of fine-resolution soil maps. Recently, several papers have been published highlighting how visible and near infrared(vis-NIR) reflectance spectroscopy may offer an alternative to address this problem by increasing the density of soil sampling and by reducing the number of conventional laboratory analyses needed. However, for farm-scale soil mapping, previous studies rarely focused on sample optimization for the calibration of vis-NIR models or on robust modelling of the spatial variation of soil properties predicted by vis-NIR spectroscopy. In the present study, we used soil vis-NIR spectroscopy models optimized in terms of both number of calibration samples and accuracy for high-resolution robust farm-scale soil mapping and addressed some of the most common pitfalls identified in previous research. We collected 910 samples from 458 locations at two depths (A, 0-0.20 m; B, 0.80-1.0 m) in the state of Sao Paulo, Brazil. All soil samples were analysed by conventional methods and scanned in the vis-NIR spectral range. With the vis-NIR spectra only, we inferred statistically the optimal set size and the best samples with which to calibrate vis-NIR models. The calibrated vis-NIR models were validated and used to predict soil properties for the rest of the samples. The prediction error of the spectroscopic model was propagated through the spatial analysis, in which robust block kriging was used to predict particle-size fractions and exchangeable calcium content for each depth. The results indicated that statistical selection of the calibration samples based on vis-NIR spectra considerably decreased the need for conventional chemical analysis for a given level of mapping accuracy.
 
 ## Study area
 
 The study area is located in Brazil between the municipalities of Barra Bonita and Mineiros do Tiete (in the state of Sao Paulo).
+```{r include = FALSE}
+library(leaflet)
+library(dplyr)
+library(ggmap)
+require(rgdal)
+```
+
+```{r echo = FALSE}
+shape <- readOGR(dsn = "./maps/poly",
+                 layer = "lim_poly",
+                 verbose = FALSE)
+proj4string(shape) <- CRS("+proj=utm +zone=22 +datum=WGS84 +south")
+shape <- spTransform(shape, CRS("+proj=longlat +datum=WGS84"))
+adm <- leaflet(data = shape)
+popup <- paste0("<strong>Name: </strong>",
+                "adm")
+leaflet() %>%
+  addProviderTiles('Esri.WorldImagery') %>%
+  setView(lat=-22.4097049, lng= -48.4977339, zoom = 14)  %>%
+  addMarkers(lat=-22.4097049, lng= -48.4977339, popup="Maunga Whau") %>%
+  addPolygons(data = getMapData(adm),
+              weight = 8,
+              fill = FALSE,
+              color = "white")
+# library(googleway)
+# 
+# apiKey <- 'your_api_key'
+# mapKey <- 'your_map_key'
+# 
+# newYork <- google_geocode(address = "New York", key = apiKey)
+# 
+# google_map(location = as.numeric(newYork$results$geometry$location), 
+#            key = mapKey)
+```
+
 
 ## In case of comments/questions/issues 
 

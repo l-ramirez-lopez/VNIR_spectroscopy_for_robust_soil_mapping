@@ -1,6 +1,6 @@
-book_filename: "R_code_for_Robust_soil_mapping_at_the_farm_scale_with_vis_NIR_spectroscopy"
+book_filename: "soilmappingwithvnir"
 language:
   ui:
-    chapter_name: "Chapter "
+    chapter_name: "Section "
 delete_merged_file: true
-output_dir: "docs" 
+output_dir: "docs"
