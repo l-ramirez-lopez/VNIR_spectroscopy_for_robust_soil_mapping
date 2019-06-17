@@ -1,0 +1,1113 @@
+# Spatial modeling
+
+------------------------------------------------------------------------
+
+In case you have previosly saved both, the vis-NIR augmented data set and the table of the variance of the residuals into your working directory, and you do not have these data in your `R` enviroment you can execute the code below:
+```{r, eval = FALSE}
+## vniraugmented.txt is spuppposed to be saved in your working directory
+vniraugmented <- read.table(file = "vniraugmented.txt", 
+                            header = TRUE, 
+                            sep = "\t")
+```
+
+If you have saved the table of the variance of the residuals into your working directory you can execute the code below:
+```{r, eval = FALSE}
+## vnir_residual_variances.txt is spuppposed to be saved in your working directory
+residualvariances <- read.table(file = "vnir_residual_variances.txt", 
+                                header = TRUE, 
+                                sep = "\t")
+```
+
+Alternatively, you can clean your `R` enviroment and leave only the data that will be used for the spatial analyses:
+```{r, eval = FALSE}
+## necessary objects
+reqobjects2 <- c("vniraugmented", "residualvariances")
+
+## objects to be removed
+o2rm2 <- ls()[!ls() %in% reqobjects2]
+
+## remove the objects
+rm(list = o2rm2)
+```
+
+Split the data and organize it by layers and spatial fit and validation sets
+```{r, eval = FALSE}
+vniraugmented <- as_tibble(vniraugmented)
+
+## split the data sets by layer and by spatial fit and spatial validation
+fitlayera <- vniraugmented %>% filter(layer == "A", set != "validation")
+fitlayerb <- vniraugmented %>% filter(layer == "B", set != "validation")
+
+vallayera <- vniraugmented %>% filter(layer == "A", set == "validation")
+vallayerb <- vniraugmented %>% filter(layer == "B", set == "validation")
+
+plot(vallayera$POINT_X, vallayera$POINT_Y,
+     xlab = "X",
+     ylab = "Y")
+points(fitlayera$POINT_X, fitlayera$POINT_Y, 
+       col = "red", 
+       cex = 1.5)
+```
+
+## Robust fitting of the spatial models
+Specify some basic aspects/parameters required for fitting the spatial models...
+```{r, eval = FALSE}
+## Define a lag distance for the estimation of the variagram
+lagdist <- seq(0, 1500, by = 100)
+
+## Choose the variogram model
+varmodel <- "RMexp"
+
+## Define what parameters need to be adjusted to fit the geo model
+fitparam <- default.fit.param(scale = FALSE, alpha = TRUE, variance = FALSE)
+
+## A tuning constant for the robust REML algorithm 
+## for the spatial models (see tuniing.psi parameter 
+## of the  georob function)
+tpsi <- 2000
+
+## Control some aspects of the spatial predictions
+gcntrl <- control.predict.georob(extended.output = TRUE, 
+                                 full.covmat = TRUE)
+```
+
+Define the tables where the fitted variogram parameters will be stored
+```{r, eval = FALSE}
+## The variables for which a spatial model will be fitted
+gprops <- c("Ca", 
+            "alr_Clay", 
+            "alr_Silt", 
+            "Ca_spec",
+            "alr_Clay_spec", 
+            "alr_Silt_spec")
+
+## names of the variogram parameters
+varparamames <- c("variance", "snugget", "nugget", "scale")
+
+## Create the table
+variogtablea <- data.frame(properties = gprops,
+                           data = rep(c("Laboratory", "vis-NIR augmented"), 
+                                      each = length(gprops) / 2),
+                           variance = NA,
+                           snugget = NA,
+                           nugget = NA,
+                           scale = NA)
+variogtableb <- variogtablea
+```
+
+### Laboratory-based data
+
+Here we fit the spatial models of the soil properties whose values comes from conventional laboratory analyes only...
+
+#### Layer A
+Exchangeable Ca^2+^...
+```{r, eval = FALSE}
+## Check the sample variogram
+vario_Ca_lab_a <- sample.variogram(object = fitlayera$Ca,
+                                   locations = fitlayera[,c("POINT_X", "POINT_Y")], 
+                                   lag.dist.def = lagdist, 
+                                   estimator = "matheron")
+## Plot the sample variogram
+plot(x = vario_Ca_lab_a$lag.dist, 
+     y = vario_Ca_lab_a$gamma, 
+     ylim = c(0, max(vario_Ca_lab_a$gamma)),
+     xlab = "lag distance",
+     ylab = "gamma",
+     pch = 16,
+     col = "red",
+     main = "Ca, laboratory - Layer A")
+grid()
+
+## Check the plot above to select some starting values of the 
+## variogram parameters
+startp_Ca_lab_a <- c(variance = 135, 
+                     nugget = 10, 
+                     scale = 920)
+## Fit 
+Ca_lab_a <- georob(Ca ~ 1, 
+                   data = fitlayera, 
+                   locations = ~ POINT_X + POINT_Y, 
+                   variogram.model = varmodel,
+                   param = startp_Ca_lab_a,
+                   fit.param = fitparam,
+                   tuning.psi = tpsi)
+summary(Ca_lab_a)
+
+## Store the variogram parameters
+variogtablea[variogtablea$properties == "Ca", varparamames] <- Ca_lab_a$variogram.object[[1]]$param[varparamames]
+```
+
+$alr(clay)$
+```{r, eval = FALSE}
+## Check the sample variogram
+vario_alr_Clay_lab_a <- sample.variogram(object = fitlayera$alr_Clay,
+                                         locations = fitlayera[,c("POINT_X", "POINT_Y")], 
+                                         lag.dist.def = lagdist, 
+                                         estimator = "matheron")
+## Plot the sample variogram
+plot(x = vario_alr_Clay_lab_a$lag.dist, 
+     y = vario_alr_Clay_lab_a$gamma, 
+     ylim = c(0, max(vario_alr_Clay_lab_a$gamma)),
+     xlab = "lag distance",
+     ylab = "gamma",
+     pch = 16,
+     col = "red",
+     main = "alr(clay) laboratory - Layer A")
+grid()
+
+## Check the plot above to select some starting values of the 
+## variogram parameters
+startp_alr_Clay_lab_a <- c(variance = 0.8, 
+                           nugget = 0.3, 
+                           scale = 1220)
+
+## Fit 
+alr_Clay_lab_a <- georob(alr_Clay ~ 1, 
+                         data = fitlayera, 
+                         locations = ~ POINT_X + POINT_Y, 
+                         variogram.model = varmodel,
+                         param = startp_alr_Clay_lab_a,
+                         fit.param = fitparam,
+                         tuning.psi = tpsi)
+summary(alr_Clay_lab_a)
+## Store the variogram parameters
+variogtablea[variogtablea$properties == "alr_Clay", varparamames] <- alr_Clay_lab_a$variogram.object[[1]]$param[varparamames]
+```
+
+$alr(silt)$
+```{r, eval = FALSE}
+## Check the sample variogram
+vario_alr_Silt_lab_a <- sample.variogram(object = fitlayera$alr_Silt,
+                                         locations = fitlayera[,c("POINT_X", "POINT_Y")], 
+                                         lag.dist.def = lagdist, 
+                                         estimator = "matheron")
+## Plot the sample variogram
+plot(x = vario_alr_Silt_lab_a$lag.dist, 
+     y = vario_alr_Silt_lab_a$gamma, 
+     ylim = c(0, max(vario_alr_Silt_lab_a$gamma)),
+     xlab = "lag distance",
+     ylab = "gamma",
+     pch = 16,
+     col = "red",
+     main = "alr(silt) laboratory - Layer A")
+grid()
+
+## Check the plot above to select some starting values of the 
+## variogram parameters
+startp_alr_Silt_lab_a <- c(variance = 1.31, 
+                           nugget = 0.3, 
+                           scale = 812)
+
+## Fit 
+alr_Silt_lab_a <- georob(alr_Silt ~ 1, 
+                         data = fitlayera, 
+                         locations = ~ POINT_X + POINT_Y, 
+                         variogram.model = varmodel,
+                         param = startp_alr_Silt_lab_a,
+                         fit.param = fitparam,
+                         tuning.psi = tpsi)
+summary(alr_Silt_lab_a)
+## Store the variogram parameters
+variogtablea[variogtablea$properties == "alr_Silt", varparamames] <- alr_Silt_lab_a$variogram.object[[1]]$param[varparamames]
+```
+
+
+#### Layer B
+
+Exchangeable Ca^2+^...
+```{r, eval = FALSE}
+## Check the sample variogram
+vario_Ca_lab_b <- sample.variogram(object = fitlayerb$Ca,
+                                   locations = fitlayerb[,c("POINT_X", "POINT_Y")], 
+                                   lag.dist.def = lagdist, 
+                                   estimator = "matheron")
+## Plot the sample variogram
+plot(x = vario_Ca_lab_b$lag.dist, 
+     y = vario_Ca_lab_b$gamma, 
+     ylim = c(0, max(vario_Ca_lab_b$gamma)),
+     xlab = "lag distance",
+     ylab = "gamma",
+     pch = 16,
+     col = "red",
+     main = "Ca, laboratory - Layer B")
+grid()
+
+## Check the plot above to select some starting values of the 
+## variogram parameters
+startp_Ca_lab_b <- c(variance = 127, 
+                     nugget = 0.1, 
+                     scale = 850)
+## Fit 
+Ca_lab_b <- georob(Ca ~ 1, 
+                   data = fitlayerb, 
+                   locations = ~ POINT_X + POINT_Y, 
+                   variogram.model = varmodel,
+                   param = startp_Ca_lab_b,
+                   fit.param = fitparam,
+                   tuning.psi = tpsi)
+summary(Ca_lab_b)
+## Store the variogram parameters
+variogtableb[variogtableb$properties == "Ca", varparamames] <- Ca_lab_b$variogram.object[[1]]$param[varparamames]
+```
+
+$alr(clay)$
+```{r, eval = FALSE}
+## Check the sample variogram
+vario_alr_Clay_lab_b <- sample.variogram(object = fitlayerb$alr_Clay,
+                                         locations = fitlayerb[,c("POINT_X", "POINT_Y")], 
+                                         lag.dist.def = lagdist, 
+                                         estimator = "matheron")
+## Plot the sample variogram
+plot(x = vario_alr_Clay_lab_b$lag.dist, 
+     y = vario_alr_Clay_lab_b$gamma, 
+     ylim = c(0, max(vario_alr_Clay_lab_b$gamma)),
+     xlab = "lag distance",
+     ylab = "gamma",
+     pch = 16,
+     col = "red",
+     main = "alr(clay) laboratory - Layer B")
+grid()
+
+## Check the plot above to select some starting values of the 
+## variogram parameters
+startp_alr_Clay_lab_b <- c(variance = 1.17, 
+                           nugget = 0.1,
+                           scale = 973, 
+                           alpha = 0.69)
+## Fit 
+alr_Clay_lab_b <- georob(alr_Clay ~ 1, 
+                         data = fitlayerb, 
+                         locations = ~ POINT_X + POINT_Y, 
+                         variogram.model = varmodel,
+                         param = startp_alr_Clay_lab_b,
+                         fit.param = fitparam,
+                         tuning.psi = tpsi)
+summary(alr_Clay_lab_b)
+## Store the variogram parameters
+variogtableb[variogtableb$properties == "alr_Clay", varparamames] <- alr_Clay_lab_b$variogram.object[[1]]$param[varparamames]
+```
+
+$alr(silt)$
+```{r, eval = FALSE}
+## Check the sample variogram
+vario_alr_Silt_lab_b <- sample.variogram(object = fitlayerb$alr_Silt,
+                                         locations = fitlayerb[,c("POINT_X", "POINT_Y")], 
+                                         lag.dist.def = lagdist, 
+                                         estimator = "matheron")
+## Plot the sample variogram
+plot(x = vario_alr_Silt_lab_b$lag.dist, 
+     y = vario_alr_Silt_lab_b$gamma, 
+     ylim = c(0, max(vario_alr_Silt_lab_b$gamma)),
+     xlab = "lag distance",
+     ylab = "gamma",
+     pch = 16,
+     col = "red",
+     main = "alr(silt) laboratory - Layer B")
+grid()
+
+## Check the plot above to select some starting values of the 
+## variogram parameters
+startp_alr_Silt_lab_b <-  c(variance = 1.1, 
+                            nugget = 0.2, 
+                            scale = 423)
+
+## Fit 
+alr_Silt_lab_b <- georob(alr_Silt ~ 1, 
+                         data = fitlayerb, 
+                         locations = ~ POINT_X + POINT_Y, 
+                         variogram.model = varmodel,
+                         param = startp_alr_Silt_lab_b,
+                         fit.param = fitparam,
+                         tuning.psi = tpsi)
+summary(alr_Silt_lab_b)
+## Store the variogram parameters
+variogtableb[variogtableb$properties == "alr_Silt", varparamames] <- alr_Silt_lab_b$variogram.object[[1]]$param[varparamames]
+```
+
+### Augmented vis-NIR data
+Here we fit the spatial models of the soil properties whose values come from the vis-NIR augmented data...
+
+#### Layer A
+
+Exchangeable Ca^2+^ (vis-NIR augmented) ...
+```{r, eval = FALSE}
+# Check the sample variogram
+vario_Ca_spec_a <- sample.variogram(object = fitlayera$Ca_spec,
+                                    locations = fitlayera[,c("POINT_X", "POINT_Y")], 
+                                    lag.dist.def = lagdist, 
+                                    estimator = "matheron")
+## Plot the sample variogram
+plot(x = vario_Ca_spec_a$lag.dist, 
+     y = vario_Ca_spec_a$gamma, 
+     ylim = c(0, max(vario_Ca_spec_a$gamma)),
+     xlab = "lag distance",
+     ylab = "gamma",
+     pch = 16,
+     col = "red",
+     main = "Ca, vis-NIR augmented - Layer A")
+grid()
+
+## Check the plot above to select some starting values of the 
+## variogram parameters
+startp_Ca_spec_a <- c(variance = 112, 
+                      nugget = 1, 
+                      scale = 1023)
+## Fit 
+Ca_spec_a <- georob(Ca ~ 1, 
+                    data = fitlayera, 
+                    locations = ~ POINT_X + POINT_Y, 
+                    variogram.model = varmodel,
+                    param = startp_Ca_spec_a,
+                    fit.param = fitparam,
+                    tuning.psi = tpsi)
+summary(Ca_spec_a)
+## Store the variogram parameters
+variogtablea[variogtablea$properties == "Ca_spec", varparamames] <- Ca_spec_a$variogram.object[[1]]$param[varparamames]
+```
+
+$alr(clay)$ (vis-NIR augmented)
+```{r, eval = FALSE}
+## Check the sample variogram
+vario_alr_Clay_spec_a <- sample.variogram(object = fitlayera$alr_Clay_spec,
+                                          locations = fitlayera[,c("POINT_X", "POINT_Y")], 
+                                          lag.dist.def = lagdist, 
+                                          estimator = "matheron")
+## Plot the sample variogram
+plot(x = vario_alr_Clay_spec_a$lag.dist, 
+     y = vario_alr_Clay_spec_a$gamma, 
+     ylim = c(0, max(vario_alr_Clay_spec_a$gamma)),
+     xlab = "lag distance",
+     ylab = "gamma",
+     pch = 16,
+     col = "red",
+     main = "alr(clay) vis-NIR augmented - Layer A")
+grid()
+
+## Check the plot above to select some starting values of the 
+## variogram parameters
+startp_alr_Clay_spec_a <- c(variance = 1.134,
+                            nugget = 0.1,
+                            scale = 955)
+
+## Fit 
+alr_Clay_spec_a <- georob(alr_Clay_spec ~ 1, 
+                          data = fitlayera, 
+                          locations = ~ POINT_X + POINT_Y, 
+                          variogram.model = varmodel,
+                          param = startp_alr_Clay_spec_a,
+                          fit.param = fitparam,
+                          tuning.psi = tpsi)
+summary(alr_Clay_spec_a)
+## Store the variogram parameters
+variogtablea[variogtablea$properties == "alr_Clay_spec", varparamames] <- alr_Clay_spec_a$variogram.object[[1]]$param[varparamames]
+```
+
+$alr(silt)$ (vis-NIR augmented) 
+```{r, eval = FALSE}
+## Check the sample variogram
+vario_alr_Silt_spec_a <- sample.variogram(object = fitlayera$alr_Silt_spec,
+                                          locations = fitlayera[,c("POINT_X", "POINT_Y")], 
+                                          lag.dist.def = lagdist, 
+                                          estimator = "matheron")
+## Plot the sample variogram
+plot(x = vario_alr_Silt_spec_a$lag.dist, 
+     y = vario_alr_Silt_spec_a$gamma, 
+     ylim = c(0, max(vario_alr_Silt_spec_a$gamma)),
+     xlab = "lag distance",
+     ylab = "gamma",
+     pch = 16,
+     col = "red",
+     main = "alr(silt) vis-NIR augmented - Layer A")
+grid()
+
+## Check the plot above to select some starting values of the 
+## variogram parameters
+startp_alr_Silt_spec_a <- c(variance = 0.845, 
+                            nugget = 0.1, 
+                            scale = 1282)
+
+## Fit 
+alr_Silt_spec_a <- georob(alr_Silt_spec ~ 1, 
+                          data = fitlayera, 
+                          locations = ~ POINT_X + POINT_Y, 
+                          variogram.model = varmodel,
+                          param = startp_alr_Silt_spec_a,
+                          fit.param = fitparam,
+                          tuning.psi = tpsi)
+summary(alr_Silt_spec_a)
+## Store the variogram parameters
+variogtablea[variogtablea$properties == "alr_Silt_spec", varparamames] <- alr_Silt_spec_a$variogram.object[[1]]$param[varparamames]
+```
+
+#### Layer B
+Exchangeable Ca^2+^ (vis-NIR augmented) ...
+```{r, eval = FALSE}
+## Check the sample variogram
+vario_Ca_spec_b <- sample.variogram(object = fitlayerb$Ca_spec,
+                                    locations = fitlayerb[,c("POINT_X", "POINT_Y")], 
+                                    lag.dist.def = lagdist, 
+                                    estimator = "matheron")
+## Plot the sample variogram
+plot(x = vario_Ca_spec_b$lag.dist, 
+     y = vario_Ca_spec_b$gamma, 
+     ylim = c(0, max(vario_Ca_spec_b$gamma)),
+     xlab = "lag distance",
+     ylab = "gamma",
+     pch = 16,
+     col = "red",
+     main = "Ca, vis-NIR augmented - Layer B")
+grid()
+
+## Check the plot above to select some starting values of the 
+## variogram parameters
+startp_Ca_spec_b <- c(variance = 142, 
+                      nugget = 0.1, 
+                      scale = 1025)
+## Fit 
+Ca_spec_b <- georob(Ca ~ 1, 
+                    data = fitlayerb, 
+                    locations = ~ POINT_X + POINT_Y, 
+                    variogram.model = varmodel,
+                    param = startp_Ca_spec_b,
+                    fit.param = fitparam,
+                    tuning.psi = tpsi)
+summary(Ca_spec_b)
+## Store the variogram parameters
+variogtableb[variogtableb$properties == "Ca_spec", varparamames] <- Ca_spec_b$variogram.object[[1]]$param[varparamames]
+```
+
+$alr(clay)$ (vis-NIR augmented)
+```{r, eval = FALSE}
+## Check the sample variogram
+vario_alr_Clay_spec_b <- sample.variogram(object = fitlayerb$alr_Clay_spec,
+                                          locations = fitlayerb[,c("POINT_X", "POINT_Y")], 
+                                          lag.dist.def = lagdist, 
+                                          estimator = "matheron")
+## Plot the sample variogram
+plot(x = vario_alr_Clay_spec_b$lag.dist, 
+     y = vario_alr_Clay_spec_b$gamma, 
+     ylim = c(0, max(vario_alr_Clay_spec_b$gamma)),
+     xlab = "lag distance",
+     ylab = "gamma",
+     pch = 16,
+     col = "red",
+     main = "alr(clay) vis-NIR augmented - Layer B")
+grid()
+
+## Check the plot above to select some starting values of the 
+## variogram parameters
+startp_alr_Clay_spec_b <- c(variance = 1.21, 
+                            nugget = 0.1, 
+                            scale = 1000, 
+                            alpha = 0.68)
+## Fit 
+alr_Clay_spec_b <- georob(alr_Clay_spec ~ 1, 
+                          data = fitlayerb, 
+                          locations = ~ POINT_X + POINT_Y, 
+                          variogram.model = varmodel,
+                          param = startp_alr_Clay_spec_b,
+                          fit.param = fitparam,
+                          tuning.psi = tpsi)
+summary(alr_Clay_spec_b)
+## Store the variogram parameters
+variogtableb[variogtableb$properties == "alr_Clay_spec", varparamames] <- alr_Clay_spec_b$variogram.object[[1]]$param[varparamames]
+```
+
+$alr(silt)$ (vis-NIR augmented) 
+```{r, eval = FALSE}
+## Check the sample variogram
+vario_alr_Silt_spec_b <- sample.variogram(object = fitlayerb$alr_Silt_spec,
+                                          locations = fitlayerb[,c("POINT_X", "POINT_Y")], 
+                                          lag.dist.def = lagdist, 
+                                          estimator = "matheron")
+## Plot the sample variogram
+plot(x = vario_alr_Silt_spec_b$lag.dist, 
+     y = vario_alr_Silt_spec_b$gamma, 
+     ylim = c(0, max(vario_alr_Silt_spec_b$gamma)),
+     xlab = "lag distance",
+     ylab = "gamma",
+     pch = 16,
+     col = "red",
+     main = "alr(silt) vis-NIR augmented - Layer B")
+grid()
+
+## Check the plot above to select some starting values of the 
+## variogram parameters
+startp_alr_Silt_spec_b <- c(variance = 1.43, 
+                            nugget = 0.1, 
+                            scale = 850,
+                            alpha = 0.63)
+## Fit 
+alr_Silt_spec_b <- georob(alr_Silt_spec ~ 1, 
+                          data = fitlayerb, 
+                          locations = ~ POINT_X + POINT_Y, 
+                          variogram.model = varmodel,
+                          param = startp_alr_Silt_spec_b,
+                          fit.param = fitparam,
+                          tuning.psi = tpsi)
+summary(alr_Silt_spec_b)
+## Store the variogram parameters
+variogtableb[variogtableb$properties == "alr_Silt_spec", varparamames] <- alr_Silt_spec_b$variogram.object[[1]]$param[varparamames]
+```
+
+
+## Accounting for vis-NIR model errors in the spatial models
+Our vis-NIR models (used to create the vis-NIR augmented data) have an error which we estimated in previous sections and which is stored in the `residualvariances` object. The uncertainty of these models was propagated through spatial predictions in order to obtain more realistic performance results of the spatial predictions. We followed the approach given in Viscarra Rossel et al. (2016b) where the variance of the residuals of the vis-NIR predictions at each layer is used for propagating the vis-NIR erros (see section _Spectroscopicmodel error_ in our paper). 
+For the vis-NIR augmented data we assume that the uncertainty of the whole set is given by the variances of the predictions. However, this dataset contains both, laboratory data (aprox. 26%) and vis-NIR predicted data (aprox. 74%), therefore the variance we assume here is expected to be larger than the actual one in the augmented data. You can try to account for this. 
+
+```{r, eval = FALSE}
+## Add the residual variances to the snugget parameter
+## of the variograms corresponding to the vis-NIR augmented 
+## data
+## Note that snugget was 0 for all the fitted variograms
+## Ca (layer A)
+variogtablea$snugget[variogtablea$properties == "Ca_spec"] <- residualvariances$layerA[residualvariances$Property == "Ca"]
+## alr(clay) (layer A)
+variogtablea$snugget[variogtablea$properties == "alr_Clay_spec"] <- residualvariances$layerA[residualvariances$Property == "alr_Clay"]
+## alr(silt) (layer A)
+variogtablea$snugget[variogtablea$properties == "alr_Silt_spec"] <- residualvariances$layerA[residualvariances$Property == "alr_Silt"]
+
+## Ca (layer B)
+variogtableb$snugget[variogtableb$properties == "Ca_spec"] <- residualvariances$layerB[residualvariances$Property == "Ca"]
+## alr(clay)  (layer B)
+variogtableb$snugget[variogtableb$properties == "alr_Clay_spec"] <- residualvariances$layerB[residualvariances$Property == "alr_Clay"]
+## alr(silt) (layer B)
+variogtableb$snugget[variogtableb$properties == "alr_Silt_spec"] <- residualvariances$layerB[residualvariances$Property == "alr_Silt"]
+
+
+```
+
+
+## Validation of the spatial models
+Create a `data.frame` for each layer to store the predictions in the validation set and another two to store the validation results...
+```{r, eval = FALSE}
+## The final variables to be predicted. In the case of 
+## Clay, silt and Sand they are estimated from the 
+## predictions of alr(clay) and alr(silt)
+bprops <- c("Ca", 
+            "Clay", 
+            "Silt", 
+            "Sand", 
+            "Ca_spec",
+            "Clay_spec", 
+            "Silt_spec", 
+            "Sand_spec")
+
+## a quick function to create columns of a given length (lg)
+idfcol <- function(x, lg){
+  data.frame(lg, fix.empty.names = FALSE)
+}
+
+## object where the spatial predictions will be stored 
+sppredsvala <- sapply(c("ID", bprops), 
+                      FUN = idfcol, 
+                      lg = rep(NA, nrow(vallayera)))
+sppredsvala <- data.frame(do.call("cbind", sppredsvala))
+sppredsvala$ID <- vallayera$ID
+
+sppredsvalb <- sapply(c("ID", bprops), 
+                      FUN = idfcol, 
+                      lg = rep(NA, nrow(vallayerb)))
+sppredsvalb <- data.frame(do.call("cbind", sppredsvalb))
+sppredsvalb$ID <- vallayerb$ID
+
+## object where the validation of the spatial predictions will be stored 
+spvala <- data.frame(properties = bprops,
+                     data = rep(c("Laboratory", "vis-NIR augmented"), 
+                                each = length(bprops) / 2),
+                     R2 = NA,
+                     RMSE = NA,
+                     ME = NA)
+spvalb <- spvala
+```
+
+### Laboratory-based data
+
+#### Layer A
+Exchangeable Ca^2+^...
+```{r, eval = FALSE}
+pred_Ca_lab_a <- predict(Ca_lab_a, 
+                         newdata = as.data.frame(vallayera), 
+                         control = gcntrl)
+
+sppredsvala$Ca <- pred_Ca_lab_a$pred$pred
+
+spvala$R2[spvala$properties == "Ca"] <- cor(vallayera$Ca, sppredsvala$Ca)^2
+spvala$RMSE[spvala$properties == "Ca"] <- mean((vallayera$Ca - sppredsvala$Ca)^2)^0.5
+spvala$ME[spvala$properties == "Ca"] <- mean(vallayera$Ca - sppredsvala$Ca)
+```
+
+Estimation of clay, silt and sand contents from the predictions of $alr(clay)$ and $alr(silt)$...
+```{r eval = FALSE}
+## predict alr(clay)
+pred_alr_Clay_lab_a <- predict(alr_Clay_lab_a, 
+                               newdata = as.data.frame(vallayera), 
+                               control = gcntrl)
+## predict alr(silt)
+pred_alr_Silt_lab_a <- predict(alr_Silt_lab_a, 
+                               newdata = as.data.frame(vallayera), 
+                               control = gcntrl)
+
+## Back-transfrom to clay, silt and sand contents
+dvr.Silt <- exp(pred_alr_Silt_lab_a$pred$pred + (0.5 * (pred_alr_Silt_lab_a$pred$var.target - pred_alr_Silt_lab_a$pred$cov.pred.target)))
+dvr.Clay <- exp(pred_alr_Clay_lab_a$pred$pred + (0.5 * (pred_alr_Clay_lab_a$pred$var.target - pred_alr_Clay_lab_a$pred$cov.pred.target)))
+dvn.pred <- 1 + dvr.Silt + dvr.Clay
+
+## Store the back-transformed values
+sppredsvala$Clay <- 100 * (dvr.Clay/dvn.pred)
+sppredsvala$Silt <- 100 * (dvr.Silt/dvn.pred)
+sppredsvala$Sand <- 100/dvn.pred
+
+## Estimate the validation parameters for
+## Clay
+spvala$R2[spvala$properties == "Clay"] <- cor(vallayera$Clay, sppredsvala$Clay)^2
+spvala$RMSE[spvala$properties == "Clay"] <- mean((vallayera$Clay - sppredsvala$Clay)^2)^0.5
+spvala$ME[spvala$properties == "Clay"] <- mean(vallayera$Clay - sppredsvala$Clay)
+## Silt
+spvala$R2[spvala$properties == "Silt"] <- cor(vallayera$Silt, sppredsvala$Silt)^2
+spvala$RMSE[spvala$properties == "Silt"] <- mean((vallayera$Silt - sppredsvala$Silt)^2)^0.5
+spvala$ME[spvala$properties == "Silt"] <- mean(vallayera$Silt - sppredsvala$Silt)
+## Sand
+spvala$R2[spvala$properties == "Sand"] <- cor(vallayera$Sand, sppredsvala$Sand)^2
+spvala$RMSE[spvala$properties == "Sand"] <- mean((vallayera$Sand - sppredsvala$Sand)^2)^0.5
+spvala$ME[spvala$properties == "Sand"] <- mean(vallayera$Sand - sppredsvala$Sand)
+```
+
+#### Layer B
+Exchangeable Ca^2+^...
+```{r, eval = FALSE}
+pred_Ca_lab_b <- predict(Ca_lab_b, 
+                         newdata = as.data.frame(vallayerb), 
+                         control = gcntrl)
+
+sppredsvalb$Ca <- pred_Ca_lab_b$pred$pred
+
+spvalb$R2[spvala$properties == "Ca"] <- cor(vallayerb$Ca, sppredsvalb$Ca)^2
+spvalb$RMSE[spvala$properties == "Ca"] <- mean((vallayerb$Ca - sppredsvalb$Ca)^2)^0.5
+spvalb$ME[spvala$properties == "Ca"] <- mean(vallayerb$Ca - sppredsvalb$Ca)
+```
+
+Estimation of clay, silt and sand contents from the predictions of $alr(clay)$ and $alr(silt)$...
+```{r, eval = FALSE}
+## predict alr(clay)
+pred_alr_Clay_lab_b <- predict(alr_Clay_lab_b, 
+                               newdata = as.data.frame(vallayerb), 
+                               control = gcntrl)
+## predict alr(silt)
+pred_alr_Silt_lab_b <- predict(alr_Silt_lab_b, 
+                               newdata = as.data.frame(vallayerb), 
+                               control = gcntrl)
+
+## Back-transfrom to clay, silt and sand contents
+dvr.Silt <- exp(pred_alr_Silt_lab_b$pred$pred + (0.5 * (pred_alr_Silt_lab_b$pred$var.target - pred_alr_Silt_lab_b$pred$cov.pred.target)))
+dvr.Clay <- exp(pred_alr_Clay_lab_b$pred$pred + (0.5 * (pred_alr_Clay_lab_b$pred$var.target - pred_alr_Clay_lab_b$pred$cov.pred.target)))
+dvn.pred <- 1 + dvr.Silt + dvr.Clay
+
+## Store the back-transformed values
+sppredsvalb$Clay <- 100 * (dvr.Clay/dvn.pred)
+sppredsvalb$Silt <- 100 * (dvr.Silt/dvn.pred)
+sppredsvalb$Sand <- 100/dvn.pred
+
+## Estimate the validation parameters for
+## Clay
+spvalb$R2[spvala$properties == "Clay"] <- cor(vallayerb$Clay, sppredsvalb$Clay)^2
+spvalb$RMSE[spvala$properties == "Clay"] <- mean((vallayerb$Clay - sppredsvalb$Clay)^2)^0.5
+spvalb$ME[spvala$properties == "Clay"] <- mean(vallayerb$Clay - sppredsvalb$Clay)
+## Silt
+spvalb$R2[spvala$properties == "Silt"] <- cor(vallayerb$Silt, sppredsvalb$Silt)^2
+spvalb$RMSE[spvala$properties == "Silt"] <- mean((vallayerb$Silt - sppredsvalb$Silt)^2)^0.5
+spvalb$ME[spvala$properties == "Silt"] <- mean(vallayerb$Silt - sppredsvalb$Silt)
+## Sand
+spvalb$R2[spvala$properties == "Sand"] <- cor(vallayerb$Sand, sppredsvalb$Sand)^2
+spvalb$RMSE[spvala$properties == "Sand"] <- mean((vallayerb$Sand - sppredsvalb$Sand)^2)^0.5
+spvalb$ME[spvala$properties == "Sand"] <- mean(vallayerb$Sand - sppredsvalb$Sand)
+```
+
+
+### Vis-NIR augmented-based data
+Here, for the spatial predictions in the vis-NIR augmented dataset we use the variogram parameters which include the residual variances of the vis-NIR models. For this we use the `param`argument of the `predict` function in the `georob` pacakge.
+#### Layer A
+Exchangeable Ca^2+^...
+```{r, eval = FALSE}
+pred_Ca_spec_a <- predict(Ca_spec_a, 
+                          newdata = as.data.frame(vallayera), 
+                          control = gcntrl,
+                          param = unlist(variogtablea[variogtablea$properties == "Ca_spec", varparamames]))
+
+
+sppredsvala$Ca_spec <- pred_Ca_spec_a$pred$pred
+
+spvala$R2[spvala$properties == "Ca_spec"] <- cor(vallayera$Ca, sppredsvala$Ca_spec)^2
+spvala$RMSE[spvala$properties == "Ca_spec"] <- mean((vallayera$Ca - sppredsvala$Ca_spec)^2)^0.5
+spvala$ME[spvala$properties == "Ca_spec"] <- mean(vallayera$Ca - sppredsvala$Ca_spec)
+```
+
+Estimation of clay, silt and sand contents from the predictions of $alr(clay)$ and $alr(silt)$...
+```{r, eval = FALSE}
+## predict alr(clay)
+pred_alr_Clay_spec_a <- predict(alr_Clay_spec_a, 
+                                newdata = as.data.frame(vallayera), 
+                                control = gcntrl,
+                                param = unlist(variogtablea[variogtablea$properties == "alr_Clay_spec", varparamames]))
+## predict alr(silt)
+pred_alr_Silt_spec_a <- predict(alr_Silt_spec_a, 
+                                newdata = as.data.frame(vallayera), 
+                                control = gcntrl,
+                                param = unlist(variogtablea[variogtablea$properties == "alr_Silt_spec", varparamames]))
+
+## Back-transfrom to clay, silt and sand contents
+dvr.Silt <- exp(pred_alr_Silt_spec_a$pred$pred + (0.5 * (pred_alr_Silt_spec_a$pred$var.target - pred_alr_Silt_spec_a$pred$cov.pred.target)))
+dvr.Clay <- exp(pred_alr_Clay_spec_a$pred$pred + (0.5 * (pred_alr_Clay_spec_a$pred$var.target - pred_alr_Clay_spec_a$pred$cov.pred.target)))
+dvn.pred <- 1 + dvr.Silt + dvr.Clay
+
+## Store the back-transformed values
+sppredsvala$Clay_spec <- 100 * (dvr.Clay/dvn.pred)
+sppredsvala$Silt_spec <- 100 * (dvr.Silt/dvn.pred)
+sppredsvala$Sand_spec <- 100/dvn.pred
+
+## Estimate the validation parameters for
+## Clay
+spvala$R2[spvala$properties == "Clay_spec"] <- cor(vallayera$Clay, sppredsvala$Clay_spec)^2
+spvala$RMSE[spvala$properties == "Clay_spec"] <- mean((vallayera$Clay - sppredsvala$Clay_spec)^2)^0.5
+spvala$ME[spvala$properties == "Clay_spec"] <- mean(vallayera$Clay - sppredsvala$Clay_spec)
+## Silt
+spvala$R2[spvala$properties == "Silt_spec"] <- cor(vallayera$Silt, sppredsvala$Silt_spec)^2
+spvala$RMSE[spvala$properties == "Silt_spec"] <- mean((vallayera$Silt - sppredsvala$Silt_spec)^2)^0.5
+spvala$ME[spvala$properties == "Silt_spec"] <- mean(vallayera$Silt - sppredsvala$Silt_spec)
+## Sand
+spvala$R2[spvala$properties == "Sand_spec"] <- cor(vallayera$Sand, sppredsvala$Sand_spec)^2
+spvala$RMSE[spvala$properties == "Sand_spec"] <- mean((vallayera$Sand - sppredsvala$Sand_spec)^2)^0.5
+spvala$ME[spvala$properties == "Sand_spec"] <- mean(vallayera$Sand - sppredsvala$Sand_spec)
+```
+
+#### Layer B
+Exchangeable Ca^2+^...
+```{r, eval = FALSE}
+pred_Ca_spec_b <- predict(Ca_spec_b, 
+                          newdata = as.data.frame(vallayerb), 
+                          control = gcntrl,
+                          param = unlist(variogtableb[variogtableb$properties == "Ca_spec", varparamames]))
+
+sppredsvalb$Ca_spec <- pred_Ca_spec_b$pred$pred
+
+spvalb$R2[spvala$properties == "Ca_spec"] <- cor(vallayerb$Ca, sppredsvalb$Ca_spec)^2
+spvalb$RMSE[spvala$properties == "Ca_spec"] <- mean((vallayerb$Ca - sppredsvalb$Ca_spec)^2)^0.5
+spvalb$ME[spvala$properties == "Ca_spec"] <- mean(vallayerb$Ca - sppredsvalb$Ca_spec)
+```
+
+Estimation of clay, silt and sand contents from the predictions of $alr(clay)$ and $alr(silt)$...
+```{r eval = FALSE}
+## predict alr(clay)
+pred_alr_Clay_spec_b <- predict(alr_Clay_spec_b, 
+                                newdata = as.data.frame(vallayerb), 
+                                control = gcntrl,
+                                param = unlist(variogtableb[variogtableb$properties == "alr_Clay_spec", varparamames]))
+## predict alr(silt)
+pred_alr_Silt_spec_b <- predict(alr_Silt_spec_b, 
+                                newdata = as.data.frame(vallayerb), 
+                                control = gcntrl,
+                                param = unlist(variogtableb[variogtableb$properties == "alr_Silt_spec", varparamames]))
+
+## Back-transfrom to clay, silt and sand contents
+dvr.Silt <- exp(pred_alr_Silt_spec_b$pred$pred + (0.5 * (pred_alr_Silt_spec_b$pred$var.target - pred_alr_Silt_spec_b$pred$cov.pred.target)))
+dvr.Clay <- exp(pred_alr_Clay_spec_b$pred$pred + (0.5 * (pred_alr_Clay_spec_b$pred$var.target - pred_alr_Clay_spec_b$pred$cov.pred.target)))
+dvn.pred <- 1 + dvr.Silt + dvr.Clay
+
+## Store the back-transformed values
+sppredsvalb$Clay_spec <- 100 * (dvr.Clay/dvn.pred)
+sppredsvalb$Silt_spec <- 100 * (dvr.Silt/dvn.pred)
+sppredsvalb$Sand_spec <- 100/dvn.pred
+
+## Estimate the validation parameters for
+## Clay
+spvalb$R2[spvala$properties == "Clay_spec"] <- cor(vallayerb$Clay, sppredsvalb$Clay_spec)^2
+spvalb$RMSE[spvala$properties == "Clay_spec"] <- mean((vallayerb$Clay - sppredsvalb$Clay_spec)^2)^0.5
+spvalb$ME[spvala$properties == "Clay_spec"] <- mean(vallayerb$Clay - sppredsvalb$Clay_spec)
+## Silt
+spvalb$R2[spvala$properties == "Silt_spec"] <- cor(vallayerb$Silt, sppredsvalb$Silt_spec)^2
+spvalb$RMSE[spvala$properties == "Silt_spec"] <- mean((vallayerb$Silt - sppredsvalb$Silt_spec)^2)^0.5
+spvalb$ME[spvala$properties == "Silt_spec"] <- mean(vallayerb$Silt - sppredsvalb$Silt_spec)
+## Sand
+spvalb$R2[spvala$properties == "Sand_spec"] <- cor(vallayerb$Sand, sppredsvalb$Sand_spec)^2
+spvalb$RMSE[spvala$properties == "Sand_spec"] <- mean((vallayerb$Sand - sppredsvalb$Sand_spec)^2)^0.5
+spvalb$ME[spvala$properties == "Sand_spec"] <- mean(vallayerb$Sand - sppredsvalb$Sand_spec)
+```
+
+## Mapping
+
+Now that we have validated the spatial models for both laboratory data and vis-NIR augmented data, we proceed to produce the maps of each property at each layer.
+First we have to read the polygon corresponding to the study area. Download the polygon to your working directory.
+This is a `R` object of class (`SpatialPolygonsDataFrame` of the package `sp`) which contains the polygon of the study area. Click [here](https://github.com/l-ramirez-lopez/VNIR_spectroscopy_for_robust_soil_mapping/raw/master/polygon.rds) to download it. If you saved the file in your working directory you can:
+```{r, eval = FALSE}
+polyfile <- file("polygon.rds")
+shape <- readRDS(polyfile)
+shape
+```
+or...
+```{r, eval = FALSE}
+polyfile <- file("https://github.com/l-ramirez-lopez/VNIR_spectroscopy_for_robust_soil_mapping/raw/master/polygon.rds")
+shape <- readRDS(polyfile)
+shape
+```
+
+
+
+Now create a template for the spatial predictions
+```{r eval = FALSE}
+## function to convert polygon to raster
+pol2raster <-function(r,  nrows = 10, ncols = 10){
+  ext<-raster(extent(r), nrows, ncols)
+  crs(ext) <- crs(r)
+  fr <- rasterize(r, ext, field = 1, update = TRUE)
+  return(fr)
+}
+
+rncol <- (extent(shape)@ymax - extent(shape)@ymin)/10
+rnrow <- (extent(shape)@xmax - extent(shape)@xmin)/10
+
+rasg <- pol2raster(shape, rncol, rnrow)
+
+## resolution
+## here you can choose the resolution for the predicted maps
+## for our paper we set this value to 10, however here we 
+## will set it to 50 for the sake of memory
+## if you have a decent machine you can go finer
+mresolution <- 50
+
+rasg <- raster::resample(rasg, 
+                         raster(resolution = mresolution, ext = extent(shape)), 
+                         method="ngb")
+rasg
+plot(rasg)
+
+## and here we have our template
+sppx <- as(rasg, "SpatialPixelsDataFrame")
+colnames(sppx@coords) <- c("POINT_X", "POINT_Y")
+```
+
+Create a `data.frame` for each layer to store the predicted values for the maps
+```{r, eval = FALSE}
+spatialpredsa <- data.frame(matrix(NA, nrow(sppx), length(bprops)))
+colnames(spatialpredsa) <- bprops
+spatialpredsb <- spatialpredsa
+```
+
+### Laboratory-based data
+
+#### Layer A
+
+Exchangeable Ca^2+^...
+```{r, eval = FALSE}
+spatialpredsa$Ca <- predict(Ca_lab_a, newdata = sppx)$pred
+```
+
+Clay, sand and silt contents..
+```{r, eval = FALSE}
+alr_Clay_lab_a_map <- predict(alr_Clay_lab_a, newdata = sppx)
+alr_Silt_lab_a_map <- predict(alr_Silt_lab_a, newdata = sppx)
+
+spatialpredsa$Clay <- 100 * exp(alr_Clay_lab_a_map$pred)/(1 + exp(alr_Silt_lab_a_map$pred) + exp(alr_Clay_lab_a_map$pred))
+spatialpredsa$Silt <- 100 * exp(alr_Silt_lab_a_map$pred)/(1 + exp(alr_Silt_lab_a_map$pred) + exp(alr_Clay_lab_a_map$pred))
+spatialpredsa$Sand <- 100/(1 + exp(alr_Silt_lab_a_map$pred) + exp(alr_Clay_lab_a_map$pred))
+```
+
+#### Layer B
+
+Exchangeable Ca^2+^...
+```{r, eval = FALSE}
+spatialpredsb$Ca <- predict(Ca_lab_b, newdata = sppx)$pred
+```
+
+Clay, sand and silt contents..
+```{r, eval = FALSE}
+alr_Clay_lab_b_map <- predict(alr_Clay_lab_b, newdata = sppx)
+alr_Silt_lab_b_map <- predict(alr_Silt_lab_b, sppx)
+
+spatialpredsb$Clay <- 100 * exp(alr_Clay_lab_b_map$pred)/(1 + exp(alr_Silt_lab_b_map$pred) + exp(alr_Clay_lab_b_map$pred))
+spatialpredsb$Silt <- 100 * exp(alr_Silt_lab_b_map$pred)/(1 + exp(alr_Silt_lab_b_map$pred) + exp(alr_Clay_lab_b_map$pred))
+spatialpredsb$Sand <- 100/(1 + exp(alr_Silt_lab_b_map$pred) + exp(alr_Clay_lab_b_map$pred))
+```
+
+### Vis-NIR augmented-based data
+
+#### Layer A
+
+Exchangeable Ca^2+^...
+```{r, eval = FALSE}
+spatialpredsa$Ca_spec <- predict(Ca_spec_a, 
+                            newdata = sppx, 
+                            param = unlist(variogtablea[variogtablea$properties == "Ca_spec", varparamames]))$pred
+```
+
+Clay, sand and silt contents..
+```{r, eval = FALSE}
+alr_Clay_spec_a_map <- predict(alr_Clay_spec_a, 
+                               newdata = sppx,
+                               param = unlist(variogtablea[variogtablea$properties == "alr_Silt_spec", varparamames]))
+alr_Silt_spec_a_map <- predict(alr_Silt_spec_a, 
+                               newdata = sppx, 
+                               param = unlist(variogtablea[variogtablea$properties == "alr_Clay_spec", varparamames]))
+
+spatialpredsa$Clay_spec <- 100 * exp(alr_Clay_spec_a_map$pred)/(1 + exp(alr_Silt_spec_a_map$pred) + exp(alr_Clay_spec_a_map$pred))
+spatialpredsa$Silt_spec <- 100 * exp(alr_Silt_spec_a_map$pred)/(1 + exp(alr_Silt_spec_a_map$pred) + exp(alr_Clay_spec_a_map$pred))
+spatialpredsa$Sand_spec <- 100/(1 + exp(alr_Silt_spec_a_map$pred) + exp(alr_Clay_spec_a_map$pred))
+```
+
+#### Layer B
+
+Exchangeable Ca^2+^...
+```{r, eval = FALSE}
+spatialpredsb$Ca_spec <- predict(Ca_spec_b, 
+                                 newdata = sppx, 
+                                 param = unlist(variogtableb[variogtableb$properties == "Ca_spec", varparamames]))$pred
+```
+
+Clay, sand and silt contents..
+```{r, eval = FALSE}
+alr_Clay_spec_b_map <- predict(alr_Clay_spec_b, 
+                               newdata = sppx,
+                               param = unlist(variogtableb[variogtableb$properties == "alr_Silt_spec", varparamames]))
+alr_Silt_spec_b_map <- predict(alr_Silt_spec_b, 
+                               newdata = sppx,
+                               param = unlist(variogtableb[variogtableb$properties == "alr_Clay_spec", varparamames]))
+
+spatialpredsb$Clay_spec <- 100 * exp(alr_Clay_spec_b_map$pred)/(1 + exp(alr_Silt_spec_b_map$pred) + exp(alr_Clay_spec_b_map$pred))
+spatialpredsb$Silt_spec <- 100 * exp(alr_Silt_spec_b_map$pred)/(1 + exp(alr_Silt_spec_b_map$pred) + exp(alr_Clay_spec_b_map$pred))
+spatialpredsb$Sand_spec <- 100/(1 + exp(alr_Silt_spec_b_map$pred) + exp(alr_Clay_spec_b_map$pred))
+```
+
+### Plots
+```{r, eval = FALSE}
+## compute the differences between maps (layer)
+spatialpredsa$Cadiff <- spatialpredsa$Ca - spatialpredsa$Ca_spec 
+spatialpredsa$Claydiff <- spatialpredsa$Clay - spatialpredsa$Clay_spec 
+spatialpredsa$Siltdiff <- spatialpredsa$Silt - spatialpredsa$Silt_spec
+spatialpredsa$Sanddiff <- spatialpredsa$Sand - spatialpredsa$Sand_spec
+
+## compute the differences between maps (layer B)
+spatialpredsb$Cadiff <- spatialpredsb$Ca - spatialpredsb$Ca_spec 
+spatialpredsb$Claydiff <- spatialpredsb$Clay - spatialpredsb$Clay_spec 
+spatialpredsb$Siltdiff <- spatialpredsb$Silt - spatialpredsb$Silt_spec
+spatialpredsb$Sanddiff <- spatialpredsb$Sand - spatialpredsb$Sand_spec
+```
+
+Create a new `data.frame` for plotting purposes
+```{r, eval = FALSE}
+pred_layer_a <- data.frame(rbind(sppx@coords, 
+                                 sppx@coords, 
+                                 sppx@coords),
+                           layer = "Depth A (0 - 0.2 m)",
+                           method = c(rep("Laboratory-based", nrow(spatialpredsa)), 
+                                      rep("vis-NIR augmented",nrow(spatialpredsa)),
+                                      rep("Differences between maps", nrow(spatialpredsa))), 
+                           Ca = unlist(spatialpredsa[,c("Ca", "Ca_spec", "Cadiff")]),
+                           Clay = unlist(spatialpredsa[,c("Clay", "Clay_spec", "Claydiff")]),
+                           Silt = unlist(spatialpredsa[,c("Silt", "Silt_spec", "Siltdiff")]),
+                           Sand = unlist(spatialpredsa[,c("Sand", "Sand_spec", "Sanddiff")]))
+
+pred_layer_b <- data.frame(rbind(sppx@coords, 
+                                 sppx@coords, 
+                                 sppx@coords),
+                           layer = "Depth B (0.8 - 1.0 m)",
+                           method = c(rep("Laboratory-based", nrow(spatialpredsb)), 
+                                      rep("vis-NIR augmented",nrow(spatialpredsb)),
+                                      rep("Differences between maps", nrow(spatialpredsb))), 
+                           Ca = unlist(spatialpredsb[,c("Ca", "Ca_spec", "Cadiff")]),
+                           Clay = unlist(spatialpredsb[,c("Clay", "Clay_spec", "Claydiff")]),
+                           Silt = unlist(spatialpredsb[,c("Silt", "Silt_spec", "Siltdiff")]),
+                           Sand = unlist(spatialpredsb[,c("Sand", "Sand_spec", "Sanddiff")]))
+
+finalmapping <- data.frame(rbind(pred_layer_a, pred_layer_b))
+```
+
+Define palette of color for the plot
+```{r, eval = FALSE}
+myPalette <- colorRampPalette(rev(brewer.pal(11, "Spectral")), space = "Lab")
+
+```
+Define some ggplot parameters common to all plots
+```{r, eval = FALSE}
+gfg <- facet_grid(layer ~ method)
+gscf <- scale_fill_gradientn(colours = myPalette(30))
+gcoord <- coord_equal() 
+gtheme <- theme_bw() + 
+  theme(legend.position = "top") + 
+  theme(axis.title.y = element_text( colour = grey(0.2), size=25),
+        axis.text.y  = element_text(angle=0, vjust =0.5, hjust =0.5, size=16), 
+        legend.title = element_text( colour = "black", size=25)) +
+  theme(axis.title.x = element_text( colour = grey(0.2), size=25),
+        axis.text.x  = element_text(angle = 0, vjust=0, size=16)) +
+  theme(legend.text = element_text( colour = grey(0.2), size=15),
+        legend.key.size = unit(0.95, "cm")) +
+  theme(strip.background = element_rect(fill = "grey"), 
+        strip.text.x = element_text( size = 25, colour = "black", angle = 0),
+        strip.text.y = element_text( size = 25, colour = "black", angle = -90)) 
+glabs <- labs(y = "Northings /m", x = "Eastings /m")
+Define palette of color for the plot
+```
+Create the maps for Ca^2+^
+```{r, eval = FALSE}  
+ca_map <- ggplot(finalmapping[finalmapping$method != "Differences between maps",], 
+                 aes(POINT_X, POINT_Y)) + geom_tile(aes(fill = Ca)) + 
+  gfg + gscf + gcoord + gtheme + glabs +
+  guides(fill = guide_colourbar(title = expression(paste("", Ca^"++", " " /mmol[c], kg^-1, " "))))
+
+
+ca_map_diff <- ggplot(finalmapping[finalmapping$method == "Differences between maps",], 
+                      aes(POINT_X, POINT_Y)) + geom_tile(aes(fill = Ca)) + 
+  gfg + gscf + gcoord + gtheme + glabs + 
+  guides(fill = guide_colourbar(title = expression(paste("Difference", " " /mmol[c], kg^-1, " "))))
+
+ca_map
+ca_map_diff
+```
+
+Create the maps for $Clay$
+  ```{r, eval = FALSE}  
+Clay_map <- ggplot(finalmapping[finalmapping$method != "Differences between maps",], 
+                   aes(POINT_X, POINT_Y)) + geom_tile(aes(fill = Clay)) + 
+  gfg + gscf + gcoord + gtheme + glabs +
+  guides(fill = guide_colourbar(title = "Clay content, % ")) 
+
+
+Clay_map_diff <- ggplot(finalmapping[finalmapping$method == "Differences between maps",], 
+                        aes(POINT_X, POINT_Y)) + geom_tile(aes(fill = Clay)) + 
+  gfg + gscf + gcoord + gtheme + glabs + 
+  guides(fill = guide_colourbar(title = "Difference, %"))
+
+Clay_map
+Clay_map_diff
+```
+Create the maps for $Silt$
+  ```{r, eval = FALSE}  
+Silt_map <- ggplot(finalmapping[finalmapping$method != "Differences between maps",], 
+                   aes(POINT_X, POINT_Y)) + geom_tile(aes(fill = Silt)) + 
+  gfg + gscf + gcoord + gtheme + glabs +
+  guides(fill = guide_colourbar(title = "Silt content, % ")) 
+
+
+Silt_map_diff <- ggplot(finalmapping[finalmapping$method == "Differences between maps",], 
+                        aes(POINT_X, POINT_Y)) + geom_tile(aes(fill = Silt)) + 
+  gfg + gscf + gcoord + gtheme + glabs + 
+  guides(fill = guide_colourbar(title = "Difference, %"))
+
+Silt_map
+Silt_map_diff
+```
+Create the maps for $Sand$
+  ```{r, eval = FALSE}  
+Sand_map <- ggplot(finalmapping[finalmapping$method != "Differences between maps",], 
+                   aes(POINT_X, POINT_Y)) + geom_tile(aes(fill = Sand)) + 
+  gfg + gscf + gcoord + gtheme + glabs +
+  guides(fill = guide_colourbar(title = "Sand content, % ")) 
+
+
+Sand_map_diff <- ggplot(finalmapping[finalmapping$method == "Differences between maps",], 
+                        aes(POINT_X, POINT_Y)) + geom_tile(aes(fill = Sand)) + 
+  gfg + gscf + gcoord + gtheme + glabs + 
+  guides(fill = guide_colourbar(title = "Difference, %"))
+
+Sand_map
+Sand_map_diff
+```
+

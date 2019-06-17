@@ -1,0 +1,39 @@
+# Required data
+
+In this section you will find the instructions on how to download and read the soil dataset used in our paper.
+
+------------------------------------------------------------------------
+
+You can download the file ['SoilNIRSaoPaulo.rds'](https://github.com/l-ramirez-lopez/VNIR_spectroscopy_for_robust_soil_mapping/raw/master/SoilNIRSaoPaulo.rds), alternatively you can visit to the [GitHub repository of the paper](https://github.com/l-ramirez-lopez/VNIR_spectroscopy_for_robust_soil_mapping) where the file resides.
+
+This `rds` file contains a `data.frame` with 910 rows (samples) and the following variables: 
+
+* Nr: An arbitrary sample number.
+* ID: A `factor` indicating the sample IDs. The first character is a letter which indicates the depth layer at which the sample was collected (A: 0-20 cm and B: 80-100 cm).  
+* POINT_X: The X (geographical) coordinate. 
+* POINT_Y: The Y (geographical) coordinate.
+* Sand: The percentage of sand contnet in the soil sample. 
+* Silt: The percentage of silt contnet in the soil sample. 
+* Clay: The percentage of clay contnet in the soil sample. 
+* Ca: The exchangeable Calcium content in the sample ($mmol_{c}$ $kg^{−1}$). 
+* set: A `factor` indicating whether the sample is used for model's validation or if it can be used to calibrate models. 
+* spc: A set of 307 variables representing the wavelengths from 502 nm to 2338 nm in steps of 6 nm. 
+
+Further information on this dataset can be found in [our paper](https://onlinelibrary.wiley.com/doi/epdf/10.1111/ejss.12752)
+
+We recommend to create a local folder (e.g. "./myworkingdirectory"). If you downloaded the file to this local folder then:
+``` r
+workingd <- "/myworkingdirectory"
+setwd(workingd)
+data <- readRDS("SoilNIRSaoPaulo.rds")
+```
+
+Alternatively, you can also read the file directly from the [GitHub repository of the paper](https://github.com/l-ramirez-lopez/VNIR_spectroscopy_for_robust_soil_mapping):
+
+``` {r echo = TRUE}
+nirfile <- file("https://github.com/l-ramirez-lopez/VNIR_spectroscopy_for_robust_soil_mapping/raw/master/SoilNIRSaoPaulo.rds")
+data <- readRDS(nirfile)
+names(data)
+```
+
+In addition you also need a `R` object of class (`SpatialPolygonsDataFrame` of the package `sp`) which contains the polygon of the study area. You can also download the file (polygon.rds) containing this object by clicking [here](https://github.com/l-ramirez-lopez/VNIR_spectroscopy_for_robust_soil_mapping/raw/master/polygon.rds).

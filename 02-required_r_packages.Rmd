@@ -1,0 +1,29 @@
+# Required `R` packages
+
+In order to run all the code presented in the next sections you will need to have the following packages installed
+
+------------------------------------------------------------------------
+
+You can install the required packages using the following code
+
+``` r
+requiredpackages <- c("resemble",    
+                      "prospectr",   
+                      "clhs",        
+                      "matrixStats", 
+                      "doParallel",  
+                      "ggplot2",
+                      "tidyr",
+                      "tidyverse",
+                      "georob", 
+                      "rgdal",
+                      "raster",
+                      "RColorBrewer")
+toinstall <- requiredpackages[!requiredpackages %in% rownames(installed.packages())]
+if(length(toinstall) > 0){
+  install.packages(toinstall)
+}
+lapply(requiredpackages, 
+       FUN = library, 
+       character.only = TRUE)
+```
