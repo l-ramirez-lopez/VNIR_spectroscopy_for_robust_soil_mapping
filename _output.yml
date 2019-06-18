@@ -5,7 +5,7 @@ bookdown::gitbook:
       before: |
         <li><a href="./">Soil mapping with VNIR</a></li>
       after: |
-        <li><a href="https://github.com/rstudio/bookdown" target="blank">End</a></li>
+        <li><a href="https://onlinelibrary.wiley.com/doi/10.1111/ejss.12752" target="blank">End</a></li>
     download: ["pdf", "epub"]
     toolbar:
       position: fixed
