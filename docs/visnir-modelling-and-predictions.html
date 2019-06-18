@@ -63,7 +63,7 @@
 <style type="text/css">
 a.sourceLine { display: inline-block; line-height: 1.25; }
 a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
-a.sourceLine:empty { height: 1.2em; }
+a.sourceLine:empty { height: 1.2em; position: absolute; }
 .sourceCode { overflow: visible; }
 code.sourceCode { white-space: pre; position: relative; }
 div.sourceCode { margin: 1em 0; }
@@ -76,11 +76,13 @@ code.sourceCode { white-space: pre-wrap; }
 a.sourceLine { text-indent: -1em; padding-left: 1em; }
 }
 pre.numberSource a.sourceLine
-  { position: relative; left: -4em; }
+  { position: relative; }
+pre.numberSource a.sourceLine:empty
+  { position: absolute; }
 pre.numberSource a.sourceLine::before
-  { content: attr(title);
-    position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; pointer-events: all; display: inline-block;
+  { content: attr(data-line-number);
+    position: absolute; left: -5em; text-align: right; vertical-align: baseline;
+    border: none; pointer-events: all;
     -webkit-touch-callout: none; -webkit-user-select: none;
     -khtml-user-select: none; -moz-user-select: none;
     -ms-user-select: none; user-select: none;
@@ -206,37 +208,37 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div id="calibration-and-validation" class="section level2">
 <h2><span class="header-section-number">7.1</span> Calibration and validation</h2>
 <p>First define some basic aspects of the MBL which will be commmon to all the properties for which NIR modeling is going to be performed.</p>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="co">## Add to the train data a variable indicating to what sampling point</span>
-<span class="co">## each sample belongs to. This variable will be used internally </span>
-<span class="co">## by the mbl function during the internal validations. </span>
+<pre class="sourceCode r"><code class="sourceCode r">## Add to the train data a variable indicating to what sampling point
+## each sample belongs to. This variable will be used internally 
+## by the mbl function during the internal validations. 
 train<span class="op">$</span>samplegroup &lt;-<span class="st"> </span><span class="kw">substr</span>(train<span class="op">$</span>ID, <span class="dv">2</span>, <span class="dv">100</span>)
 
-<span class="co">## Dissimilarity metric: partial least squares (pls)</span>
+## Dissimilarity metric: partial least squares (pls)
 dmetric &lt;-<span class="st"> &quot;pls&quot;</span>
 
-<span class="co">## Threshold distances to be tested</span>
-<span class="co">## Note: the number of threshold distances tested here is large, </span>
-<span class="co">## it could be reduced</span>
+## Threshold distances to be tested
+## Note: the number of threshold distances tested here is large, 
+## it could be reduced
 diss2test &lt;-<span class="st"> </span><span class="kw">seq</span>(<span class="fl">0.3</span>, <span class="fl">1.5</span>, <span class="dt">by =</span> <span class="fl">0.05</span>)
 
-<span class="co">## Define the minimum and maximum number of neighbors that must be retained</span>
-<span class="co">## for each local model.</span>
-<span class="co">## Example: If with a given threshold distance only 70 neighbors are</span>
-<span class="co">## selected, then the function will be fored to take the especified minimum</span>
-<span class="co">## number of neighbors to be included in the model. In this case 120. </span>
-<span class="co">## We also set that the maximum number of neighbors that can be</span>
-<span class="co">## included can be all the samples in the calibration set.</span>
+## Define the minimum and maximum number of neighbors that must be retained
+## for each local model.
+## Example: If with a given threshold distance only 70 neighbors are
+## selected, then the function will be fored to take the especified minimum
+## number of neighbors to be included in the model. In this case 120. 
+## We also set that the maximum number of neighbors that can be
+## included can be all the samples in the calibration set.
 kminmax &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dv">120</span>, <span class="kw">nrow</span>(train<span class="op">$</span>spc))
 
-<span class="co">## Regression method: Weighted average pls (wapls)</span>
+## Regression method: Weighted average pls (wapls)
 rmethod &lt;-<span class="st"> &quot;wapls1&quot;</span>
 
-<span class="co">## set the maximum and minimum number of pls factors </span>
-<span class="co">## for the local wapls regressions</span>
+## set the maximum and minimum number of pls factors 
+## for the local wapls regressions
 pls.f &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dt">minpls =</span> <span class="dv">5</span>, <span class="dt">maxpls =</span> <span class="dv">20</span>)
 
-<span class="co">## Adjust some additional parameters that control some </span>
-<span class="co">## aspects of the mbl</span>
+## Adjust some additional parameters that control some 
+## aspects of the mbl
 ctrl &lt;-<span class="st"> </span><span class="kw">mblControl</span>(<span class="dt">sm =</span> dmetric, 
                    <span class="dt">pcSelection =</span> <span class="kw">list</span>(<span class="st">&quot;opc&quot;</span>, <span class="dv">40</span>), 
                    <span class="dt">valMethod =</span> <span class="st">&quot;NNv&quot;</span>, 
@@ -244,12 +246,12 @@ ctrl &lt;-<span class="st"> </span><span class="kw">mblControl</span>(<span clas
                    <span class="dt">scaled =</span> <span class="ot">FALSE</span>, 
                    <span class="dt">center =</span> <span class="ot">TRUE</span>)</code></pre>
 <p>We also create some <code>data.frames</code> were we are going to store the prediction results for the validation set</p>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="co">## Create a data frame and store the validation results</span>
-<span class="co">## Squared correlation coefficient (R2)</span>
-<span class="co">## Root mean squared error (RMSE)</span>
-<span class="co">## Mean error (ME)</span>
-<span class="co">## (particle size predictions are also back-transformed to the original </span>
-<span class="co">## space to report the R2, RMSE and ME).</span>
+<pre class="sourceCode r"><code class="sourceCode r">## Create a data frame and store the validation results
+## Squared correlation coefficient (R2)
+## Root mean squared error (RMSE)
+## Mean error (ME)
+## (particle size predictions are also back-transformed to the original 
+## space to report the R2, RMSE and ME).
 valrestuls &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">Property =</span> <span class="kw">c</span>(<span class="st">&quot;Ca&quot;</span>, 
                                       <span class="st">&quot;alr_clay&quot;</span>,
                                       <span class="st">&quot;alr_silt&quot;</span>, 
@@ -260,20 +262,20 @@ valrestuls &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<spa
                          <span class="dt">R2 =</span> <span class="ot">NA</span>, 
                          <span class="dt">ME =</span> <span class="ot">NA</span>)
 
-<span class="co">## Create a data frame and store the variance of the residuals for each layer</span>
-<span class="co">## (this will be later used for geostatistical analyses)</span>
+## Create a data frame and store the variance of the residuals for each layer
+## (this will be later used for geostatistical analyses)
 residualvariances &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">Property =</span> <span class="kw">c</span>(<span class="st">&quot;Ca&quot;</span>, <span class="st">&quot;alr_Clay&quot;</span>, <span class="st">&quot;alr_Silt&quot;</span>),
                                 <span class="dt">layerA =</span> <span class="ot">NA</span>,
                                 <span class="dt">layerB =</span> <span class="ot">NA</span>,
                                 <span class="dt">layersAB =</span> <span class="ot">NA</span>)</code></pre>
 <p>Now we perfom MBL and predictions for soil exchangeable Ca<sup>2+</sup>:</p>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="co">## Run the MBL and find the optimal threshold distance </span>
-<span class="co">## for neighbor selection and predict Ca for validation</span>
-<span class="co">## - MBL fits a wapls model to each sample in Xu using </span>
-<span class="co">##   the calibration samples {Yr,Xr}</span>
-<span class="co">## - The internal validation predictions </span>
-<span class="co">##   these are predictions of the nearest samples</span>
-<span class="co">##   of each Xu found in Xr - Nearest neighbor validation (NNv) -</span>
+<pre class="sourceCode r"><code class="sourceCode r">## Run the MBL and find the optimal threshold distance 
+## for neighbor selection and predict Ca for validation
+## - MBL fits a wapls model to each sample in Xu using 
+##   the calibration samples {Yr,Xr}
+## - The internal validation predictions 
+##   these are predictions of the nearest samples
+##   of each Xu found in Xr - Nearest neighbor validation (NNv) -
 sbl_ca &lt;-<span class="st"> </span><span class="kw">mbl</span>(<span class="dt">Yr =</span> train<span class="op">$</span>Ca ,
               <span class="dt">Xr =</span> train<span class="op">$</span>spc,
               <span class="dt">Xu =</span> valida<span class="op">$</span>spc,
@@ -286,26 +288,26 @@ sbl_ca &lt;-<span class="st"> </span><span class="kw">mbl</span>(<span class="dt
               <span class="dt">method =</span> rmethod)
 sbl_ca
 
-<span class="co">## Best threshold distance</span>
+## Best threshold distance
 idx.best.ca &lt;-<span class="st"> </span><span class="kw">which.min</span>(sbl_ca<span class="op">$</span>nnValStats<span class="op">$</span>st.rmse)
 best.kdiss.ca &lt;-<span class="st"> </span>sbl_ca<span class="op">$</span>nnValStats<span class="op">$</span>k.diss[idx.best.ca]
 
-<span class="co">## Get the predicted values for the validation set</span>
+## Get the predicted values for the validation set
 pred_valCa &lt;-<span class="st"> </span><span class="kw">getPredictions</span>(sbl_ca)[,idx.best.ca]
 
-<span class="co">## R2</span>
+## R2
 valrestuls<span class="op">$</span>R2[valrestuls<span class="op">$</span>Property <span class="op">==</span><span class="st"> &quot;Ca&quot;</span>] &lt;-<span class="st"> </span><span class="kw">cor</span>(valida<span class="op">$</span>Ca, pred_valCa)<span class="op">^</span><span class="dv">2</span>
 <span class="co"># RMSE</span>
 valrestuls<span class="op">$</span>RMSE[valrestuls<span class="op">$</span>Property <span class="op">==</span><span class="st"> &quot;Ca&quot;</span>] &lt;-<span class="st"> </span><span class="kw">mean</span>((valida<span class="op">$</span>Ca <span class="op">-</span><span class="st"> </span>pred_valCa)<span class="op">^</span><span class="dv">2</span>)<span class="op">^</span><span class="fl">0.5</span>
 <span class="co"># ME</span>
 valrestuls<span class="op">$</span>ME[valrestuls<span class="op">$</span>Property <span class="op">==</span><span class="st"> &quot;Ca&quot;</span>] &lt;-<span class="st"> </span><span class="kw">mean</span>(valida<span class="op">$</span>Ca <span class="op">-</span><span class="st"> </span>pred_valCa)
 
-<span class="co">## Residual variances</span>
-<span class="co">## layer A</span>
+## Residual variances
+## layer A
 residualvariances<span class="op">$</span>layerA[residualvariances<span class="op">$</span>Property <span class="op">==</span><span class="st"> &quot;Ca&quot;</span>] &lt;-<span class="st"> </span><span class="kw">var</span>(valida<span class="op">$</span>Ca[valida<span class="op">$</span>layer <span class="op">==</span><span class="st"> &#39;A&#39;</span>] <span class="op">-</span><span class="st"> </span>pred_valCa[valida<span class="op">$</span>layer <span class="op">==</span><span class="st"> &#39;A&#39;</span>])
-<span class="co">## layer B</span>
+## layer B
 residualvariances<span class="op">$</span>layerB[residualvariances<span class="op">$</span>Property <span class="op">==</span><span class="st"> &quot;Ca&quot;</span>] &lt;-<span class="st"> </span><span class="kw">var</span>(valida<span class="op">$</span>Ca[valida<span class="op">$</span>layer <span class="op">==</span><span class="st"> &#39;B&#39;</span>] <span class="op">-</span><span class="st"> </span>pred_valCa[valida<span class="op">$</span>layer <span class="op">==</span><span class="st"> &#39;B&#39;</span>])
-<span class="co">## layers A and B</span>
+## layers A and B
 residualvariances<span class="op">$</span>layersAB[residualvariances<span class="op">$</span>Property <span class="op">==</span><span class="st"> &quot;Ca&quot;</span>] &lt;-<span class="st"> </span><span class="kw">var</span>(valida<span class="op">$</span>Ca <span class="op">-</span><span class="st"> </span>pred_valCa)</code></pre>
 <p>MBL and predictions for <span class="math inline">\(alr(clay)\)</span>…</p>
 <pre class="sourceCode r"><code class="sourceCode r">sbl_alrclay &lt;-<span class="st"> </span><span class="kw">mbl</span>(<span class="dt">Yr =</span> train<span class="op">$</span>alr_Clay, 
@@ -319,26 +321,26 @@ residualvariances<span class="op">$</span>layersAB[residualvariances<span class=
                    <span class="dt">pls.c =</span> pls.f,
                    <span class="dt">method =</span> rmethod)
 
-<span class="co">## Best threshold distance</span>
+## Best threshold distance
 idx.best.alrclay &lt;-<span class="st"> </span><span class="kw">which.min</span>(sbl_alrclay<span class="op">$</span>nnValStats<span class="op">$</span>st.rmse)
 best.kdiss.alrclay &lt;-<span class="st"> </span>sbl_alrclay<span class="op">$</span>nnValStats<span class="op">$</span>k.diss[idx.best.alrclay]
 
-<span class="co">## Get the predicted values for the validation set</span>
+## Get the predicted values for the validation set
 pred_val_alrclay &lt;-<span class="st"> </span><span class="kw">getPredictions</span>(sbl_alrclay)[,idx.best.alrclay]
 
-<span class="co">## R2</span>
+## R2
 valrestuls<span class="op">$</span>R2[valrestuls<span class="op">$</span>Property <span class="op">==</span><span class="st"> &quot;alr_clay&quot;</span>] &lt;-<span class="st"> </span><span class="kw">cor</span>(valida<span class="op">$</span>alr_Clay, pred_val_alrclay)<span class="op">^</span><span class="dv">2</span>
 <span class="co"># RMSE</span>
 valrestuls<span class="op">$</span>RMSE[valrestuls<span class="op">$</span>Property <span class="op">==</span><span class="st"> &quot;alr_clay&quot;</span>] &lt;-<span class="st"> </span><span class="kw">mean</span>((valida<span class="op">$</span>alr_Clay <span class="op">-</span><span class="st"> </span>pred_val_alrclay)<span class="op">^</span><span class="dv">2</span>)<span class="op">^</span><span class="fl">0.5</span>
 <span class="co"># ME</span>
 valrestuls<span class="op">$</span>ME[valrestuls<span class="op">$</span>Property <span class="op">==</span><span class="st"> &quot;alr_clay&quot;</span>] &lt;-<span class="st"> </span><span class="kw">mean</span>(valida<span class="op">$</span>alr_Clay <span class="op">-</span><span class="st"> </span>pred_val_alrclay)
 
-<span class="co">## Residual variances</span>
-<span class="co">## layer A</span>
+## Residual variances
+## layer A
 residualvariances<span class="op">$</span>layerA[residualvariances<span class="op">$</span>Property <span class="op">==</span><span class="st"> &quot;alr_Clay&quot;</span>] &lt;-<span class="st"> </span><span class="kw">var</span>(valida<span class="op">$</span>alr_Clay[valida<span class="op">$</span>layer <span class="op">==</span><span class="st"> &#39;A&#39;</span>] <span class="op">-</span><span class="st"> </span>pred_val_alrclay[valida<span class="op">$</span>layer <span class="op">==</span><span class="st"> &#39;A&#39;</span>])
-<span class="co">## layer B</span>
+## layer B
 residualvariances<span class="op">$</span>layerB[residualvariances<span class="op">$</span>Property <span class="op">==</span><span class="st"> &quot;alr_Clay&quot;</span>] &lt;-<span class="st"> </span><span class="kw">var</span>(valida<span class="op">$</span>alr_Clay[valida<span class="op">$</span>layer <span class="op">==</span><span class="st"> &#39;B&#39;</span>] <span class="op">-</span><span class="st"> </span>pred_val_alrclay[valida<span class="op">$</span>layer <span class="op">==</span><span class="st"> &#39;B&#39;</span>])
-<span class="co">## layers A and B</span>
+## layers A and B
 residualvariances<span class="op">$</span>layersAB[residualvariances<span class="op">$</span>Property <span class="op">==</span><span class="st"> &quot;alr_Clay&quot;</span>] &lt;-<span class="st"> </span><span class="kw">var</span>(valida<span class="op">$</span>alr_Clay <span class="op">-</span><span class="st"> </span>pred_val_alrclay)</code></pre>
 <p>…and <span class="math inline">\(alr(silt)\)</span>…</p>
 <pre class="sourceCode r"><code class="sourceCode r">sbl_alrsilt &lt;-<span class="st"> </span><span class="kw">mbl</span>(<span class="dt">Yr =</span> train<span class="op">$</span>alr_Silt, 
@@ -352,26 +354,26 @@ residualvariances<span class="op">$</span>layersAB[residualvariances<span class=
                    <span class="dt">pls.c =</span> pls.f,
                    <span class="dt">method =</span> rmethod)
 
-<span class="co">## Best threshold distance</span>
+## Best threshold distance
 idx.best.alrsilt &lt;-<span class="st"> </span><span class="kw">which.min</span>(sbl_alrsilt<span class="op">$</span>nnValStats<span class="op">$</span>st.rmse)
 best.kdiss.alrsilt &lt;-<span class="st"> </span>sbl_alrsilt<span class="op">$</span>nnValStats<span class="op">$</span>k.diss[idx.best.alrsilt]
 
-<span class="co">## Get the predicted values for the validation set</span>
+## Get the predicted values for the validation set
 pred_val_alrsilt &lt;-<span class="st"> </span><span class="kw">getPredictions</span>(sbl_alrsilt)[,idx.best.alrsilt]
 
-<span class="co">## R2</span>
+## R2
 valrestuls<span class="op">$</span>R2[valrestuls<span class="op">$</span>Property <span class="op">==</span><span class="st"> &quot;alr_silt&quot;</span>] &lt;-<span class="st"> </span><span class="kw">cor</span>(valida<span class="op">$</span>alr_Clay, pred_val_alrsilt)<span class="op">^</span><span class="dv">2</span>
 <span class="co"># RMSE</span>
 valrestuls<span class="op">$</span>RMSE[valrestuls<span class="op">$</span>Property <span class="op">==</span><span class="st"> &quot;alr_silt&quot;</span>] &lt;-<span class="st"> </span><span class="kw">mean</span>((valida<span class="op">$</span>alr_Clay <span class="op">-</span><span class="st"> </span>pred_val_alrsilt)<span class="op">^</span><span class="dv">2</span>)<span class="op">^</span><span class="fl">0.5</span>
 <span class="co"># ME</span>
 valrestuls<span class="op">$</span>ME[valrestuls<span class="op">$</span>Property <span class="op">==</span><span class="st"> &quot;alr_silt&quot;</span>] &lt;-<span class="st"> </span><span class="kw">mean</span>(valida<span class="op">$</span>alr_Clay <span class="op">-</span><span class="st"> </span>pred_val_alrsilt)
 
-<span class="co">## Residual variances</span>
-<span class="co">## layer A</span>
+## Residual variances
+## layer A
 residualvariances<span class="op">$</span>layerA[residualvariances<span class="op">$</span>Property <span class="op">==</span><span class="st"> &quot;alr_Silt&quot;</span>] &lt;-<span class="st"> </span><span class="kw">var</span>(valida<span class="op">$</span>alr_Silt[valida<span class="op">$</span>layer <span class="op">==</span><span class="st"> &#39;A&#39;</span>] <span class="op">-</span><span class="st"> </span>pred_val_alrsilt[valida<span class="op">$</span>layer <span class="op">==</span><span class="st"> &#39;A&#39;</span>])
-<span class="co">## layer B</span>
+## layer B
 residualvariances<span class="op">$</span>layerB[residualvariances<span class="op">$</span>Property <span class="op">==</span><span class="st"> &quot;alr_Silt&quot;</span>] &lt;-<span class="st"> </span><span class="kw">var</span>(valida<span class="op">$</span>alr_Silt[valida<span class="op">$</span>layer <span class="op">==</span><span class="st"> &#39;B&#39;</span>] <span class="op">-</span><span class="st"> </span>pred_val_alrsilt[valida<span class="op">$</span>layer <span class="op">==</span><span class="st"> &#39;B&#39;</span>])
-<span class="co">## layers A and B</span>
+## layers A and B
 residualvariances<span class="op">$</span>layersAB[residualvariances<span class="op">$</span>Property <span class="op">==</span><span class="st"> &quot;alr_Silt&quot;</span>] &lt;-<span class="st"> </span><span class="kw">var</span>(valida<span class="op">$</span>alr_Silt <span class="op">-</span><span class="st"> </span>pred_val_alrsilt)</code></pre>
 <p>Save the table of the variance of the residuals into your working directory. This data will be later used in the spatial analyses.</p>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="kw">write.table</span>(<span class="dt">x =</span> residualvariances, 
@@ -379,32 +381,32 @@ residualvariances<span class="op">$</span>layersAB[residualvariances<span class=
             <span class="dt">sep =</span> <span class="st">&quot;</span><span class="ch">\t</span><span class="st">&quot;</span>,
             <span class="dt">row.names =</span> <span class="ot">FALSE</span>)</code></pre>
 <p>To asses the accuracies and precisions of the predictions (in the validation set) for particle-size distribution, we need to back-transform the additive log-ratio transformed variables to the original clay, silt and sand contents:</p>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="co">## Alr back-transformations</span>
-<span class="co">## Clay contents</span>
+<pre class="sourceCode r"><code class="sourceCode r">## Alr back-transformations
+## Clay contents
 valClay_alr &lt;-<span class="st"> </span><span class="dv">100</span> <span class="op">*</span><span class="st"> </span><span class="kw">exp</span>(pred_val_alrclay)<span class="op">/</span>(<span class="dv">1</span> <span class="op">+</span><span class="st"> </span><span class="kw">exp</span>(pred_val_alrclay) <span class="op">+</span><span class="st"> </span><span class="kw">exp</span>(pred_val_alrsilt))
-<span class="co">## Silt contents</span>
+## Silt contents
 valSilt_alr &lt;-<span class="st"> </span><span class="dv">100</span> <span class="op">*</span><span class="st"> </span><span class="kw">exp</span>(pred_val_alrsilt)<span class="op">/</span>(<span class="dv">1</span> <span class="op">+</span><span class="st"> </span><span class="kw">exp</span>(pred_val_alrclay) <span class="op">+</span><span class="st"> </span><span class="kw">exp</span>(pred_val_alrsilt))
-<span class="co">## Sand contents</span>
+## Sand contents
 valSand_alr &lt;-<span class="st"> </span><span class="dv">100</span> <span class="op">*</span><span class="st"> </span><span class="dv">1</span><span class="op">/</span>(<span class="dv">1</span> <span class="op">+</span><span class="st"> </span><span class="kw">exp</span>(pred_val_alrclay) <span class="op">+</span><span class="st"> </span><span class="kw">exp</span>(pred_val_alrsilt))</code></pre>
 <p>Now we can compute the parameters to asses accuracies and precisions:</p>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="co">## Clay content </span>
-<span class="co">## R2</span>
+<pre class="sourceCode r"><code class="sourceCode r">## Clay content 
+## R2
 valrestuls<span class="op">$</span>R2[valrestuls<span class="op">$</span>Property <span class="op">==</span><span class="st"> &quot;Clay&quot;</span>] &lt;-<span class="st"> </span>(<span class="kw">cor</span>(valida<span class="op">$</span>Clay, valClay_alr))<span class="op">^</span><span class="dv">2</span>
 <span class="co"># RMSE</span>
 valrestuls<span class="op">$</span>RMSE[valrestuls<span class="op">$</span>Property <span class="op">==</span><span class="st"> &quot;Clay&quot;</span>] &lt;-<span class="st"> </span><span class="kw">mean</span>((valida<span class="op">$</span>Clay <span class="op">-</span><span class="st"> </span>valClay_alr)<span class="op">^</span><span class="dv">2</span>)<span class="op">^</span><span class="fl">0.5</span>
 <span class="co"># ME</span>
 valrestuls<span class="op">$</span>ME[valrestuls<span class="op">$</span>Property <span class="op">==</span><span class="st"> &quot;Clay&quot;</span>] &lt;-<span class="st">  </span><span class="kw">mean</span>(valida<span class="op">$</span>Clay <span class="op">-</span><span class="st"> </span>valClay_alr)
 
-<span class="co">## Silt content </span>
-<span class="co">## R2</span>
+## Silt content 
+## R2
 valrestuls<span class="op">$</span>R2[valrestuls<span class="op">$</span>Property <span class="op">==</span><span class="st"> &quot;Silt&quot;</span>] &lt;-<span class="st"> </span>(<span class="kw">cor</span>(valida<span class="op">$</span>Silt, valSilt_alr))<span class="op">^</span><span class="dv">2</span>
 <span class="co"># RMSE</span>
 valrestuls<span class="op">$</span>RMSE[valrestuls<span class="op">$</span>Property <span class="op">==</span><span class="st"> &quot;Silt&quot;</span>] &lt;-<span class="st"> </span><span class="kw">mean</span>((valida<span class="op">$</span>Silt <span class="op">-</span><span class="st"> </span>valSilt_alr)<span class="op">^</span><span class="dv">2</span>)<span class="op">^</span><span class="fl">0.5</span>
 <span class="co"># ME</span>
 valrestuls<span class="op">$</span>ME[valrestuls<span class="op">$</span>Property <span class="op">==</span><span class="st"> &quot;Silt&quot;</span>] &lt;-<span class="st">  </span><span class="kw">mean</span>(valida<span class="op">$</span>Silt <span class="op">-</span><span class="st"> </span>valSilt_alr)
 
-<span class="co">## Sand content </span>
-<span class="co">## R2</span>
+## Sand content 
+## R2
 valrestuls<span class="op">$</span>R2[valrestuls<span class="op">$</span>Property <span class="op">==</span><span class="st"> &quot;Sand&quot;</span>] &lt;-<span class="st"> </span>(<span class="kw">cor</span>(valida<span class="op">$</span>Sand, valSand_alr))<span class="op">^</span><span class="dv">2</span>
 <span class="co"># RMSE</span>
 valrestuls<span class="op">$</span>RMSE[valrestuls<span class="op">$</span>Property <span class="op">==</span><span class="st"> &quot;Sand&quot;</span>] &lt;-<span class="st"> </span><span class="kw">mean</span>((valida<span class="op">$</span>Sand <span class="op">-</span><span class="st"> </span>valSand_alr)<span class="op">^</span><span class="dv">2</span>)<span class="op">^</span><span class="fl">0.5</span>
@@ -425,7 +427,7 @@ vnirpredictions &lt;-<span class="st"> </span><span class="kw">data.frame</span>
                               <span class="dt">alr_Clay_spec =</span> <span class="kw">rep</span>(<span class="ot">NA</span>, <span class="kw">nrow</span>(pred)),
                               <span class="dt">alr_Silt_spec =</span> <span class="kw">rep</span>(<span class="ot">NA</span>, <span class="kw">nrow</span>(pred)))
 
-<span class="co">## Add additional relevant information from the original prediction set</span>
+## Add additional relevant information from the original prediction set
 vnirpredictions &lt;-<span class="st"> </span><span class="kw">cbind</span>(pred[,<span class="kw">c</span>(<span class="st">&quot;ID&quot;</span>, 
                                  <span class="st">&quot;POINT_X&quot;</span>, 
                                  <span class="st">&quot;POINT_Y&quot;</span>,
@@ -438,7 +440,7 @@ vnirpredictions &lt;-<span class="st"> </span><span class="kw">cbind</span>(pred
                                  <span class="st">&quot;alr_Silt&quot;</span>)], 
                          vnirpredictions)
 
-<span class="co">## Re-encode the set variable to &quot;prediction&quot;</span>
+## Re-encode the set variable to &quot;prediction&quot;
 vnirpredictions<span class="op">$</span>set &lt;-<span class="st"> </span><span class="kw">factor</span>(<span class="st">&quot;prediction&quot;</span>)</code></pre>
 <p>For exchangeable Ca<sup>2+</sup> predictions…</p>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Predict Ca in the prediction set based on the optimized threshold</span>
@@ -453,7 +455,7 @@ sbl_ca_pred &lt;-<span class="st"> </span><span class="kw">mbl</span>(<span clas
                    <span class="dt">k.range =</span> kminmax,
                    <span class="dt">pls.c =</span> pls.f,
                    <span class="dt">method =</span> rmethod)
-<span class="co">## get the predicted values and store them in nirpredictions</span>
+## get the predicted values and store them in nirpredictions
 vnirpredictions<span class="op">$</span>Ca_spec &lt;-<span class="st"> </span><span class="kw">getPredictions</span>(sbl_ca_pred)[,<span class="dv">1</span>]</code></pre>
 <p>For <span class="math inline">\(alr(clay)\)</span> predictions…</p>
 <pre class="sourceCode r"><code class="sourceCode r">sbl_alrclay_pred &lt;-<span class="st"> </span><span class="kw">mbl</span>(<span class="dt">Yr =</span> train<span class="op">$</span>alr_Clay, 
@@ -466,7 +468,7 @@ vnirpredictions<span class="op">$</span>Ca_spec &lt;-<span class="st"> </span><s
                         <span class="dt">k.range =</span> kminmax,
                         <span class="dt">pls.c =</span> pls.f,
                         <span class="dt">method =</span> rmethod)
-<span class="co">## get the predicted values and store them in nirpredictions</span>
+## get the predicted values and store them in nirpredictions
 vnirpredictions<span class="op">$</span>alr_Clay_spec &lt;-<span class="st"> </span><span class="kw">getPredictions</span>(sbl_alrclay_pred)[,<span class="dv">1</span>]</code></pre>
 <p>For <span class="math inline">\(alr(silt)\)</span> predictions…</p>
 <pre class="sourceCode r"><code class="sourceCode r">sbl_alrsilt_pred &lt;-<span class="st"> </span><span class="kw">mbl</span>(<span class="dt">Yr =</span> train<span class="op">$</span>alr_Silt, 
@@ -479,7 +481,7 @@ vnirpredictions<span class="op">$</span>alr_Clay_spec &lt;-<span class="st"> </s
                         <span class="dt">k.range =</span> kminmax,
                         <span class="dt">pls.c =</span> pls.f,
                         <span class="dt">method =</span> rmethod)
-<span class="co">## get the predicted values and store them in nirpredictions</span>
+## get the predicted values and store them in nirpredictions
 vnirpredictions<span class="op">$</span>alr_Silt_spec &lt;-<span class="st"> </span><span class="kw">getPredictions</span>(sbl_alrsilt_pred)[,<span class="dv">1</span>]</code></pre>
 <p>Examine the <code>vnirpredictions</code> object…</p>
 <pre class="sourceCode r"><code class="sourceCode r">vnirpredictions
