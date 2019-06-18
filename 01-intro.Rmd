@@ -16,7 +16,7 @@ library(ggmap)
 require(rgdal)
 ```
 
-```{r, echo = FALSE, eval = TRUE}
+```{r, echo = FALSE, eval = TRUE, fig.cap = "View of the study area"}
 shape <- readOGR(dsn = "./maps/poly",
                  layer = "lim_poly",
                  verbose = FALSE)

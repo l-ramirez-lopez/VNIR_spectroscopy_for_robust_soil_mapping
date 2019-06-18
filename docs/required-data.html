@@ -227,6 +227,23 @@ data &lt;-<span class="st"> </span><span class="kw">readRDS</span>(<span class="
 <pre class="sourceCode r"><code class="sourceCode r">nirfile &lt;-<span class="st"> </span><span class="kw">file</span>(<span class="st">&quot;https://github.com/l-ramirez-lopez/VNIR_spectroscopy_for_robust_soil_mapping/raw/master/SoilNIRSaoPaulo.rds&quot;</span>)
 data &lt;-<span class="st"> </span><span class="kw">readRDS</span>(nirfile)
 <span class="kw">names</span>(data)</code></pre>
+<pre><code>##  [1] &quot;Nr&quot;      &quot;ID&quot;      &quot;POINT_X&quot; &quot;POINT_Y&quot; &quot;Sand&quot;    &quot;Silt&quot;    &quot;Clay&quot;   
+##  [8] &quot;Ca&quot;      &quot;set&quot;     &quot;spc&quot;</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r">obg &lt;-<span class="st"> </span><span class="kw">par</span>()<span class="op">$</span>bg
+<span class="kw">par</span>(<span class="dt">bg =</span> <span class="kw">rgb</span>(<span class="fl">0.11</span>, <span class="fl">0.12</span>, <span class="fl">0.17</span>))
+tcol &lt;-<span class="st"> </span><span class="kw">rgb</span>(<span class="fl">0.6</span>, <span class="fl">0.6</span>, <span class="fl">0.6</span>, <span class="fl">0.8</span>)
+scol &lt;-<span class="st"> </span><span class="kw">rgb</span>(<span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">0</span>, <span class="fl">0.5</span>)
+<span class="kw">matplot</span>(<span class="dt">x =</span> <span class="kw">as.numeric</span>(<span class="kw">colnames</span>(data<span class="op">$</span>spc)), <span class="dt">y =</span> <span class="kw">t</span>(data<span class="op">$</span>spc), <span class="dt">type =</span> <span class="st">&quot;l&quot;</span>, <span class="dt">lty =</span> <span class="dv">1</span>, 
+                    <span class="dt">col =</span> scol, <span class="dt">xlab =</span> <span class="st">&quot;wavelength (nm)&quot;</span>, <span class="dt">ylab =</span> <span class="st">&quot;Absorbance&quot;</span>, <span class="dt">col.axis =</span> tcol, 
+                    <span class="dt">col.lab =</span> tcol)
+<span class="kw">grid</span>(<span class="dt">lty =</span> <span class="dv">1</span>, <span class="dt">col =</span> tcol)</code></pre>
+<div class="figure"><span id="fig:unnamed-chunk-5"></span>
+<img src="soilmappingwithvnir_files/figure-html/unnamed-chunk-5-1.png" alt="Spectra in the SoilNIRSaoPaulo dataset" width="672" />
+<p class="caption">
+Figure 3.1: Spectra in the SoilNIRSaoPaulo dataset
+</p>
+</div>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">par</span>(<span class="dt">bg =</span> obg)</code></pre>
 <p>In addition you also need a <code>R</code> object of class (<code>SpatialPolygonsDataFrame</code> of the package <code>sp</code>) which contains the polygon of the study area. You can also download the file (polygon.rds) containing this object by clicking <a href="https://github.com/l-ramirez-lopez/VNIR_spectroscopy_for_robust_soil_mapping/raw/master/polygon.rds">here</a>.</p>
 
 </div>

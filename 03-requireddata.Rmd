@@ -30,10 +30,30 @@ data <- readRDS("SoilNIRSaoPaulo.rds")
 
 Alternatively, you can also read the file directly from the [GitHub repository of the paper](https://github.com/l-ramirez-lopez/VNIR_spectroscopy_for_robust_soil_mapping):
 
-```{r, eval = FALSE}
+```{r, eval = TRUE}
 nirfile <- file("https://github.com/l-ramirez-lopez/VNIR_spectroscopy_for_robust_soil_mapping/raw/master/SoilNIRSaoPaulo.rds")
 data <- readRDS(nirfile)
 names(data)
 ```
+
+
+```{r, eval = TRUE, fig.cap = "Spectra in the SoilNIRSaoPaulo dataset"}
+obg <- par()$bg 
+par(bg = rgb(0.11, 0.12, 0.17))
+tcol <- rgb(0.6,0.6,0.6,0.8)
+scol <- rgb(0, 1, 0, 0.5)
+matplot(x = as.numeric(colnames(data$spc)),
+        y = t(data$spc),
+        type = "l",
+        lty = 1,
+        col = scol,
+        xlab = "wavelength (nm)",
+        ylab = "Absorbance", 
+        col.axis = tcol, 
+        col.lab = tcol)
+grid(lty = 1, col = tcol)
+par(bg = obg)
+```
+
 
 In addition you also need a `R` object of class (`SpatialPolygonsDataFrame` of the package `sp`) which contains the polygon of the study area. You can also download the file (polygon.rds) containing this object by clicking [here](https://github.com/l-ramirez-lopez/VNIR_spectroscopy_for_robust_soil_mapping/raw/master/polygon.rds).
