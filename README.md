@@ -8,7 +8,7 @@ You can access the paper [here](https://onlinelibrary.wiley.com/doi/10.1111/ejss
 
 and all the code and data [here](https://l-ramirez-lopez.github.io/VNIR_spectroscopy_for_robust_soil_mapping).
 
-For more information, please contact us (ramirez.lopez.leo@gmail.com or Alexandre Wadoux alexandre.wadoux@yahoo.fr).
+For more information, please contact us (ramirez.lopez.leo@gmail.com or alexandre.wadoux@yahoo.fr).
 
 Thanks for visiting,
 
