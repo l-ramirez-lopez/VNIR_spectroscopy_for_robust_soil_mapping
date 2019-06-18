@@ -41,7 +41,7 @@ Plot the spectra of the loaded data..
 obg <- par()$bg 
 par(bg = rgb(0.11, 0.12, 0.17))
 tcol <- rgb(0.6,0.6,0.6,0.8)
-scol <- rgb(0, 1, 0, 0.5)
+scol <- rgb(0, 1, 0, 0.2)
 matplot(x = as.numeric(colnames(data$spc)),
         y = t(data$spc),
         type = "l",

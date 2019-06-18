@@ -150,6 +150,9 @@
 In the spirit of reproducible research, here we share the data and the computational code
 used for carrying out the analyses presented in our paper \href{https://onlinelibrary.wiley.com/doi/10.1111/ejss.12752}{``Robust soil mapping at the farm scale with vis-NIR spectroscopy''} which is by the way open access. Before you go thorugh this code we strongly recoment to read our paper.
 
+\begin{figure}
+\includegraphics[width=0.9\linewidth]{./maps/paperimg} \end{figure}
+
 \hypertarget{intro}{%
 \chapter{Introduction}\label{intro}}
 
@@ -164,6 +167,10 @@ Sustainable agriculture practices are often hampered by the prohibitive costs as
 \section{Study area}\label{study-area}}
 
 The study area is located in Brazil between the municipalities of Barra Bonita and Mineiros do Tiete (in the state of Sao Paulo).
+
+\hypertarget{htmlwidget-49e0e3650e34c81eed9c}{}
+
+\label{fig:unnamed-chunk-2}View of the study area
 
 \hypertarget{in-case-of-commentsquestionsissues}{%
 \section{In case of comments/questions/issues}\label{in-case-of-commentsquestionsissues}}
@@ -261,6 +268,39 @@ Alternatively, you can also read the file directly from the \href{https://github
 \NormalTok{nirfile <-}\StringTok{ }\KeywordTok{file}\NormalTok{(}\StringTok{"https://github.com/l-ramirez-lopez/VNIR_spectroscopy_for_robust_soil_mapping/raw/master/SoilNIRSaoPaulo.rds"}\NormalTok{)}
 \NormalTok{data <-}\StringTok{ }\KeywordTok{readRDS}\NormalTok{(nirfile)}
 \KeywordTok{names}\NormalTok{(data)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##  [1] "Nr"      "ID"      "POINT_X" "POINT_Y" "Sand"    "Silt"    "Clay"   
+##  [8] "Ca"      "set"     "spc"
+\end{verbatim}
+
+Plot the spectra of the loaded data..
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{obg <-}\StringTok{ }\KeywordTok{par}\NormalTok{()}\OperatorTok{$}\NormalTok{bg}
+\KeywordTok{par}\NormalTok{(}\DataTypeTok{bg =} \KeywordTok{rgb}\NormalTok{(}\FloatTok{0.11}\NormalTok{, }\FloatTok{0.12}\NormalTok{, }\FloatTok{0.17}\NormalTok{))}
+\NormalTok{tcol <-}\StringTok{ }\KeywordTok{rgb}\NormalTok{(}\FloatTok{0.6}\NormalTok{, }\FloatTok{0.6}\NormalTok{, }\FloatTok{0.6}\NormalTok{, }\FloatTok{0.8}\NormalTok{)}
+\NormalTok{scol <-}\StringTok{ }\KeywordTok{rgb}\NormalTok{(}\DecValTok{0}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{0}\NormalTok{, }\FloatTok{0.3}\NormalTok{)}
+\KeywordTok{matplot}\NormalTok{(}\DataTypeTok{x =} \KeywordTok{as.numeric}\NormalTok{(}\KeywordTok{colnames}\NormalTok{(data}\OperatorTok{$}\NormalTok{spc)), }\DataTypeTok{y =} \KeywordTok{t}\NormalTok{(data}\OperatorTok{$}\NormalTok{spc), }\DataTypeTok{type =} \StringTok{"l"}\NormalTok{, }\DataTypeTok{lty =} \DecValTok{1}\NormalTok{, }
+                    \DataTypeTok{col =}\NormalTok{ scol, }\DataTypeTok{xlab =} \StringTok{"wavelength (nm)"}\NormalTok{, }\DataTypeTok{ylab =} \StringTok{"Absorbance"}\NormalTok{, }\DataTypeTok{col.axis =}\NormalTok{ tcol, }
+                    \DataTypeTok{col.lab =}\NormalTok{ tcol)}
+\KeywordTok{grid}\NormalTok{(}\DataTypeTok{lty =} \DecValTok{1}\NormalTok{, }\DataTypeTok{col =}\NormalTok{ tcol)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{figure}
+\centering
+\includegraphics{soilmappingwithvnir_files/figure-latex/unnamed-chunk-5-1.pdf}
+\caption{\label{fig:unnamed-chunk-5}Spectra in the SoilNIRSaoPaulo dataset}
+\end{figure}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{## reset the background color of your plots to the original color}
+\KeywordTok{par}\NormalTok{(}\DataTypeTok{bg =}\NormalTok{ obg)}
 \end{Highlighting}
 \end{Shaded}
 
