@@ -6,8 +6,24 @@ bookdown::gitbook:
         <li><a href="./">Soil mapping with VNIR</a></li>
       after: |
         <li><a href="https://github.com/rstudio/bookdown" target="blank">End</a></li>
-    edit: https://github.com/rstudio/bookdown-demo/edit/master/%s
     download: ["pdf", "epub"]
+    toolbar:
+      position: fixed
+    edit : null
+    search: yes
+    fontsettings:
+      theme: night
+      family: sans
+      size: 2
+    sharing:
+      facebook: yes
+      twitter: yes
+      google: no
+      linkedin: no
+      weibo: no
+      instapaper: no
+      vk: no
+      all: ['facebook', 'google', 'twitter', 'linkedin', 'weibo', 'instapaper']
 bookdown::pdf_book:
   includes:
     in_header: preamble.tex

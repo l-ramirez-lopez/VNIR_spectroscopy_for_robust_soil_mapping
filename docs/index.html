@@ -209,6 +209,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <h1>Preface</h1>
 <p>In the spirit of reproducible research, here we share the data and the computational code
 used for carrying out the analyses presented in our paper <a href="https://onlinelibrary.wiley.com/doi/10.1111/ejss.12752">“Robust soil mapping at the farm scale with vis-NIR spectroscopy”</a> which is by the way open access. Before you go thorugh this code we strongly recoment to read our paper.</p>
+<p><img src="maps/paperimg.png" width="90%" /></p>
 
 </div>
             </section>
@@ -242,14 +243,11 @@ gitbook.start({
 "all": ["facebook", "google", "twitter", "linkedin", "weibo", "instapaper"]
 },
 "fontsettings": {
-"theme": "white",
+"theme": "night",
 "family": "sans",
 "size": 2
 },
-"edit": {
-"link": "https://github.com/rstudio/bookdown-demo/edit/master/index.Rmd",
-"text": "Edit"
-},
+"edit": null,
 "history": {
 "link": null,
 "text": null
@@ -257,7 +255,11 @@ gitbook.start({
 "download": ["soilmappingwithvnir.pdf", "soilmappingwithvnir.epub"],
 "toc": {
 "collapse": "subsection"
-}
+},
+"toolbar": {
+"position": "fixed"
+},
+"search": true
 });
 });
 </script>
