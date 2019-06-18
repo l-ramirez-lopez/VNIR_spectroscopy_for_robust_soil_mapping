@@ -36,7 +36,7 @@ data <- readRDS(nirfile)
 names(data)
 ```
 
-
+Plot the spectra of the loaded data..
 ```{r, eval = TRUE, fig.cap = "Spectra in the SoilNIRSaoPaulo dataset"}
 obg <- par()$bg 
 par(bg = rgb(0.11, 0.12, 0.17))
@@ -52,6 +52,9 @@ matplot(x = as.numeric(colnames(data$spc)),
         col.axis = tcol, 
         col.lab = tcol)
 grid(lty = 1, col = tcol)
+
+## reset the background color of your plots 
+## to the original color
 par(bg = obg)
 ```
 
