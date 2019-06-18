@@ -25,7 +25,7 @@
 <meta name="author" content="Alex Wadoux (Wageningen University, Netherlands)" />
 
 
-<meta name="date" content="2019-06-17" />
+<meta name="date" content="2019-06-18" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -63,7 +63,7 @@
 <style type="text/css">
 a.sourceLine { display: inline-block; line-height: 1.25; }
 a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
-a.sourceLine:empty { height: 1.2em; position: absolute; }
+a.sourceLine:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
 code.sourceCode { white-space: pre; position: relative; }
 div.sourceCode { margin: 1em 0; }
@@ -76,13 +76,11 @@ code.sourceCode { white-space: pre-wrap; }
 a.sourceLine { text-indent: -1em; padding-left: 1em; }
 }
 pre.numberSource a.sourceLine
-  { position: relative; }
-pre.numberSource a.sourceLine:empty
-  { position: absolute; }
+  { position: relative; left: -4em; }
 pre.numberSource a.sourceLine::before
-  { content: attr(data-line-number);
-    position: absolute; left: -5em; text-align: right; vertical-align: baseline;
-    border: none; pointer-events: all;
+  { content: attr(title);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; pointer-events: all; display: inline-block;
     -webkit-touch-callout: none; -webkit-user-select: none;
     -khtml-user-select: none; -moz-user-select: none;
     -ms-user-select: none; user-select: none;
@@ -228,102 +226,66 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <ul>
 <li><p>The values of the samples that are labeled as <code>train</code> come from the conventional laboratory methods (e.g. for Ca_spec the values of these samples for this variable are identical to the corresponding values in the variable Ca).</p></li>
 <li><p>The values of the samples that are labeled as <code>prediction</code> come from the predictions done with the respective vis-NIR model.</p></li>
-<li><p>The values of the samples that are labeled as <code>validation</code> are treated as missing (i.e. <code>NA</code>s).</p></li>
+<li><p>The values of the samples that are labeled as <code>validation</code> are treated as missing (i.e. <code>NA</code>s).</p></li>
 </ul>
-<pre class="sourceCode r"><code class="sourceCode r">## samples for the set &quot;prediction&quot;
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co">## samples for the set &#39;prediction&#39;</span>
 vnirpredictions
 
-## samples for the set &quot;train&quot;
-vnirtrain &lt;-<span class="st"> </span>train[ ,<span class="kw">c</span>(<span class="st">&quot;ID&quot;</span>,<span class="st">&quot;POINT_X&quot;</span>,<span class="st">&quot;POINT_Y&quot;</span>,<span class="st">&quot;set&quot;</span>, <span class="st">&quot;Ca&quot;</span>, <span class="st">&quot;Clay&quot;</span>, <span class="st">&quot;Silt&quot;</span>, <span class="st">&quot;Sand&quot;</span>, <span class="st">&quot;alr_Clay&quot;</span>,<span class="st">&quot;alr_Silt&quot;</span>)]
-vnirtrain<span class="op">$</span>set &lt;-<span class="st"> </span><span class="kw">factor</span>(<span class="st">&quot;train&quot;</span>) 
+<span class="co">## samples for the set &#39;train&#39;</span>
+vnirtrain &lt;-<span class="st"> </span>train[, <span class="kw">c</span>(<span class="st">&quot;ID&quot;</span>, <span class="st">&quot;POINT_X&quot;</span>, <span class="st">&quot;POINT_Y&quot;</span>, <span class="st">&quot;set&quot;</span>, <span class="st">&quot;Ca&quot;</span>, <span class="st">&quot;Clay&quot;</span>, <span class="st">&quot;Silt&quot;</span>, 
+                    <span class="st">&quot;Sand&quot;</span>, <span class="st">&quot;alr_Clay&quot;</span>, <span class="st">&quot;alr_Silt&quot;</span>)]
+vnirtrain<span class="op">$</span>set &lt;-<span class="st"> </span><span class="kw">factor</span>(<span class="st">&quot;train&quot;</span>)
 vnirtrain<span class="op">$</span>Ca_spec &lt;-<span class="st"> </span>vnirtrain<span class="op">$</span>Ca
 vnirtrain<span class="op">$</span>alr_Clay_spec &lt;-<span class="st"> </span>vnirtrain<span class="op">$</span>alr_Clay
 vnirtrain<span class="op">$</span>alr_Silt_spec &lt;-<span class="st"> </span>vnirtrain<span class="op">$</span>alr_Silt
 
-## samples for the set &quot;validation&quot;
-vnirvalidation &lt;-<span class="st"> </span>valida[ ,<span class="kw">c</span>(<span class="st">&quot;ID&quot;</span>,<span class="st">&quot;POINT_X&quot;</span>,<span class="st">&quot;POINT_Y&quot;</span>,<span class="st">&quot;set&quot;</span>, <span class="st">&quot;Ca&quot;</span>,<span class="st">&quot;Clay&quot;</span>, <span class="st">&quot;Silt&quot;</span>, <span class="st">&quot;Sand&quot;</span>, <span class="st">&quot;alr_Clay&quot;</span>,<span class="st">&quot;alr_Silt&quot;</span>)]
+<span class="co">## samples for the set &#39;validation&#39;</span>
+vnirvalidation &lt;-<span class="st"> </span>valida[, <span class="kw">c</span>(<span class="st">&quot;ID&quot;</span>, <span class="st">&quot;POINT_X&quot;</span>, <span class="st">&quot;POINT_Y&quot;</span>, <span class="st">&quot;set&quot;</span>, <span class="st">&quot;Ca&quot;</span>, <span class="st">&quot;Clay&quot;</span>, 
+                    <span class="st">&quot;Silt&quot;</span>, <span class="st">&quot;Sand&quot;</span>, <span class="st">&quot;alr_Clay&quot;</span>, <span class="st">&quot;alr_Silt&quot;</span>)]
 vnirvalidation<span class="op">$</span>set &lt;-<span class="st"> </span><span class="kw">factor</span>(vnirvalidation<span class="op">$</span>set)
 vnirvalidation<span class="op">$</span>Ca_spec &lt;-<span class="st"> </span><span class="ot">NA</span>
 vnirvalidation<span class="op">$</span>alr_Clay_spec &lt;-<span class="st"> </span><span class="ot">NA</span>
 vnirvalidation<span class="op">$</span>alr_Silt_spec &lt;-<span class="st"> </span><span class="ot">NA</span></code></pre>
 <p>Now create a single <code>data.frame</code> containing the three data sets…</p>
-<pre class="sourceCode r"><code class="sourceCode r">vniraugmented &lt;-<span class="st"> </span><span class="kw">rbind</span>(vnirtrain, 
-                       vnirpredictions,
-                       vnirvalidation)
+<pre class="sourceCode r"><code class="sourceCode r">vniraugmented &lt;-<span class="st"> </span><span class="kw">rbind</span>(vnirtrain, vnirpredictions, vnirvalidation)
 
 vniraugmented<span class="op">$</span>layer &lt;-<span class="st"> </span><span class="kw">factor</span>(<span class="kw">substr</span>(vniraugmented<span class="op">$</span>ID, <span class="dv">1</span>, <span class="dv">1</span>))
 
-## Reorganize the variables
-vniraugmented &lt;-<span class="st"> </span>vniraugmented[,<span class="kw">c</span>(<span class="st">&quot;ID&quot;</span>, 
-                                  <span class="st">&quot;POINT_X&quot;</span>, 
-                                  <span class="st">&quot;POINT_Y&quot;</span>, 
-                                  <span class="st">&quot;layer&quot;</span>, 
-                                  <span class="st">&quot;set&quot;</span>, 
-                                  <span class="st">&quot;Ca&quot;</span>, 
-                                  <span class="st">&quot;Clay&quot;</span>, 
-                                  <span class="st">&quot;Silt&quot;</span>, 
-                                  <span class="st">&quot;Sand&quot;</span>,
-                                  <span class="st">&quot;alr_Clay&quot;</span>, 
-                                  <span class="st">&quot;alr_Silt&quot;</span>, 
-                                  <span class="st">&quot;Ca_spec&quot;</span>, 
-                                  <span class="st">&quot;alr_Clay_spec&quot;</span>, 
-                                  <span class="st">&quot;alr_Silt_spec&quot;</span>)]</code></pre>
+<span class="co">## Reorganize the variables</span>
+vniraugmented &lt;-<span class="st"> </span>vniraugmented[, <span class="kw">c</span>(<span class="st">&quot;ID&quot;</span>, <span class="st">&quot;POINT_X&quot;</span>, <span class="st">&quot;POINT_Y&quot;</span>, <span class="st">&quot;layer&quot;</span>, <span class="st">&quot;set&quot;</span>, 
+                    <span class="st">&quot;Ca&quot;</span>, <span class="st">&quot;Clay&quot;</span>, <span class="st">&quot;Silt&quot;</span>, <span class="st">&quot;Sand&quot;</span>, <span class="st">&quot;alr_Clay&quot;</span>, <span class="st">&quot;alr_Silt&quot;</span>, <span class="st">&quot;Ca_spec&quot;</span>, <span class="st">&quot;alr_Clay_spec&quot;</span>, 
+                    <span class="st">&quot;alr_Silt_spec&quot;</span>)]</code></pre>
 <p>Compute some statistics for the final data set…</p>
-<pre class="sourceCode r"><code class="sourceCode r">## Names of the properties
-props &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;Ca&quot;</span>,
-           <span class="st">&quot;Clay&quot;</span>,
-           <span class="st">&quot;Silt&quot;</span>,
-           <span class="st">&quot;Sand&quot;</span>,
-           <span class="st">&quot;alr_Clay&quot;</span>,
-           <span class="st">&quot;alr_Silt&quot;</span>,
-           <span class="st">&quot;Ca_spec&quot;</span>,
-           <span class="st">&quot;alr_Clay_spec&quot;</span>,
-           <span class="st">&quot;alr_Silt_spec&quot;</span>)
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co">## Names of the properties</span>
+props &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;Ca&quot;</span>, <span class="st">&quot;Clay&quot;</span>, <span class="st">&quot;Silt&quot;</span>, <span class="st">&quot;Sand&quot;</span>, <span class="st">&quot;alr_Clay&quot;</span>, <span class="st">&quot;alr_Silt&quot;</span>, <span class="st">&quot;Ca_spec&quot;</span>, 
+                    <span class="st">&quot;alr_Clay_spec&quot;</span>, <span class="st">&quot;alr_Silt_spec&quot;</span>)
 
-## Compute the statistics: mean, standard deviation and 
-##  the quantiles (&quot;0%&quot;, &quot;25%&quot;, &quot;50%&quot;, &quot;75%&quot; and&quot;100%&quot;)
-statsprops &lt;-<span class="st"> </span><span class="kw">aggregate</span>(vniraugmented[, props],
-                        <span class="dt">by =</span> <span class="kw">list</span>(<span class="dt">set =</span> vniraugmented<span class="op">$</span>set,
-                                  <span class="dt">layer =</span> vniraugmented<span class="op">$</span>layer),
-                        <span class="dt">FUN =</span> <span class="cf">function</span>(x){
-                          <span class="kw">c</span>(<span class="dt">mean =</span> <span class="kw">mean</span>(<span class="kw">as.matrix</span>(x), <span class="dt">na.rm =</span> <span class="ot">TRUE</span>),
-                            <span class="dt">sd =</span> <span class="kw">sd</span>(<span class="kw">as.matrix</span>(x), <span class="dt">na.rm =</span> <span class="ot">TRUE</span>),
-                            <span class="kw">quantile</span>(x, <span class="dt">na.rm =</span> <span class="ot">TRUE</span>))
-                        })
+<span class="co">## Compute the statistics: mean, standard deviation and the quantiles (&#39;0%&#39;,</span>
+<span class="co">## &#39;25%&#39;, &#39;50%&#39;, &#39;75%&#39; and&#39;100%&#39;)</span>
+statsprops &lt;-<span class="st"> </span><span class="kw">aggregate</span>(vniraugmented[, props], <span class="dt">by =</span> <span class="kw">list</span>(<span class="dt">set =</span> vniraugmented<span class="op">$</span>set, 
+                    <span class="dt">layer =</span> vniraugmented<span class="op">$</span>layer), <span class="dt">FUN =</span> <span class="cf">function</span>(x) {
+                    <span class="kw">c</span>(<span class="dt">mean =</span> <span class="kw">mean</span>(<span class="kw">as.matrix</span>(x), <span class="dt">na.rm =</span> <span class="ot">TRUE</span>), <span class="dt">sd =</span> <span class="kw">sd</span>(<span class="kw">as.matrix</span>(x), <span class="dt">na.rm =</span> <span class="ot">TRUE</span>), 
+                                        <span class="kw">quantile</span>(x, <span class="dt">na.rm =</span> <span class="ot">TRUE</span>))
+})
 
-## Reorganize the object containing the results of the statistics
-statsprops &lt;-<span class="st"> </span><span class="kw">lapply</span>(props, 
-                     <span class="dt">FUN =</span> <span class="cf">function</span>(x, object, ids){
-                       object &lt;-<span class="st"> </span><span class="kw">cbind</span>(object[,keep], 
-                                       <span class="kw">as.data.frame</span>(statsquant[[x]]))
-                       
-                     }, 
-                     <span class="dt">object =</span> statsprops,
-                     <span class="dt">ids =</span> <span class="kw">c</span>(<span class="st">&quot;set&quot;</span>, <span class="st">&quot;layer&quot;</span>))
+<span class="co">## Reorganize the object containing the results of the statistics</span>
+statsprops &lt;-<span class="st"> </span><span class="kw">lapply</span>(props, <span class="dt">FUN =</span> <span class="cf">function</span>(x, object, ids) {
+                    object &lt;-<span class="st"> </span><span class="kw">cbind</span>(object[, keep], <span class="kw">as.data.frame</span>(statsquant[[x]]))
+                    
+}, <span class="dt">object =</span> statsprops, <span class="dt">ids =</span> <span class="kw">c</span>(<span class="st">&quot;set&quot;</span>, <span class="st">&quot;layer&quot;</span>))
 <span class="kw">names</span>(statsprops) &lt;-<span class="st"> </span>props
 
 statsprops &lt;-<span class="st"> </span><span class="kw">do.call</span>(<span class="st">&quot;rbind&quot;</span>, statsprops)
 statsprops<span class="op">$</span>property &lt;-<span class="st"> </span><span class="kw">gsub</span>(<span class="st">&quot;.[0-9]&quot;</span>, <span class="st">&quot;&quot;</span>, <span class="kw">rownames</span>(statsprops))
 statsprops[<span class="kw">is.na</span>(statsprops)] &lt;-<span class="st"> </span><span class="ot">NA</span>
 
-## Reorganize the order of the variables
-statsprops &lt;-<span class="st"> </span>statsprops[, <span class="kw">c</span>(<span class="st">&quot;set&quot;</span>, 
-                             <span class="st">&quot;layer&quot;</span>,
-                             <span class="st">&quot;property&quot;</span>,
-                             <span class="st">&quot;mean&quot;</span>,
-                             <span class="st">&quot;sd&quot;</span>,
-                             <span class="st">&quot;0%&quot;</span>,
-                             <span class="st">&quot;25%&quot;</span>,
-                             <span class="st">&quot;50%&quot;</span>,
-                             <span class="st">&quot;75%&quot;</span>,
-                             <span class="st">&quot;100%&quot;</span>)]
+<span class="co">## Reorganize the order of the variables</span>
+statsprops &lt;-<span class="st"> </span>statsprops[, <span class="kw">c</span>(<span class="st">&quot;set&quot;</span>, <span class="st">&quot;layer&quot;</span>, <span class="st">&quot;property&quot;</span>, <span class="st">&quot;mean&quot;</span>, <span class="st">&quot;sd&quot;</span>, <span class="st">&quot;0%&quot;</span>, 
+                    <span class="st">&quot;25%&quot;</span>, <span class="st">&quot;50%&quot;</span>, <span class="st">&quot;75%&quot;</span>, <span class="st">&quot;100%&quot;</span>)]
 
 statsprops</code></pre>
 <p>Optionally, save this data in your working directory</p>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">write.table</span>(<span class="dt">x =</span> vniraugmented, 
-            <span class="dt">file =</span> <span class="st">&quot;vniraugmented.txt&quot;</span>, 
-            <span class="dt">sep =</span> <span class="st">&quot;</span><span class="ch">\t</span><span class="st">&quot;</span>, 
-            <span class="dt">row.names =</span> <span class="ot">FALSE</span>)</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">write.table</span>(<span class="dt">x =</span> vniraugmented, <span class="dt">file =</span> <span class="st">&quot;vniraugmented.txt&quot;</span>, <span class="dt">sep =</span> <span class="st">&quot;</span><span class="ch">\t</span><span class="st">&quot;</span>, <span class="dt">row.names =</span> <span class="ot">FALSE</span>)</code></pre>
 
 </div>
             </section>

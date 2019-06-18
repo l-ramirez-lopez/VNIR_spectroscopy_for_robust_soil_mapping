@@ -25,7 +25,7 @@
 <meta name="author" content="Alex Wadoux (Wageningen University, Netherlands)" />
 
 
-<meta name="date" content="2019-06-17" />
+<meta name="date" content="2019-06-18" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -63,7 +63,7 @@
 <style type="text/css">
 a.sourceLine { display: inline-block; line-height: 1.25; }
 a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
-a.sourceLine:empty { height: 1.2em; position: absolute; }
+a.sourceLine:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
 code.sourceCode { white-space: pre; position: relative; }
 div.sourceCode { margin: 1em 0; }
@@ -76,13 +76,11 @@ code.sourceCode { white-space: pre-wrap; }
 a.sourceLine { text-indent: -1em; padding-left: 1em; }
 }
 pre.numberSource a.sourceLine
-  { position: relative; }
-pre.numberSource a.sourceLine:empty
-  { position: absolute; }
+  { position: relative; left: -4em; }
 pre.numberSource a.sourceLine::before
-  { content: attr(data-line-number);
-    position: absolute; left: -5em; text-align: right; vertical-align: baseline;
-    border: none; pointer-events: all;
+  { content: attr(title);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; pointer-events: all; display: inline-block;
     -webkit-touch-callout: none; -webkit-user-select: none;
     -khtml-user-select: none; -moz-user-select: none;
     -ms-user-select: none; user-select: none;
@@ -206,25 +204,13 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>In order to run all the code presented in the next sections you will need to have the following packages installed</p>
 <hr />
 <p>You can install the required packages using the following code</p>
-<pre class="sourceCode r"><code class="sourceCode r">requiredpackages &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;resemble&quot;</span>,    
-                      <span class="st">&quot;prospectr&quot;</span>,   
-                      <span class="st">&quot;clhs&quot;</span>,        
-                      <span class="st">&quot;matrixStats&quot;</span>, 
-                      <span class="st">&quot;doParallel&quot;</span>,  
-                      <span class="st">&quot;ggplot2&quot;</span>,
-                      <span class="st">&quot;tidyr&quot;</span>,
-                      <span class="st">&quot;tidyverse&quot;</span>,
-                      <span class="st">&quot;georob&quot;</span>, 
-                      <span class="st">&quot;rgdal&quot;</span>,
-                      <span class="st">&quot;raster&quot;</span>,
-                      <span class="st">&quot;RColorBrewer&quot;</span>)
+<pre class="sourceCode r"><code class="sourceCode r">requiredpackages &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;resemble&quot;</span>, <span class="st">&quot;prospectr&quot;</span>, <span class="st">&quot;clhs&quot;</span>, <span class="st">&quot;matrixStats&quot;</span>, <span class="st">&quot;doParallel&quot;</span>, 
+                    <span class="st">&quot;ggplot2&quot;</span>, <span class="st">&quot;tidyr&quot;</span>, <span class="st">&quot;tidyverse&quot;</span>, <span class="st">&quot;georob&quot;</span>, <span class="st">&quot;rgdal&quot;</span>, <span class="st">&quot;raster&quot;</span>, <span class="st">&quot;RColorBrewer&quot;</span>)
 toinstall &lt;-<span class="st"> </span>requiredpackages[<span class="op">!</span>requiredpackages <span class="op">%in%</span><span class="st"> </span><span class="kw">rownames</span>(<span class="kw">installed.packages</span>())]
-<span class="cf">if</span>(<span class="kw">length</span>(toinstall) <span class="op">&gt;</span><span class="st"> </span><span class="dv">0</span>){
-  <span class="kw">install.packages</span>(toinstall)
+<span class="cf">if</span> (<span class="kw">length</span>(toinstall) <span class="op">&gt;</span><span class="st"> </span><span class="dv">0</span>) {
+                    <span class="kw">install.packages</span>(toinstall)
 }
-<span class="kw">lapply</span>(requiredpackages, 
-       <span class="dt">FUN =</span> library, 
-       <span class="dt">character.only =</span> <span class="ot">TRUE</span>)</code></pre>
+<span class="kw">lapply</span>(requiredpackages, <span class="dt">FUN =</span> library, <span class="dt">character.only =</span> <span class="ot">TRUE</span>)</code></pre>
 
 </div>
             </section>

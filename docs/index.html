@@ -25,7 +25,7 @@
 <meta name="author" content="Alex Wadoux (Wageningen University, Netherlands)" />
 
 
-<meta name="date" content="2019-06-17" />
+<meta name="date" content="2019-06-18" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -63,7 +63,7 @@
 <style type="text/css">
 a.sourceLine { display: inline-block; line-height: 1.25; }
 a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
-a.sourceLine:empty { height: 1.2em; position: absolute; }
+a.sourceLine:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
 code.sourceCode { white-space: pre; position: relative; }
 div.sourceCode { margin: 1em 0; }
@@ -76,13 +76,11 @@ code.sourceCode { white-space: pre-wrap; }
 a.sourceLine { text-indent: -1em; padding-left: 1em; }
 }
 pre.numberSource a.sourceLine
-  { position: relative; }
-pre.numberSource a.sourceLine:empty
-  { position: absolute; }
+  { position: relative; left: -4em; }
 pre.numberSource a.sourceLine::before
-  { content: attr(data-line-number);
-    position: absolute; left: -5em; text-align: right; vertical-align: baseline;
-    border: none; pointer-events: all;
+  { content: attr(title);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; pointer-events: all; display: inline-block;
     -webkit-touch-callout: none; -webkit-user-select: none;
     -khtml-user-select: none; -moz-user-select: none;
     -ms-user-select: none; user-select: none;
@@ -205,13 +203,12 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <h1 class="title">R code for Robust soil mapping at the farm scale with vis-NIR spectroscopy (Ramirez-Lopez <em>et al.</em>, 2019)</h1>
 <p class="author"><em>Leo Ramirez-Lopez (BUCHI Labortechnik AG, Switzerland)</em></p>
 <p class="author"><em>Alex Wadoux (Wageningen University, Netherlands)</em></p>
-<p class="date"><em>2019-06-17</em></p>
+<p class="date"><em>2019-06-18</em></p>
 </div>
 <div id="preface" class="section level1 unnumbered">
 <h1>Preface</h1>
 <p>In the spirit of reproducible research, here we share the data and the computational code
 used for carrying out the analyses presented in our paper <a href="https://onlinelibrary.wiley.com/doi/10.1111/ejss.12752">“Robust soil mapping at the farm scale with vis-NIR spectroscopy”</a> which is by the way open access. Before you go thorugh this code we strongly recoment to read our paper.</p>
-<p><img src="maps/paperimg.png" width="100%" /></p>
 
 </div>
             </section>

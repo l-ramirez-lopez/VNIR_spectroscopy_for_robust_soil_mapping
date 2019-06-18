@@ -1023,8 +1023,8 @@ finalmapping <- data.frame(rbind(pred_layer_a, pred_layer_b))
 Define palette of color for the plot
 ```{r, eval = FALSE}
 myPalette <- colorRampPalette(rev(brewer.pal(11, "Spectral")), space = "Lab")
-
 ```
+
 Define some ggplot parameters common to all plots
 ```{r, eval = FALSE}
 gfg <- facet_grid(layer ~ method)
@@ -1043,7 +1043,6 @@ gtheme <- theme_bw() +
         strip.text.x = element_text( size = 25, colour = "black", angle = 0),
         strip.text.y = element_text( size = 25, colour = "black", angle = -90)) 
 glabs <- labs(y = "Northings /m", x = "Eastings /m")
-Define palette of color for the plot
 ```
 Create the maps for Ca^2+^
 ```{r, eval = FALSE}  

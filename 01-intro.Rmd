@@ -9,14 +9,14 @@ Sustainable agriculture practices are often hampered by the prohibitive costs as
 ## Study area
 
 The study area is located in Brazil between the municipalities of Barra Bonita and Mineiros do Tiete (in the state of Sao Paulo).
-```{r include = FALSE}
+```{r include = FALSE, eval = TRUE}
 library(leaflet)
 library(dplyr)
 library(ggmap)
 require(rgdal)
 ```
 
-```{r echo = FALSE}
+```{r, echo = FALSE, eval = TRUE}
 shape <- readOGR(dsn = "./maps/poly",
                  layer = "lim_poly",
                  verbose = FALSE)

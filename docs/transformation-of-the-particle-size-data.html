@@ -25,7 +25,7 @@
 <meta name="author" content="Alex Wadoux (Wageningen University, Netherlands)" />
 
 
-<meta name="date" content="2019-06-17" />
+<meta name="date" content="2019-06-18" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -63,7 +63,7 @@
 <style type="text/css">
 a.sourceLine { display: inline-block; line-height: 1.25; }
 a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
-a.sourceLine:empty { height: 1.2em; position: absolute; }
+a.sourceLine:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
 code.sourceCode { white-space: pre; position: relative; }
 div.sourceCode { margin: 1em 0; }
@@ -76,13 +76,11 @@ code.sourceCode { white-space: pre-wrap; }
 a.sourceLine { text-indent: -1em; padding-left: 1em; }
 }
 pre.numberSource a.sourceLine
-  { position: relative; }
-pre.numberSource a.sourceLine:empty
-  { position: absolute; }
+  { position: relative; left: -4em; }
 pre.numberSource a.sourceLine::before
-  { content: attr(data-line-number);
-    position: absolute; left: -5em; text-align: right; vertical-align: baseline;
-    border: none; pointer-events: all;
+  { content: attr(title);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; pointer-events: all; display: inline-block;
     -webkit-touch-callout: none; -webkit-user-select: none;
     -khtml-user-select: none; -moz-user-select: none;
     -ms-user-select: none; user-select: none;
@@ -208,24 +206,24 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span class="math display">\[Y_{l,i} = \frac{V_{l,i}}{V_{l,r}} \quad \forall \quad i = 1,2,.. (r -1) \quad \forall \quad l \in (A,B)\]</span><br />
 where <span class="math inline">\(Y_{l,i}\)</span> is the resulting transformed variable, <span class="math inline">\(V_{l,i}\)</span> is the ith variable of the set of compositional variables (silt and clay contents) at depth <span class="math inline">\(l\)</span>, <span class="math inline">\(V_{l,r}\)</span> designates a reference compositional variable at depth
 <span class="math inline">\(l\)</span> and <span class="math inline">\(r\)</span> is the total number of compositional variables. In ou paper, we used the sand content as reference (<span class="math inline">\(V_{l,r}\)</span>).</p>
-<pre class="sourceCode r"><code class="sourceCode r">## The above equation can be simply applied in two lines of code
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co">## The above equation can be simply applied in two lines of code</span>
 
-## Calibration dataset
-## alr for silt contnet
+<span class="co">## Calibration dataset</span>
+<span class="co">## alr for silt contnet</span>
 train<span class="op">$</span>alr_Silt &lt;-<span class="st"> </span><span class="kw">log</span>(train<span class="op">$</span>Silt<span class="op">/</span>train<span class="op">$</span>Sand)
-## alr for clay contnet
+<span class="co">## alr for clay contnet</span>
 train<span class="op">$</span>alr_Clay &lt;-<span class="st"> </span><span class="kw">log</span>(train<span class="op">$</span>Clay<span class="op">/</span>train<span class="op">$</span>Sand)
 
-## Validation dataset
-## alr for silt contnet
+<span class="co">## Validation dataset</span>
+<span class="co">## alr for silt contnet</span>
 valida<span class="op">$</span>alr_Silt &lt;-<span class="st"> </span><span class="kw">log</span>(valida<span class="op">$</span>Silt<span class="op">/</span>valida<span class="op">$</span>Sand)
-## alr for clay contnet
+<span class="co">## alr for clay contnet</span>
 valida<span class="op">$</span>alr_Clay &lt;-<span class="st"> </span><span class="kw">log</span>(valida<span class="op">$</span>Clay<span class="op">/</span>valida<span class="op">$</span>Sand)
 
-## Prediction dataset
-## alr for silt contnet
+<span class="co">## Prediction dataset</span>
+<span class="co">## alr for silt contnet</span>
 pred<span class="op">$</span>alr_Silt &lt;-<span class="st"> </span><span class="kw">log</span>(pred<span class="op">$</span>Silt<span class="op">/</span>pred<span class="op">$</span>Sand)
-## alr for clay contnet
+<span class="co">## alr for clay contnet</span>
 pred<span class="op">$</span>alr_Clay &lt;-<span class="st"> </span><span class="kw">log</span>(pred<span class="op">$</span>Clay<span class="op">/</span>pred<span class="op">$</span>Sand)</code></pre>
 
 </div>
