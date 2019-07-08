@@ -108,7 +108,7 @@ results.clhs <-  data.frame(css = css,
                             sddiff = rep(NA, length(css)))
 for(k in 1:repetitions){
   results.clhs[,-1] <- NA
-  
+
   ## Define a file name
   fn <- paste(filerootname, k,".txt", sep = "")
   if(fn %in% list.files()){
@@ -137,6 +137,11 @@ for(k in 1:repetitions){
     results.clhs$msd[i] <- mean(colMeans((j.sc.dens[,-1] - sc.dens[,-1])^2, na.rm = T))
     results.clhs$mndiff[i] <- mean(abs(colMeans(pcaall$scores.std[i.calidx,])))
     results.clhs$sddiff[i] <- mean(abs(colSds(pcaall$scores.std[i.calidx,]) - 1))
+    
+    ## write the results obtained so far...
+    write.table(results.clhs, 
+                file = fn,
+                row.names = FALSE, sep = "\t")
     
     print(results.clhs[1:i,])
   }
