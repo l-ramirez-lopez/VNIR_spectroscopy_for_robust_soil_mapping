@@ -30,6 +30,6 @@ knitr::opts_chunk$set(echo = TRUE,
                       size = "tiny")
 ```
 
-```{r pressure, eval = TRUE, echo = FALSE, fig.cap = "", out.width = '90%'}
+```{r paper, eval = TRUE, echo = FALSE, fig.cap = "", out.width = '90%'}
 knitr::include_graphics("./maps/paperimg.png")
 ```

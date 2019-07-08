@@ -138,15 +138,6 @@ for(k in 1:repetitions){
     results.clhs$mndiff[i] <- mean(abs(colMeans(pcaall$scores.std[i.calidx,])))
     results.clhs$sddiff[i] <- mean(abs(colSds(pcaall$scores.std[i.calidx,]) - 1))
     
-    ## write the results obtained so far...
-    if(iter == length(nmsrepsclhs)){
-      final.clhs <- final.clhs/iter
-      write.table(x = final.clhs, 
-                  file = "6pcs_final.clhs.txt", 
-                  sep = "\t", 
-                  row.names = FALSE)
-    }
-    
     print(results.clhs[1:i,])
   }
 }
