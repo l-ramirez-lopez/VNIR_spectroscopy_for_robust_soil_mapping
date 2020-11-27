@@ -34,16 +34,12 @@ rmethod <- "wapls1"
 
 ## set the maximum and minimum number of pls factors 
 ## for the local wapls regressions
-pls.f <- c(minpls = 5, maxpls = 20)
+my_wapls <- local_fit_wapls(min_pls_c = 5, max_pls_c = 20)
 
 ## Adjust some additional parameters that control some 
 ## aspects of the mbl
-ctrl <- mblControl(sm = dmetric, 
-                   pcSelection = list("opc", 40), 
-                   valMethod = "NNv", 
-                   returnDiss = TRUE,
-                   scaled = FALSE, 
-                   center = TRUE)
+ctrl <- mbl_control(return_dissimilarity = TRUE,
+                    validation_type = "NNv")
 ```
 
 We also create some `data.frames` were we are going to store the prediction results for the validation set
@@ -85,21 +81,21 @@ Now we perfom MBL and predictions for soil exchangeable Ca^2+^:
 sbl_ca <- mbl(Yr = train$Ca ,
               Xr = train$spc,
               Xu = valida$spc,
-              mblCtrl = ctrl,
-              group = train$samplegroup,
-              dissUsage = "none",
-              k.diss = diss2test, 
-              k.range = kminmax,
-              pls.c = pls.f,
-              method = rmethod)
+              k_diss = diss2test, 
+              k_range = kminmax,
+              diss_method = dmetric,
+              diss_usage = "none",
+              method = my_wapls,
+              control = ctrl,
+              group = train$samplegroup)
 sbl_ca
 
 ## Best threshold distance
-idx.best.ca <- which.min(sbl_ca$nnValStats$st.rmse)
-best.kdiss.ca <- sbl_ca$nnValStats$k.diss[idx.best.ca]
+idx.best.ca <- which.min(sbl_ca$validation_results$nearest_neighbor_validation$st_rmse)
+best.kdiss.ca <- sbl_ca$validation_results$nearest_neighbor_validation$k_diss[idx.best.ca]
 
 ## Get the predicted values for the validation set
-pred_valCa <- getPredictions(sbl_ca)[,idx.best.ca]
+pred_valCa <- unlist(get_predictions(sbl_ca)[,..idx.best.ca])
 
 ## R2
 valrestuls$R2[valrestuls$Property == "Ca"] <- cor(valida$Ca, pred_valCa)^2
@@ -122,20 +118,20 @@ MBL and predictions for $alr(clay)$...
 sbl_alrclay <- mbl(Yr = train$alr_Clay, 
                    Xr = train$spc, 
                    Xu = valida$spc,
-                   mblCtrl = ctrl,
-                   group = train$samplegroup,
-                   dissUsage = "none",
-                   k.diss = diss2test, 
-                   k.range = kminmax,
-                   pls.c = pls.f,
-                   method = rmethod)
+                   k_diss = diss2test, 
+                   k_range = kminmax,
+                   diss_method = dmetric,
+                   diss_usage = "none",
+                   method = my_wapls,
+                   control = ctrl,
+                   group = train$samplegroup)
 
 ## Best threshold distance
-idx.best.alrclay <- which.min(sbl_alrclay$nnValStats$st.rmse)
-best.kdiss.alrclay <- sbl_alrclay$nnValStats$k.diss[idx.best.alrclay]
+idx.best.alrclay <- which.min(sbl_alrclay$validation_results$nearest_neighbor_validation$st_rmse)
+best.kdiss.alrclay <- sbl_alrclay$validation_results$nearest_neighbor_validation$k_diss[idx.best.alrclay]
 
 ## Get the predicted values for the validation set
-pred_val_alrclay <- getPredictions(sbl_alrclay)[,idx.best.alrclay]
+pred_val_alrclay <- unlist(get_predictions(sbl_alrclay)[,..idx.best.alrclay])
 
 ## R2
 valrestuls$R2[valrestuls$Property == "alr_clay"] <- cor(valida$alr_Clay, pred_val_alrclay)^2
@@ -158,20 +154,20 @@ residualvariances$layersAB[residualvariances$Property == "alr_Clay"] <- var(vali
 sbl_alrsilt <- mbl(Yr = train$alr_Silt, 
                    Xr = train$spc, 
                    Xu = valida$spc,
-                   mblCtrl = ctrl,
-                   group = train$samplegroup,
-                   dissUsage = "none",
-                   k.diss = diss2test, 
-                   k.range = kminmax,
-                   pls.c = pls.f,
-                   method = rmethod)
+                   k_diss = diss2test, 
+                   k_range = kminmax,
+                   diss_method = dmetric,
+                   diss_usage = "none",
+                   method = my_wapls,
+                   control = ctrl,
+                   group = train$samplegroup)
 
 ## Best threshold distance
-idx.best.alrsilt <- which.min(sbl_alrsilt$nnValStats$st.rmse)
-best.kdiss.alrsilt <- sbl_alrsilt$nnValStats$k.diss[idx.best.alrsilt]
+idx.best.alrsilt <- which.min(sbl_alrsilt$validation_results$nearest_neighbor_validation$st_rmse)
+best.kdiss.alrsilt <- sbl_alrsilt$validation_results$nearest_neighbor_validation$k_diss[idx.best.alrsilt]
 
 ## Get the predicted values for the validation set
-pred_val_alrsilt <- getPredictions(sbl_alrsilt)[,idx.best.alrsilt]
+pred_val_alrsilt <- unlist(get_predictions(sbl_alrsilt)[,..idx.best.alrsilt])
 
 ## R2
 valrestuls$R2[valrestuls$Property == "alr_silt"] <- cor(valida$alr_Clay, pred_val_alrsilt)^2
@@ -276,15 +272,15 @@ For exchangeable Ca^2+^ predictions...
 sbl_ca_pred <- mbl(Yr = train$Ca, 
                    Xr = train$spc, 
                    Xu = pred$spc,
-                   mblCtrl = ctrl,
-                   group = train$samplegroup,
-                   dissUsage = "none",
-                   k.diss = best.kdiss.ca, 
-                   k.range = kminmax,
-                   pls.c = pls.f,
-                   method = rmethod)
+                   k_diss = best.kdiss.ca, 
+                   k_range = kminmax,
+                   diss_method = dmetric,
+                   diss_usage = "none",
+                   method = my_wapls,
+                   control = ctrl,
+                   group = train$samplegroup)
 ## get the predicted values and store them in nirpredictions
-vnirpredictions$Ca_spec <- getPredictions(sbl_ca_pred)[,1]
+vnirpredictions$Ca_spec <- unlist(get_predictions(sbl_ca_pred))
 ```
 
 For $alr(clay)$ predictions...
@@ -292,15 +288,15 @@ For $alr(clay)$ predictions...
 sbl_alrclay_pred <- mbl(Yr = train$alr_Clay, 
                         Xr = train$spc, 
                         Xu = pred$spc,
-                        mblCtrl = ctrl,
-                        group = train$samplegroup,
-                        dissUsage = "none",
-                        k.diss = best.kdiss.alrclay, 
-                        k.range = kminmax,
-                        pls.c = pls.f,
-                        method = rmethod)
+                        k_diss = best.kdiss.alrclay, 
+                        k_range = kminmax,
+                        diss_method = dmetric,
+                        diss_usage = "none",
+                        method = my_wapls,
+                        control = ctrl,
+                        group = train$samplegroup)
 ## get the predicted values and store them in nirpredictions
-vnirpredictions$alr_Clay_spec <- getPredictions(sbl_alrclay_pred)[,1]
+vnirpredictions$alr_Clay_spec <- unlist(get_predictions(sbl_alrclay_pred))
 ```
 
 For $alr(silt)$ predictions...
@@ -308,15 +304,15 @@ For $alr(silt)$ predictions...
 sbl_alrsilt_pred <- mbl(Yr = train$alr_Silt, 
                         Xr = train$spc, 
                         Xu = pred$spc,
-                        mblCtrl = ctrl,
-                        group = train$samplegroup,
-                        dissUsage = "none",
-                        k.diss = best.kdiss.alrsilt, 
-                        k.range = kminmax,
-                        pls.c = pls.f,
-                        method = rmethod)
+                        k_diss = best.kdiss.alrsilt, 
+                        k_range = kminmax,
+                        diss_method = dmetric,
+                        diss_usage = "none",
+                        method = my_wapls,
+                        control = ctrl,
+                        group = train$samplegroup)
 ## get the predicted values and store them in nirpredictions
-vnirpredictions$alr_Silt_spec <- getPredictions(sbl_alrsilt_pred)[,1]
+vnirpredictions$alr_Silt_spec <- unlist(get_predictions(sbl_alrsilt_pred))
 ```
 
 Examine the `vnirpredictions` object...
