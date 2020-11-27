@@ -8,7 +8,7 @@ Euclidean distance ($msd$) between estimates of the probability density function
 First we compute the principal components (PCs) of the NIR spectra of the whole set of calibration candidate samples. Then for each component we compute kernel density estimates ($KDE$): 
 ``` r
 ## Apply standard normal variate 
-data$spc_snv <- standardNormalVariate(data$spc)
+data$spc_snv <- as.matrix(standardNormalVariate(data$spc))
 
 ## extract the validation samples into a new set/object
 valida <- data[data$set == "validation",]
@@ -18,16 +18,15 @@ data <- data[data$set == "cal_candidate",]
 
 ## --- 2. Perform a principal component analysis  ----
 ## Compress the data 
-pcaall <- orthoProjection(Xr = data$spc_snv, 
-                          X2 = NULL, 
-                          Yr = NULL, 
-                          method = "pca", 
-                          pcSelection = list("cumvar", 0.99), 
-                          center = TRUE, 
-                          scaled = FALSE)
-                          
+pcaall <- ortho_projection(Xr = data$spc_snv, 
+                           method = "pca", 
+                           pc_selection = list("cumvar", 0.99))
+
 ## standardize the socres
-pcaall$scores.std <- sweep(pcaall$scores, MARGIN = 2, STATS = pcaall$sc.sdv, FUN = "/")
+pcaall$scores.std <- sweep(pcaall$scores, 
+                           MARGIN = 2, 
+                           STATS = pcaall$scores_sd, 
+                           FUN = "/")
 
 ## compute the max and min of each score for the limits of the density estimations
 max.sc <- colMins(pcaall$scores.std)
@@ -61,8 +60,19 @@ for(i in 1:length(min.sc)){
 ## Create the vector of different sample set sizes to be tested
 css <- seq(10, 400, by = 10)
 ``` 
-Now we will iterate over the different calibration set sizes (`css`). We are going to use the LHS algorithm to select subsets from our set of candiate samples for calibartion. This is done using the (standardized) scores of the principal components (PCs) of the spectra (`pcaall$scores.std`). For each calibration subset we'll compute the mean squared Euclidean distance ($msd$) between estimates of the probability density functions ($pdfs$) of the whole set of samples and the $pdfs$ of samples in the subset. The $msd$ is computed using kernel density estimates ($KDE$) of the $pdfs$. To obtain reliable estimates of $msd$ as a function of the sample set size, we will repeat 10 times (`repetitions`) the whole sampling procedure for each `css`, the final $msd$ will be the the average of the $msd$s obtained at each iteration.
-The following pseudo-code summarizes the procedure to compute the $msd$ (see the '_Calibration samples_' section in our paper for more details): 
+Now we will iterate over the different calibration set sizes (`css`). We are 
+going to use the LHS algorithm to select subsets from our set of candidate 
+samples for calibartion. This is done using the (standardized) scores of the 
+principal components (PCs) of the spectra (`pcaall$scores.std`). For each 
+calibration subset we'll compute the mean squared Euclidean distance ($msd$) 
+between estimates of the probability density functions ($pdfs$) of the whole 
+set of samples and the $pdfs$ of samples in the subset. The $msd$ is computed 
+using kernel density estimates ($KDE$) of the $pdfs$. To obtain reliable 
+estimates of $msd$ as a function of the sample set size, we will repeat 10 
+times (`repetitions`) the whole sampling procedure for each `css`, the final 
+$msd$ will be the the average of the $msd$s obtained at each iteration.
+The following pseudo-code summarizes the procedure to compute the $msd$ 
+(see the '_Calibration samples_' section in our paper for more details): 
 ```{r, tidy=FALSE, eval=FALSE, highlight=FALSE}
 Input:  PCs of the whole set of candidate samples (p);
         KDEs of the PCs of the whole set of candidate samples;
@@ -81,7 +91,8 @@ Output: msd
 the repetition iterations for each sample set size
 ```
 
-First we'll compute the $msd$s for ecah repetition and we will write each set of results into our working directory.
+First we'll compute the $msd$s for each repetition and we will write each set of 
+results into our working directory.
 ``` r
 ## Sample with LHS (latin hypercube sampling)
 
