@@ -1,6 +1,6 @@
 # R code for Robust soil mapping at the farm scale with vis-NIR spectroscopy (Ramirez-Lopez _et al._, 2019)
 
-_::::18.06.2019::::_
+_::::28.11.2020::::_
 
 Hello,
 
