@@ -12,7 +12,7 @@ bookdown::gitbook:
     edit : null
     search: yes
     fontsettings:
-      theme: night
+      theme: sepia
       family: sans
       size: 2
     sharing:
